@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#define debug(x) cout<<#x<<" = "<<x<<"\n"
 using ll = unsigned long long;
 using namespace std;
 
@@ -63,12 +64,13 @@ bool isGreaterOrEqual(int1024 a, int1024 b){ //a>=b
 }
 
 int1024 modulo(int1024 a, int1024 b){
-	int1024 c;
 	int a_len = 0;
 	int b_len = 0;
 	for(int i = 2048/32-1; i>=0; i--){
 		if(a.chunk[i] != 0){
 			a_len = i+1;
+			debug(i);
+			debug(a.chunk[i]);
 			break;
 		}
 	}
@@ -78,11 +80,35 @@ int1024 modulo(int1024 a, int1024 b){
 			break;
 		}
 	}
+	debug(a_len);
+	debug(b_len);
+	debug(a.chunk[0]);
+	debug(b.chunk[0]);
 	for(int i = a_len-1; i>=b_len-1; i--){
 		ll A = a.chunk[i];
-		ll B = b.chunk[b_len]+1;
+		ll B = b.chunk[b_len-1]+1;
 		int1024 d; d.chunk[0]=A/B;
-		a  = subtract(a,shift(multiply(d,b),i-b_len));
+		debug(A/B);
+		//debug(a.chunk[63]);
+		//debug(b.chunk[63]);
+	///	debug(d.chunk[63]);
+		d =shift(multiply(d,b),i-b_len+1); 
+		if(!isGreaterOrEqual(a,d)) cout<<"!!!!!!!!";
+//		debug(a.chunk[63]);
+//		debug(b.chunk[63]);
+//		debug(d.chunk[63]);
+		for(int i = 0 ; i < 64; i++){
+			cout<<i<<":"<<a.chunk[i]<<"\n";
+		}
+		for(int i = 0 ; i < 64; i++){
+			cout<<i<<":"<<d.chunk[i]<<"\n";
+		}
+		a  = subtract(a,d);
+		debug("--------");
+	//		debug(a.chunk[63]);
+	//	debug(b.chunk[63]);
+	//	debug(d.chunk[63]);
+
 		if(i>=b_len) {
 			a.chunk[i-1]+=a.chunk[i]<<32;
 			a.chunk[i]=0;
@@ -97,23 +123,28 @@ int1024 modulo(int1024 a, int1024 b){
 		subtract(a,b);
 		cnt++;
 
-		if(cnt > 1) cerr<<"Linia 100 a.cpp Blad\n"; 
+		if(cnt > 5) cout<<"Linia 100 a.cpp Blad\n"; 
 
 	}
 	
-	return c;
+	return a;
 }
 
 
 int main(){
 
-/*	int1024 a,b,c;
-	a.chunk[0]=5656565;
-	a.chunk[2]=43434334;
-	b.chunk[0]=5656566;
-	b.chunk[2]=43434333;
-	c = subtract(a,b);
-	cout<<c.chunk[0]<<","<<c.chunk[1]<<"\n";*/
+	int1024 a,b,c;
+	a.chunk[0]=3;
+	c.chunk[0]=1;
+	b.chunk[0]=10000000;
+	for(int i = 0; i < 1000; i++){
+		c = multiply(c,a);
+//		for(int i = 0; i < 64; i++){debug(i);debug(c.chunk[i]);}
+		c= modulo(c,b);
+
+	}
+
+	cout<<c.chunk[0]<<","<<c.chunk[1]<<"\n";
 
 
 
