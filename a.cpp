@@ -56,7 +56,7 @@ int1024 subtract(int1024 a, int1024 b){ //a-b
 }
 
 bool isGreaterOrEqual(int1024 a, int1024 b){ //a>=b
-	for(int i = 0; i < 2048/32; i++){
+	for(int i = 2048/32-1; i >= 0; i--){
 		if(a.chunk[i] > b.chunk[i]) return true;
 		if(a.chunk[i] < b.chunk[i]) return false;
 	}
@@ -120,10 +120,12 @@ int1024 modulo(int1024 a, int1024 b){
 	}
 	int cnt = 0;
 	while(isGreaterOrEqual(a,b)){
-		subtract(a,b);
+		a = subtract(a,b);
 		cnt++;
 
-		if(cnt > 5) cout<<"Linia 100 a.cpp Blad\n"; 
+		if(cnt > 5) {cout<<"Linia 100 a.cpp Blad\n"; 
+		assert(0==1);
+	}
 
 	}
 	
@@ -136,15 +138,16 @@ int main(){
 	int1024 a,b,c;
 	a.chunk[0]=3;
 	c.chunk[0]=1;
-	b.chunk[0]=10000000;
-	for(int i = 0; i < 1000; i++){
+	b.chunk[0]=1000;
+	b.chunk[2]=1000;
+	for(int i = 0; i < 508; i++){
 		c = multiply(c,a);
 //		for(int i = 0; i < 64; i++){debug(i);debug(c.chunk[i]);}
 		c= modulo(c,b);
 
 	}
 
-	cout<<c.chunk[0]<<","<<c.chunk[1]<<"\n";
+	cout<<c.chunk[0]<<","<<c.chunk[1]<<","<<c.chunk[2]<<"\n";
 
 
 
