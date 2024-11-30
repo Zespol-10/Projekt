@@ -28,10 +28,12 @@ int1024 multiply(int1024 a, int1024 b){
 
 	return c;
 }
-int1024 shift(int1024 a){
+int1024 shift(int1024 a, int s){
 	int1024 c;
-	//
-	//
+	for(int i = s; i < 2048/32; i++){
+		c.chunk[i] = a.chunk[i-s];
+	}
+
 	return c;
 }
 
@@ -50,6 +52,14 @@ int1024 subtract(int1024 a, int1024 b){ //a-b
 		c.chunk[i] = a.chunk[i]-b.chunk[i];
 	}
 	return c;
+}
+
+bool isGreaterOrEqual(int1024 a, int1024 b){ //a>=b
+	for(int i = 0; i < 2048/32; i++){
+		if(a.chunk[i] > b.chunk[i]) return true;
+		if(a.chunk[i] < b.chunk[i]) return false;
+	}
+	return true;
 }
 
 int1024 modulo(int1024 a, int1024 b){
