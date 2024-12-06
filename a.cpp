@@ -132,7 +132,7 @@ int1024 modulo(int1024 a, int1024 b){
 }
 
 
-int1024 random_int1024(int1024 n){
+int1024 random_int1024(int1024 n){ //do poprawki
 	int1024 a;
 	bool ok = false;
 	bool ok2 = false;
@@ -142,7 +142,7 @@ int1024 random_int1024(int1024 n){
 				ok = true;
 				ll r = rand()%2;
 				a.chunk[i]+=r*(ll(1)<<j);
-				if(!ok2 && r == 0) ok2 = true;
+				if(r == 0) ok2 = true;
 
 			}else{
 				if(ok2){
@@ -159,14 +159,32 @@ int1024 random_int1024(int1024 n){
 
 
 	}
-
-
-
 	return a;
+}
+
+
+int1024 random_int1024(){
+	int1024 a;
+	bool ok = true;
+	bool ok2 = true;
+	for(int i = 1024/32-1; i  >= 0; i-- ){
+		for(int j = 31; j>=0; j--){
+			
+				
+				ll r = rand()%2;
+				a.chunk[i]+=r*(ll(1)<<j);
+				
+
+
+			
+		//	debug(a.chunk[i]);
+		}
 
 
 
 
+	}
+	return a;
 }
 
 
@@ -190,6 +208,11 @@ int1024 fast_exponentation(int1024 a, int1024 b, int1024 mod){
 	return c;
 }
 
+bool isEqual(int1024 a, int1024 b){
+	if(isGreaterOrEqual(a,b) && isGreaterOrEqual(b,a)) return true;
+	return false;
+}
+
 bool RabinMiller(int1024 p, int k){
 
 	//przydałoby się jeszcze sprawdzanie czy p > 2....
@@ -197,11 +220,32 @@ bool RabinMiller(int1024 p, int k){
 	if(p.chunk[0]%2 == 0) return false; // oczywiście to nie działa dla 2, ale to nie ważne
 	int1024 c; int1024 jeden; jeden.chunk[0] = 1;
 	c = subtract(p,jeden);
+	int s= count_zeroes(c);
+	int1024 d = right_bitshift(c,s);
+	while(k--){
+		debug(k);
+		int1024 a = random_int1024(c);
+		int1024 jeden; jeden.chunk[0] = 1;
+		bool ok = true;
+		int1024 res = fast_exponentation(a,d,p);
+		if(isEqual(res,jeden)) ok = false;
+		if(!ok) continue;
+		for(int r = 0; r < s; r++){
+			int1024 q = bitshift(d,r);
+			res = fast_exponentation(a,q,p);
+			if(isEqual(res,c)) ok = false;
+			if(!ok) break;
+		}
 
-//budowa
 
 
-return true;
+		if(ok) return false;
+	}
+
+
+
+
+	return true;
 }
 
 int main(){
@@ -209,15 +253,20 @@ int main(){
 	srand(time(NULL));
 
 	int1024 a,b,c,d;
-	a.chunk[0]=3;
+	a.chunk[0]=1;
 	
-	b.chunk[0]=1000;
-	b.chunk[2]=1000;
-	d.chunk[0]=510;
+	b.chunk[1] = 1;
 
-	int zz = count_zeroes(b);
-	debug(zz);
-	c = random_int1024(b);//fast_exponentation(a,d,b);
+
+	
+	c = random_int1024(b);
+	while(!RabinMiller(c,10)){
+		c = subtract(c,a);
+	}
+
+
+
+	//fast_exponentation(a,d,b);
 	//for(int i = 0; i < 508; i++){
 	//	c = multiply(c,a);
 //		for(int i = 0; i < 64; i++){debug(i);debug(c.chunk[i]);}
