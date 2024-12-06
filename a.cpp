@@ -63,15 +63,25 @@ bool isGreaterOrEqual(int1024 a, int1024 b){ //a>=b
 	return true;
 }
 
-int1024 bitshift(int1024 a, int s){
+int1024 bitshift(int1024 a, ll s){
 	int1024 b;
-	int bity = s%32;
-	int czunki = s/32;
+	ll bity = s%32;
+	ll czunki = s/32;
 	ll carry = 0;
-	for(int i = czunki; i < 2048/32; i++){
-		b.chunk[i] = a.chunk[i-czunki]<<bity + carry;
-		carry = b.chunk[i]-b.chunk[i]%(ll(1)<<32);
+	//debug(bity);
+	//debug(carry);
+	//debug(czunki);
+	for(int i = czunki; i < 2048/32; i++){//zamiast 5 2048/32 powinno być
+	//	debug(i);
+	//	debug(carry);
+	//	debug(a.chunk[i]);
+	//	debug((ll(a.chunk[i-czunki])<<ll(bity) ));
+		b.chunk[i] = (ll(a.chunk[i-czunki])<<ll(bity)) + ll(carry);
+	//	debug(b.chunk[i]);
+		carry = (b.chunk[i]/(ll(1)<<32));
+
 		b.chunk[i]%=(ll(1)<<32);
+	//	debug(b.chunk[i]);
 	}
 	return b;
 }
@@ -82,7 +92,16 @@ int1024 modulo(int1024 a, int1024 b){
 
 	for(int i = 1023; i>=0; i--){
 		int1024 d = bitshift(b,i);
-		if(isGreaterOrEqual(a,d)) a = subtract(a,d);
+		if(isGreaterOrEqual(a,d)) {
+
+			a = subtract(a,d);
+			//debug(i);
+			//for(int j = 0; j < 4; j++){
+			//	debug(j);
+			//	debug(d.chunk[j]);
+			//}
+
+		}
 	}
 	return a;
 }
@@ -127,12 +146,13 @@ int main(){
 	srand(time(NULL));
 
 	int1024 a,b,c,d;
-	a.chunk[0]=3;
+	a.chunk[0]=287;
+	a.chunk[1]=125;
+	b.chunk[0]=683683;
+	b.chunk[1]=2;
 
-	b.chunk[0]=1000;
-	b.chunk[2]=1000;
-	d.chunk[0] = 100;
-	c = fast_exponentation(a,d,b);
+	
+	c = modulo(a,b);
 	//for(int i = 0; i < 508; i++){
 	//	c = multiply(c,a);
 //		for(int i = 0; i < 64; i++){debug(i);debug(c.chunk[i]);}
