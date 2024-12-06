@@ -63,89 +63,82 @@ bool isGreaterOrEqual(int1024 a, int1024 b){ //a>=b
 	return true;
 }
 
+int1024 bitshift(int1024 a, int s){
+	int1024 b;
+	int bity = s%32;
+	int czunki = s/32;
+	ll carry = 0;
+	for(int i = czunki; i < 2048/32; i++){
+		b.chunk[i] = a.chunk[i-czunki]<<bity + carry;
+		carry = b.chunk[i]-b.chunk[i]%(ll(1)<<32);
+		b.chunk[i]%=(ll(1)<<32);
+	}
+	return b;
+}
+
 int1024 modulo(int1024 a, int1024 b){
 	int a_len = 0;
 	int b_len = 0;
-	for(int i = 2048/32-1; i>=0; i--){
-		if(a.chunk[i] != 0){
-			a_len = i+1;
-			debug(i);
-			debug(a.chunk[i]);
-			break;
-		}
+
+	for(int i = 1023; i>=0; i--){
+		int1024 d = bitshift(b,i);
+		if(isGreaterOrEqual(a,d)) a = subtract(a,d);
 	}
-	for(int i = 2048/32-1; i>=0; i--){
-		if(b.chunk[i] != 0){
-			b_len = i+1;
-			break;
-		}
-	}
-	debug(a_len);
-	debug(b_len);
-	debug(a.chunk[0]);
-	debug(b.chunk[0]);
-	for(int i = a_len-1; i>=b_len-1; i--){
-		ll A = a.chunk[i];
-		ll B = b.chunk[b_len-1]+1;
-		int1024 d; d.chunk[0]=A/B;
-		debug(A/B);
-		//debug(a.chunk[63]);
-		//debug(b.chunk[63]);
-	///	debug(d.chunk[63]);
-		d =shift(multiply(d,b),i-b_len+1); 
-		if(!isGreaterOrEqual(a,d)) cout<<"!!!!!!!!";
-//		debug(a.chunk[63]);
-//		debug(b.chunk[63]);
-//		debug(d.chunk[63]);
-		for(int i = 0 ; i < 64; i++){
-			cout<<i<<":"<<a.chunk[i]<<"\n";
-		}
-		for(int i = 0 ; i < 64; i++){
-			cout<<i<<":"<<d.chunk[i]<<"\n";
-		}
-		a  = subtract(a,d);
-		debug("--------");
-	//		debug(a.chunk[63]);
-	//	debug(b.chunk[63]);
-	//	debug(d.chunk[63]);
-
-		if(i>=b_len) {
-			a.chunk[i-1]+=a.chunk[i]<<32;
-			a.chunk[i]=0;
-		}
-
-
-
-
-	}
-	int cnt = 0;
-	while(isGreaterOrEqual(a,b)){
-		a = subtract(a,b);
-		cnt++;
-
-		if(cnt > 5) {cout<<"Linia 100 a.cpp Blad\n"; 
-		assert(0==1);
-	}
-
-	}
-	
 	return a;
 }
 
 
+int1024 fast_exponentation(int1024 a, int1024 b, int1024 mod){
+	int1024 c; c.chunk[0] = 1;
+	for(int i = 1024/32 - 1; i >= 0 ; i-- ){
+	//	debug(i);
+		for(int j = 31; j >= 0; j--){
+	//		debug(j);
+			int bit = (b.chunk[i]&(1<<j))>>j;
+	//		debug(bit);
+			c = multiply(c,c);
+			c = modulo(c,mod);
+			if(bit == 1){
+				c = multiply(c,a);
+				c = modulo(c,mod);
+			}
+		}
+		
+	}
+	return c;
+}
+
+bool RabinMiller(int1024 p, int k){
+
+	//przydałoby się jeszcze sprawdzanie czy p > 2....
+
+	if(p.chunk[0]%2 == 0) return false; // oczywiście to nie działa dla 2, ale to nie ważne
+	int1024 c; int1024 jeden; jeden.chunk[0] = 1;
+	c = subtract(p,jeden);
+
+//budowa
+
+
+return true;
+}
+
 int main(){
 
-	int1024 a,b,c;
+	srand(time(NULL));
+
+	int1024 a,b,c,d;
 	a.chunk[0]=3;
-	c.chunk[0]=1;
+
 	b.chunk[0]=1000;
 	b.chunk[2]=1000;
-	for(int i = 0; i < 508; i++){
-		c = multiply(c,a);
+	d.chunk[0] = 100;
+	c = fast_exponentation(a,d,b);
+	//for(int i = 0; i < 508; i++){
+	//	c = multiply(c,a);
 //		for(int i = 0; i < 64; i++){debug(i);debug(c.chunk[i]);}
-		c= modulo(c,b);
+	//	c= modulo(c,b);
 
-	}
+	//}/
 
 	cout<<c.chunk[0]<<","<<c.chunk[1]<<","<<c.chunk[2]<<"\n";
 
