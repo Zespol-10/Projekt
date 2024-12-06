@@ -38,6 +38,15 @@ int1024 shift(int1024 a, int s){
 	return c;
 }
 
+int1024 right_shift(int1024 a, int s){
+	int1024 c;
+	for(int  i = 2048/32-s-1; i >= 0; i--){
+		c.chunk[i] = a.chunk[i+s];
+	}
+
+	return c;
+}
+
 int1024 subtract(int1024 a, int1024 b){ //a-b
 	int1024 c;
 	for(int i = 0; i < 2048/32; i++){
@@ -68,22 +77,38 @@ int1024 bitshift(int1024 a, ll s){
 	ll bity = s%32;
 	ll czunki = s/32;
 	ll carry = 0;
-	//debug(bity);
-	//debug(carry);
-	//debug(czunki);
-	for(int i = czunki; i < 2048/32; i++){//zamiast 5 2048/32 powinno być
-	//	debug(i);
-	//	debug(carry);
-	//	debug(a.chunk[i]);
-	//	debug((ll(a.chunk[i-czunki])<<ll(bity) ));
+	for(int i = czunki; i < 2048/32; i++){
 		b.chunk[i] = (ll(a.chunk[i-czunki])<<ll(bity)) + ll(carry);
-	//	debug(b.chunk[i]);
 		carry = (b.chunk[i]/(ll(1)<<32));
-
 		b.chunk[i]%=(ll(1)<<32);
-	//	debug(b.chunk[i]);
 	}
 	return b;
+}
+
+int1024 right_bitshift(int1024 a, ll s){
+	int1024 b;
+	ll bity = s%32;
+	ll czunki = s/32;
+	int1024 d = bitshift(a,32-bity);
+//	debug(d.chunk[0]);
+///	debug(d.chunk[1]);
+//	debug(d.chunk[2]);
+	//debug(bity);
+//	debug(d.chunk[3]);
+	b = right_shift(bitshift(a,32-bity),czunki+1);
+
+	
+	return b;
+}
+
+int count_zeroes(int1024 a){
+	int i =0;
+	while(i < 1024){
+		if( (a.chunk[i/32]&(1<<ll(i%32)) ) != 0 ) return i;
+
+		i++;
+	}
+	return i;
 }
 
 int1024 modulo(int1024 a, int1024 b){
@@ -104,6 +129,44 @@ int1024 modulo(int1024 a, int1024 b){
 		}
 	}
 	return a;
+}
+
+
+int1024 random_int1024(int1024 n){
+	int1024 a;
+	bool ok = false;
+	bool ok2 = false;
+	for(int i = 2048/32-1; i  >= 0; i-- ){
+		for(int j = 31; j>=0; j--){
+			if(((n.chunk[i]&(ll(1)<<j))>>j)==1){
+				ok = true;
+				ll r = rand()%2;
+				a.chunk[i]+=r*(ll(1)<<j);
+				if(!ok2 && r == 0) ok2 = true;
+
+			}else{
+				if(ok2){
+					ll r = rand()%2;
+					a.chunk[i]+=r*(ll(1)<<j);
+				}
+
+
+			}
+		//	debug(a.chunk[i]);
+		}
+
+
+
+
+	}
+
+
+
+	return a;
+
+
+
+
 }
 
 
@@ -146,13 +209,15 @@ int main(){
 	srand(time(NULL));
 
 	int1024 a,b,c,d;
-	a.chunk[0]=287;
-	a.chunk[1]=125;
-	b.chunk[0]=683683;
-	b.chunk[1]=2;
-
+	a.chunk[0]=3;
 	
-	c = modulo(a,b);
+	b.chunk[0]=1000;
+	b.chunk[2]=1000;
+	d.chunk[0]=510;
+
+	int zz = count_zeroes(b);
+	debug(zz);
+	c = random_int1024(b);//fast_exponentation(a,d,b);
 	//for(int i = 0; i < 508; i++){
 	//	c = multiply(c,a);
 //		for(int i = 0; i < 64; i++){debug(i);debug(c.chunk[i]);}
