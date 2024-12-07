@@ -12,17 +12,19 @@ public:
 		}
 	}
 };
+void print(int1024 a);
 
-int1024 multiply(int1024 a, int1024 b){
+int1024 multiply(int1024 a, int1024 b){ //błądddd!!!!
 	int1024 c;
 	for(int i  = 0; i < 2048/32; i++){
 		ll res = 0; 
 		for(int j = 0; j <=i; j++){
-			res+=a.chunk[j]*b.chunk[i-j];
+			if(i+1 < 2048/32) c.chunk[i+1]+=c.chunk[i]>>32;
+			c.chunk[i]=c.chunk[i]-((c.chunk[i]>>32)<<32);
+			c.chunk[i]+=a.chunk[j]*b.chunk[i-j];
 		}
-		c.chunk[i]+=res;
 		if(i+1 < 2048/32) c.chunk[i+1]+=c.chunk[i]>>32;
-		c.chunk[i]=c.chunk[i]-((c.chunk[i]>>32)<<32);
+		c.chunk[i]=c.chunk[i]-((c.chunk[i]>>32)<<32);	
 	}
 	return c;
 }
@@ -168,16 +170,32 @@ int1024 random_int1024(int1024 n){
 }
 
 
-int1024 fast_exponentation(int1024 a, int1024 b, int1024 mod){
+int1024 fast_exponentation(int1024 a, int1024 b, int1024 mod){//wyglada ok
+	cout<<"a = ";print(a);
+	cout<<"b = ";print(b);
+	cout<<"mod = ";print(mod);
 	int1024 c; c.chunk[0] = 1;
 	for(int i = 1024/32 - 1; i >= 0 ; i-- ){
 		for(int j = 31; j >= 0; j--){
 			int bit = (b.chunk[i]&(1<<j))>>j;
+	//		debug(i);
+	//		debug(b.chunk[i]);
+	//		debug(i*32+j);
+	//		debug(bit);
+	//		cout<<"c = ";print(c);
+	//		debug("square");
 			c = multiply(c,c);
+	//		cout<<"c = ";print(c);
 			c = modulo(c,mod);
+	//		debug("modulo");
+	//		cout<<"c = ";print(c);
 			if(bit == 1){
+	//			debug("multiply by a");
 				c = multiply(c,a);
+	//			cout<<"c = ";print(c);
+	//			debug("modulo");
 				c = modulo(c,mod);
+	//			cout<<"c = ";print(c);
 			}
 		}
 		
@@ -190,27 +208,40 @@ bool isEqual(int1024 a, int1024 b){
 	return false;
 }
 
+
 bool RabinMiller(int1024 p, int k){
 	//przydałoby się jeszcze sprawdzanie czy p > 2....
 	if(p.chunk[0]%2 == 0) return false; // oczywiście to nie działa dla 2, ale to nie ważne
 	int1024 c; int1024 jeden; jeden.chunk[0] = 1;
 	c = subtract(p,jeden);
+	cout<<"c = ";print(c);
 	int s= count_zeroes(c);
+	debug(s);
 	int1024 d = right_bitshift(c,s);
+	print(d);
 	while(k--){
 		debug(k);
 		int1024 a = random_int1024(c);
+		cout<<"a = ";print(a);
 		int1024 jeden; jeden.chunk[0] = 1;
 		bool ok = true;
 		int1024 res = fast_exponentation(a,d,p);
 		if(isEqual(res,jeden)) ok = false;
+		debug(ok);
 		if(!ok) continue;
 		for(int r = 0; r < s; r++){
+			debug(r);
 			int1024 q = bitshift(d,r);
+			print(a);
+			print(q);
+			print(p);
 			res = fast_exponentation(a,q,p);
+			print(res);
 			if(isEqual(res,c)) ok = false;
+			debug(ok);
 			if(!ok) break;
 		}
+		debug(ok);
 		if(ok) return false;
 	}
 	return true;
@@ -331,13 +362,35 @@ int main(){
 	while(!RabinMiller(c,10)){
 		c = subtract(c,a);
 	}*/
-	a.chunk[0] = 8323;
-	b.chunk[0] = 253526;
-	pair_int1024 e = Extended_Euclidean_Algorithm(a,b);
-	c = e.fi;
+	c.chunk[0] = 1;
+	a.chunk[3] = 83;
+	b = random_int1024(a);
+/*
+	int1024 jeden; jeden.chunk[0] = 1;
+	int1024 dwies; dwies.chunk[0] = 210;
+	pair_int1024 dziel = division_with_modulo(b,dwies);
+	b = add(multiply(dwies,dziel.fi),jeden);
+
+	
+	while(!RabinMiller(b,10)){
+		print(b);
+		b = subtract(b,dwies);
+
+	}
+	print(b);*/
+	int1024 P;
+	P.chunk[0] = 366841091;
+	P.chunk[1] = 1940089343;
+	P.chunk[2] = 1584104064;
+	P.chunk[3] = 78;
+	print(P);
+	debug(RabinMiller(P,10));
 
 
-	cout<<c.chunk[0]<<","<<c.chunk[1]<<","<<c.chunk[2]<<"\n";
-	RSA();
+	// c = e.fi;
+
+
+	//cout<<c.chunk[0]<<","<<c.chunk[1]<<","<<c.chunk[2]<<"\n";
+	//RSA();
 	return 0;
 }
