@@ -132,35 +132,7 @@ int1024 modulo(int1024 a, int1024 b){
 }
 
 
-int1024 random_int1024(int1024 n){ //do poprawki
-	int1024 a;
-	bool ok = false;
-	bool ok2 = false;
-	for(int i = 2048/32-1; i  >= 0; i-- ){
-		for(int j = 31; j>=0; j--){
-			if(((n.chunk[i]&(ll(1)<<j))>>j)==1){
-				ok = true;
-				ll r = rand()%2;
-				a.chunk[i]+=r*(ll(1)<<j);
-				if(r == 0) ok2 = true;
 
-			}else{
-				if(ok2){
-					ll r = rand()%2;
-					a.chunk[i]+=r*(ll(1)<<j);
-				}
-
-
-			}
-		//	debug(a.chunk[i]);
-		}
-
-
-
-
-	}
-	return a;
-}
 
 
 int1024 random_int1024(){
@@ -168,22 +140,16 @@ int1024 random_int1024(){
 	bool ok = true;
 	bool ok2 = true;
 	for(int i = 1024/32-1; i  >= 0; i-- ){
-		for(int j = 31; j>=0; j--){
-			
-				
+		for(int j = 31; j>=0; j--){	
 				ll r = rand()%2;
 				a.chunk[i]+=r*(ll(1)<<j);
-				
-
-
-			
-		//	debug(a.chunk[i]);
 		}
-
-
-
-
 	}
+	return a;
+}
+
+int1024 random_int1024(int1024 n){ //do poprawki
+	int1024 a = modulo(random_int1024(), n);
 	return a;
 }
 
