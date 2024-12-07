@@ -171,9 +171,9 @@ int1024 random_int1024(int1024 n){
 
 
 int1024 fast_exponentation(int1024 a, int1024 b, int1024 mod){//wyglada ok
-	cout<<"a = ";print(a);
-	cout<<"b = ";print(b);
-	cout<<"mod = ";print(mod);
+//	cout<<"a = ";print(a);
+//	cout<<"b = ";print(b);
+//	cout<<"mod = ";print(mod);
 	int1024 c; c.chunk[0] = 1;
 	for(int i = 1024/32 - 1; i >= 0 ; i-- ){
 		for(int j = 31; j >= 0; j--){
@@ -214,34 +214,34 @@ bool RabinMiller(int1024 p, int k){
 	if(p.chunk[0]%2 == 0) return false; // oczywiście to nie działa dla 2, ale to nie ważne
 	int1024 c; int1024 jeden; jeden.chunk[0] = 1;
 	c = subtract(p,jeden);
-	cout<<"c = ";print(c);
+//	cout<<"c = ";print(c);
 	int s= count_zeroes(c);
-	debug(s);
+//	debug(s);
 	int1024 d = right_bitshift(c,s);
-	print(d);
+//	print(d);
 	while(k--){
 		debug(k);
 		int1024 a = random_int1024(c);
-		cout<<"a = ";print(a);
+//		cout<<"a = ";print(a);
 		int1024 jeden; jeden.chunk[0] = 1;
 		bool ok = true;
 		int1024 res = fast_exponentation(a,d,p);
 		if(isEqual(res,jeden)) ok = false;
-		debug(ok);
+//		debug(ok);
 		if(!ok) continue;
 		for(int r = 0; r < s; r++){
-			debug(r);
+//			debug(r);
 			int1024 q = bitshift(d,r);
-			print(a);
-			print(q);
-			print(p);
+//			print(a);
+//			print(q);
+//			print(p);
 			res = fast_exponentation(a,q,p);
-			print(res);
+//			print(res);
 			if(isEqual(res,c)) ok = false;
-			debug(ok);
+//			debug(ok);
 			if(!ok) break;
 		}
-		debug(ok);
+//		debug(ok);
 		if(ok) return false;
 	}
 	return true;
@@ -314,23 +314,32 @@ void print(int1024 a){
 
 
 void RSA(){
-	int1024 Z; Z.chunk[32/32] = 1;
+	int1024 Z; Z.chunk[64/32] = 1;
 	int1024 p,q;
 	p = random_int1024(Z);
 	q = random_int1024(Z);
-	Z.chunk[32/32] = 0; Z.chunk[0] = 1;
+	int1024 jeden; jeden.chunk[0] = 1;
+	int1024 dwies; dwies.chunk[0] = 210;
+	pair_int1024 dziel;
+	dziel = division_with_modulo(p,dwies);
+	p = add(multiply(dwies,dziel.fi),jeden);
+	dziel = division_with_modulo(q,dwies);
+	q = add(multiply(dwies,dziel.fi),jeden);
 	while(!RabinMiller(p,10)){
-		p = subtract(p,Z);
+		p = subtract(p,dwies);
 	}
 	while(!RabinMiller(q,10)){
-		q = subtract(q,Z);
+		q = subtract(q,dwies);
 	}
 	int1024 n = multiply(p,q);
-	int1024 phi = multiply(subtract(p,Z),subtract(q,Z));
+	int1024 phi = multiply(subtract(p,jeden),subtract(q,jeden));
 	int1024 e = random_int1024(phi);
 	int1024 d;
+	debug("zbliżamy sie do eullidesa!!!! ");
 	//check if e is coprime to phi...
 	bool ok = false;
+	cout<<"p = ";print(p);
+	cout<<"q = ";print(q);
 	while(!ok){
 		pair_int1024 ab = Extended_Euclidean_Algorithm(e,phi);
 		int1024 ax = multiply(ab.fi,e);
@@ -338,10 +347,19 @@ void RSA(){
 		int1024 diff;
 		if(isGreaterOrEqual(ax,by)) diff = subtract(ax,by);
 		else diff = subtract(by,ax);
-		if(isEqual(diff,Z)) ok = true;
+		cout<<"diff = ";print(diff);
+		if(isEqual(diff,jeden)) ok = true;
 		d = modulo(ab.fi,phi);
-		if(ok) break;
+		if(ok){
+			if(!isEqual(modulo(multiply(d,e),phi),jeden)){
+				d = modulo(multiply(d,subtract(phi,jeden)),phi);
+			}
+			break;
+		}
 		e = random_int1024(phi);
+		
+		debug(ok);
+		print(e);
 	}
 	print(d);
 	print(e);
@@ -355,17 +373,18 @@ void RSA(){
 
 int main(){
 	srand(time(NULL));
+
 	int1024 a,b,c,d;
+	RSA();
 /*	a.chunk[0]=1;
 	b.chunk[1] = 1;
 	c = random_int1024(b);
 	while(!RabinMiller(c,10)){
 		c = subtract(c,a);
 	}*/
-	c.chunk[0] = 1;
+	/*c.chunk[0] = 1;
 	a.chunk[3] = 83;
 	b = random_int1024(a);
-/*
 	int1024 jeden; jeden.chunk[0] = 1;
 	int1024 dwies; dwies.chunk[0] = 210;
 	pair_int1024 dziel = division_with_modulo(b,dwies);
@@ -377,14 +396,15 @@ int main(){
 		b = subtract(b,dwies);
 
 	}
+	
 	print(b);*/
-	int1024 P;
-	P.chunk[0] = 366841091;
+	//int1024 P;
+/*	P.chunk[0] = 366841091;
 	P.chunk[1] = 1940089343;
 	P.chunk[2] = 1584104064;
 	P.chunk[3] = 78;
 	print(P);
-	debug(RabinMiller(P,10));
+	debug(RabinMiller(P,10));*/
 
 
 	// c = e.fi;
