@@ -257,13 +257,37 @@ pair_int1024 Extended_Euclidean_Algorithm(int1024 a , int1024 b){ //musimy znale
 	return result;
 }
 
+void print(int1024 a){
+	int1024 dzies; dzies.chunk[0] = 10;
+	int1024 zero;
+	string s;
+	if(isEqual(a,zero)){
+		s = "0";
+		cout<<s<<"\n";
+		return;
+	}
+	while(!isEqual(a,zero)){
+		pair_int1024 d = division_with_modulo(a,dzies);
+		a = d.fi;
+		s += char(d.se.chunk[0]+'0');
+	}
+	reverse(s.begin(),s.end());
+	cout<<s<<"\n";
+
+
+
+
+
+
+}
+
 
 void RSA(){
-	int1024 Z; Z.chunk[512/32] = 1;
+	int1024 Z; Z.chunk[32/32] = 1;
 	int1024 p,q;
 	p = random_int1024(Z);
 	q = random_int1024(Z);
-	Z.chunk[512/32] = 0; Z.chunk[0] = 1;
+	Z.chunk[32/32] = 0; Z.chunk[0] = 1;
 	while(!RabinMiller(p,10)){
 		p = subtract(p,Z);
 	}
@@ -273,14 +297,24 @@ void RSA(){
 	int1024 n = multiply(p,q);
 	int1024 phi = multiply(subtract(p,Z),subtract(q,Z));
 	int1024 e = random_int1024(phi);
+	int1024 d;
 	//check if e is coprime to phi...
-
-
-
-
-
-
-
+	bool ok = false;
+	while(!ok){
+		pair_int1024 ab = Extended_Euclidean_Algorithm(e,phi);
+		int1024 ax = multiply(ab.fi,e);
+		int1024 by = multiply(ab.se,phi);
+		int1024 diff;
+		if(isGreaterOrEqual(ax,by)) diff = subtract(ax,by);
+		else diff = subtract(by,ax);
+		if(isEqual(diff,Z)) ok = true;
+		d = modulo(ab.fi,phi);
+		if(ok) break;
+		e = random_int1024(phi);
+	}
+	print(d);
+	print(e);
+	print(n);
 
 
 }
@@ -304,5 +338,6 @@ int main(){
 
 
 	cout<<c.chunk[0]<<","<<c.chunk[1]<<","<<c.chunk[2]<<"\n";
+	RSA();
 	return 0;
 }
