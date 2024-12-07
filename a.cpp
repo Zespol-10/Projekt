@@ -60,6 +60,22 @@ int1024 subtract(int1024 a, int1024 b){ //a-b
 	return c;
 }
 
+
+
+int1024 add(int1024 a, int1024 b){ //a+b
+	int1024 c;
+	for(int i = 0; i < 2048/32; i++){
+		c.chunk[i] += a.chunk[i]+b.chunk[i];
+		if(c.chunk[i] >= (ll(1)<<32)){
+			if(i < 2048/32-1){
+				c.chunk[i+1] += (c.chunk[i]/(ll(1)<<32));
+			}
+			c.chunk[i] %= (ll(1)<<32);
+		}
+	}
+	return c;
+}
+
 bool isGreaterOrEqual(int1024 a, int1024 b){ //a>=b
 	for(int i = 2048/32-1; i >= 0; i--){
 		if(a.chunk[i] > b.chunk[i]) return true;
@@ -109,6 +125,28 @@ int1024 modulo(int1024 a, int1024 b){
 		}
 	}
 	return a;
+}
+
+struct pair_int1024{
+	int1024 fi;
+	int1024 se;
+};
+
+
+pair_int1024 division_with_modulo(int1024 a, int1024 b){
+	int1024 c;
+	pair_int1024 res;
+	int a_len = 0;
+	int b_len = 0;
+	for(int i = 1023; i>=0; i--){
+		int1024 d = bitshift(b,i);
+		if(isGreaterOrEqual(a,d)) {
+			a = subtract(a,d);
+			c.chunk[i/32]+=(ll(1)<<(i%32));
+		}
+	}
+	res.fi = c; res.se = a;
+	return res;
 }
 
 int1024 random_int1024(){
@@ -178,15 +216,93 @@ bool RabinMiller(int1024 p, int k){
 	return true;
 }
 
+
+
+pair_int1024 Extended_Euclidean_Algorithm(int1024 a , int1024 b){ //musimy znalezc takie x,y > 0, że ax-by=gcd(a,b)
+	int1024 zero;
+	int1024 x;
+	int1024 y;
+	pair_int1024 result;
+	if(isEqual(a,zero) ){
+		y.chunk[0]=1;
+		result.fi = x;
+		result.se = y;
+		return result;
+	}
+	if(isEqual(b,zero)){
+		x.chunk[0]=1;
+		result.fi = x;
+		result.se = y;
+		return result;
+	}
+	if(isGreaterOrEqual(a,b)){
+		pair_int1024 d = division_with_modulo(a,b);
+		pair_int1024 r = Extended_Euclidean_Algorithm(d.se,b);
+		x = r.fi;
+		y = add(r.se,multiply(d.fi,r.fi));
+		result.fi = x;
+		result.se = y;
+		return result;
+	}
+	if(isGreaterOrEqual(b,a)){
+		pair_int1024 d = division_with_modulo(b,a);
+		pair_int1024 r = Extended_Euclidean_Algorithm(a,d.se);
+		x =  add(r.fi,multiply(d.fi,r.se));
+		y = r.se;
+		result.fi = x;
+		result.se = y;
+		return result;
+	}
+	assert(0==4); //nic nie powinno tu dojść
+	return result;
+}
+
+
+void RSA(){
+	int1024 Z; Z.chunk[512/32] = 1;
+	int1024 p,q;
+	p = random_int1024(Z);
+	q = random_int1024(Z);
+	Z.chunk[512/32] = 0; Z.chunk[0] = 1;
+	while(!RabinMiller(p,10)){
+		p = subtract(p,Z);
+	}
+	while(!RabinMiller(q,10)){
+		q = subtract(q,Z);
+	}
+	int1024 n = multiply(p,q);
+	int1024 phi = multiply(subtract(p,Z),subtract(q,Z));
+	int1024 e = random_int1024(phi);
+	//check if e is coprime to phi...
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
 int main(){
 	srand(time(NULL));
 	int1024 a,b,c,d;
-	a.chunk[0]=1;
+/*	a.chunk[0]=1;
 	b.chunk[1] = 1;
 	c = random_int1024(b);
 	while(!RabinMiller(c,10)){
 		c = subtract(c,a);
-	}
+	}*/
+	a.chunk[0] = 8323;
+	b.chunk[0] = 253526;
+	pair_int1024 e = Extended_Euclidean_Algorithm(a,b);
+	c = e.fi;
+
+
 	cout<<c.chunk[0]<<","<<c.chunk[1]<<","<<c.chunk[2]<<"\n";
 	return 0;
 }
