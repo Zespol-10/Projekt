@@ -10,8 +10,6 @@ public:
 		for(int i = 0; i < 2048/32; i++){
 			chunk[i] = 0;
 		}
-
-
 	}
 };
 
@@ -26,15 +24,14 @@ int1024 multiply(int1024 a, int1024 b){
 		if(i+1 < 2048/32) c.chunk[i+1]+=c.chunk[i]>>32;
 		c.chunk[i]=c.chunk[i]-((c.chunk[i]>>32)<<32);
 	}
-
 	return c;
 }
+
 int1024 shift(int1024 a, int s){
 	int1024 c;
 	for(int i = s; i < 2048/32; i++){
 		c.chunk[i] = a.chunk[i-s];
 	}
-
 	return c;
 }
 
@@ -43,7 +40,6 @@ int1024 right_shift(int1024 a, int s){
 	for(int  i = 2048/32-s-1; i >= 0; i--){
 		c.chunk[i] = a.chunk[i+s];
 	}
-
 	return c;
 }
 
@@ -90,14 +86,7 @@ int1024 right_bitshift(int1024 a, ll s){
 	ll bity = s%32;
 	ll czunki = s/32;
 	int1024 d = bitshift(a,32-bity);
-//	debug(d.chunk[0]);
-///	debug(d.chunk[1]);
-//	debug(d.chunk[2]);
-	//debug(bity);
-//	debug(d.chunk[3]);
 	b = right_shift(bitshift(a,32-bity),czunki+1);
-
-	
 	return b;
 }
 
@@ -105,7 +94,6 @@ int count_zeroes(int1024 a){
 	int i =0;
 	while(i < 1024){
 		if( (a.chunk[i/32]&(1<<ll(i%32)) ) != 0 ) return i;
-
 		i++;
 	}
 	return i;
@@ -114,26 +102,14 @@ int count_zeroes(int1024 a){
 int1024 modulo(int1024 a, int1024 b){
 	int a_len = 0;
 	int b_len = 0;
-
 	for(int i = 1023; i>=0; i--){
 		int1024 d = bitshift(b,i);
 		if(isGreaterOrEqual(a,d)) {
-
 			a = subtract(a,d);
-			//debug(i);
-			//for(int j = 0; j < 4; j++){
-			//	debug(j);
-			//	debug(d.chunk[j]);
-			//}
-
 		}
 	}
 	return a;
 }
-
-
-
-
 
 int1024 random_int1024(){
 	int1024 a;
@@ -148,7 +124,7 @@ int1024 random_int1024(){
 	return a;
 }
 
-int1024 random_int1024(int1024 n){ //do poprawki
+int1024 random_int1024(int1024 n){ 
 	int1024 a = modulo(random_int1024(), n);
 	return a;
 }
@@ -157,11 +133,8 @@ int1024 random_int1024(int1024 n){ //do poprawki
 int1024 fast_exponentation(int1024 a, int1024 b, int1024 mod){
 	int1024 c; c.chunk[0] = 1;
 	for(int i = 1024/32 - 1; i >= 0 ; i-- ){
-	//	debug(i);
 		for(int j = 31; j >= 0; j--){
-	//		debug(j);
 			int bit = (b.chunk[i]&(1<<j))>>j;
-	//		debug(bit);
 			c = multiply(c,c);
 			c = modulo(c,mod);
 			if(bit == 1){
@@ -180,9 +153,7 @@ bool isEqual(int1024 a, int1024 b){
 }
 
 bool RabinMiller(int1024 p, int k){
-
 	//przydałoby się jeszcze sprawdzanie czy p > 2....
-
 	if(p.chunk[0]%2 == 0) return false; // oczywiście to nie działa dla 2, ale to nie ważne
 	int1024 c; int1024 jeden; jeden.chunk[0] = 1;
 	c = subtract(p,jeden);
@@ -202,47 +173,20 @@ bool RabinMiller(int1024 p, int k){
 			if(isEqual(res,c)) ok = false;
 			if(!ok) break;
 		}
-
-
-
 		if(ok) return false;
 	}
-
-
-
-
 	return true;
 }
 
 int main(){
-
 	srand(time(NULL));
-
 	int1024 a,b,c,d;
 	a.chunk[0]=1;
-	
 	b.chunk[1] = 1;
-
-
-	
 	c = random_int1024(b);
 	while(!RabinMiller(c,10)){
 		c = subtract(c,a);
 	}
-
-
-
-	//fast_exponentation(a,d,b);
-	//for(int i = 0; i < 508; i++){
-	//	c = multiply(c,a);
-//		for(int i = 0; i < 64; i++){debug(i);debug(c.chunk[i]);}
-	//	c= modulo(c,b);
-
-	//}/
-
 	cout<<c.chunk[0]<<","<<c.chunk[1]<<","<<c.chunk[2]<<"\n";
-
-
-
-
+	return 0;
 }
