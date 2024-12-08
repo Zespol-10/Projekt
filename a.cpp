@@ -134,6 +134,19 @@ struct pair_int1024{
 	int1024 se;
 };
 
+int get_bits(int1024 a){
+	for(int i = 1023; i >= 0; i--){
+		int czunk = i/32;
+		int j = i%32;
+		if(a.chunk[czunk]&(ll(1)<<j)) return i+1;
+
+
+
+
+	}
+	return 0;
+}
+
 
 pair_int1024 division_with_modulo(int1024 a, int1024 b){
 	int1024 c;
@@ -312,9 +325,24 @@ void print(int1024 a){
 
 }
 
+struct public_key{
+	int1024 e;
+	int1024 n;
+};
 
-void RSA(){
-	int1024 Z; Z.chunk[64/32] = 1;
+struct private_key{
+	int1024 d;
+	int1024 n;
+};
+
+
+struct key{
+	public_key publickey;
+	private_key privatekey;
+};
+
+key RSA(){
+	int1024 Z; Z.chunk[32/32] = 1;
 	int1024 p,q;
 	p = random_int1024(Z);
 	q = random_int1024(Z);
@@ -335,7 +363,6 @@ void RSA(){
 	int1024 phi = multiply(subtract(p,jeden),subtract(q,jeden));
 	int1024 e = random_int1024(phi);
 	int1024 d;
-	debug("zbliżamy sie do eullidesa!!!! ");
 	//check if e is coprime to phi...
 	bool ok = false;
 	cout<<"p = ";print(p);
@@ -361,9 +388,56 @@ void RSA(){
 		debug(ok);
 		print(e);
 	}
-	print(d);
-	print(e);
-	print(n);
+//	print(d);
+//	print(e);
+//	print(n);
+	key klucz;
+	klucz.privatekey.d = d;
+	klucz.privatekey.n = n;
+	klucz.publickey.e = e;
+	klucz.publickey.n = n;
+	return klucz; 
+}
+
+
+string RSA_encode(string s, public_key klucz){
+	string res;
+	int rozm = get_bits(klucz.n)-1;
+	if(rozm <= 10) assert(0 == 5);
+	rozm/=8;
+	for(int i = 0; i < s.size(); i+= rozm){
+		int1024 liczba;
+		int1024 asci; asci.chunk[0] = 256;
+		int1024 lit; 
+		for(int j = rozm*i; j < s.size(); j++){
+			lit.chunk[0]= int(s[j]);
+			liczba = multiply(liczba,asci);
+			liczba = add(liczba, lit);
+		}
+		for(int j = s.size(); j < rozm*(i+1); j++){
+			lit.chunk[0]= 0;
+			liczba = multiply(liczba,asci);
+			liczba = add(liczba, lit);
+		}
+		liczba =fast_exponentation(liczba,klucz.e, klucz.n);
+		string g; 
+		asci.chunk[0] = 16;
+		for(int j = 0; j < 2*rozm; j++){
+			pair_int1024 dziel =  division_with_modulo(liczba, asci);
+			g+=char(dziel.se.chunk[0]+'0');
+			liczba = dziel.fi;
+
+
+		}
+		reverse(g.begin(),g.end());
+		res+=g;
+	}
+
+
+	return res;
+
+
+
 
 
 }
@@ -375,7 +449,12 @@ int main(){
 	srand(time(NULL));
 
 	int1024 a,b,c,d;
-	RSA();
+	key klucz = RSA();
+	string s = "lubie kwiatki";
+	s = RSA_encode(s,klucz.publickey);
+	cout<<s<<"\n";
+
+
 /*	a.chunk[0]=1;
 	b.chunk[1] = 1;
 	c = random_int1024(b);
