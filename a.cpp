@@ -117,10 +117,12 @@ int count_zeroes(int1024 a){
 	return i;
 }
 
+int get_bits(int1024 a);
+
 int1024 modulo(int1024 a, int1024 b){
 	int a_len = 0;
 	int b_len = 0;
-	for(int i = 1023; i>=0; i--){
+	for(int i = 2048-get_bits(b); i>=0; i--){  // do poprawki wkrótce 
 		int1024 d = bitshift(b,i);
 		if(isGreaterOrEqual(a,d)) {
 			a = subtract(a,d);
@@ -135,7 +137,7 @@ struct pair_int1024{
 };
 
 int get_bits(int1024 a){
-	for(int i = 1023; i >= 0; i--){
+	for(int i = 2048-1; i >= 0; i--){
 		int czunk = i/32;
 		int j = i%32;
 		if(a.chunk[czunk]&(ll(1)<<j)) return i+1;
@@ -144,12 +146,12 @@ int get_bits(int1024 a){
 }
 
 
-pair_int1024 division_with_modulo(int1024 a, int1024 b){
+pair_int1024 division_with_modulo(int1024 a, int1024 b){ //to też
 	int1024 c;
 	pair_int1024 res;
 	int a_len = 0;
 	int b_len = 0;
-	for(int i = 1023; i>=0; i--){
+	for(int i = 2048-get_bits(b); i>=0; i--){
 		int1024 d = bitshift(b,i);
 		if(isGreaterOrEqual(a,d)) {
 			a = subtract(a,d);
@@ -280,6 +282,7 @@ void print(int1024 a){
 	while(!isEqual(a,zero)){
 		pair_int1024 d = division_with_modulo(a,dzies);
 		a = d.fi;
+	//	debug(d.se.chunk[0]);
 		s += char(d.se.chunk[0]+'0');
 	}
 	reverse(s.begin(),s.end());
@@ -365,6 +368,76 @@ string RSA_encode(string s, public_key klucz){
 }
 
 
+inline int1024 fast_divide(int1024 A, int b){
+	return right_bitshift(A,b);
+}
+
+int1024 fast_modulo(int1024 A, int b){
+	int1024 C;
+	int czunki = b/32;
+	for(int i = 0; i < czunki; i++) C.chunk[i] = A.chunk[i];
+	return C;
+}
+
+struct Montgomery_pack{
+	int1024 R;
+	int1024 R_;
+	int1024 N;
+	int1024 M;
+};
+
+Montgomery_pack init_Montgomery_algorithm(int1024 N){
+	Montgomery_pack pack;
+	pack.R.chunk[1024/32]=1;
+	pack.N = N;
+	pair_int1024 para = Extended_Euclidean_Algorithm(pack.R,N);
+	pack.R_ = para.fi;
+	pack.M = para.se;
+	return pack;
+}
+
+inline int1024 ConvertToMontgomeryForm(int1024 a, Montgomery_pack pack){
+	return modulo(multiply(a,pack.R),pack.N);
+}
+
+inline int1024 ConvertFromMontgomeryForm(int1024 a, Montgomery_pack pack){
+	return modulo(multiply(a,pack.R_),pack.N);
+}
+
+int1024 REDC(int1024 T, Montgomery_pack pack){ //N*M = -1 mod R, R > N, gcd(R,N) = 1, T < RN, return S = TR^-1 mod N
+	int1024 S;
+	int1024 m = fast_modulo(multiply(fast_modulo(T,1024),pack.M),1024);
+	//print(m);
+	//debug("!");
+	//S = division_with_modulo(add(T,multiply(m,pack.N)),pack.R).fi;
+	S = fast_divide(add(T,multiply(m,pack.N)),1024);
+	//print(pack.N);
+	//print(add(T,multiply(m,pack.N)));
+	if(isGreaterOrEqual(S,pack.N)) return subtract(S,pack.N);
+	return S;
+}
+
+
+int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgomery_pack pack){
+	int1024 c; c.chunk[0] = 1;
+	a = ConvertToMontgomeryForm(a,pack);
+	c = ConvertToMontgomeryForm(c,pack);
+	for(int i = 1024/32 - 1; i >= 0 ; i-- ){
+		for(int j = 31; j >= 0; j--){
+			int bit = (b.chunk[i]&(1<<j))>>j;
+			c = multiply(c,c);
+			c = REDC(c,pack);
+			if(bit == 1){
+				c = multiply(c,a);
+				c = REDC(c,pack);
+			}
+		}
+		
+	}
+	c = ConvertFromMontgomeryForm(c,pack);
+	return c;
+}
+
 
 
 
@@ -373,13 +446,37 @@ int main(){
 	srand(time(NULL));
 
 	int1024 a,b,c,d;
-	key klucz = RSA();
+
+	a.chunk[1] = 1000;
+	b.chunk[2] = 1000;
+	c.chunk[0] = 2137;
+	Montgomery_pack pack = init_Montgomery_algorithm(c);
+	a = ConvertToMontgomeryForm(a,pack);
+	b = ConvertToMontgomeryForm(b,pack);
+	//print(a);
+	//print(b);
+	a = multiply(a,b);
+//	print(a);
+	a = REDC(a,pack);
+//	print(a);
+	a =ConvertFromMontgomeryForm(a,pack);
+	print(a);
+
+	//print(pack.N);
+	//print(pack.M);
+	//print(pack.R);
+	//print(pack.R_);
+
+
+
+
+/*	key klucz = RSA();
 	string s = "lubie kwiatki";
 	s = RSA_encode(s,klucz.publickey);
 	print(klucz.publickey.e);
 	print(klucz.publickey.n);
 	print(klucz.privatekey.d);
-	cout<<s<<"\n";
+	cout<<s<<"\n";*/
 
 
 /*	a.chunk[0]=1;
