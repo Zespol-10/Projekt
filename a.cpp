@@ -1,4 +1,5 @@
 // g++ -O3 -march=native -funroll-loops -fno-strict-aliasing -o a a.cpp
+// g++ -O3 -march=native -funroll-loops -ffast-math -Wl,--stack,16777216 -o a.exe a.cpp
 
 #include <bits/stdc++.h>
 #define debug(x) cout<<#x<<" = "<<x<<"\n"
@@ -224,7 +225,7 @@ bool isEqual(int1024 a, int1024 b){
 
 bool RabinMiller(int1024 p, int k){
 	Montgomery_pack pack = init_Montgomery_algorithm(p);
-
+debug("mont");
 
 	if(p.chunk[0]%2 == 0) return false; 
 	int1024 c; int1024 jeden; jeden.chunk[0] = 1;
@@ -236,7 +237,7 @@ bool RabinMiller(int1024 p, int k){
 		int1024 a = random_int1024(c);
 		int1024 jeden; jeden.chunk[0] = 1;
 		bool ok = true;
-	//	debug("!");
+		debug("!");
 	//	debug("<begin>");
 	//	print(a);
 	//	print(d);
@@ -284,6 +285,7 @@ pair_int1024 Extended_Euclidean_Algorithm(int1024 a , int1024 b){ //musimy znale
 		result.se = y;
 		return result;
 	}
+	debug("zus");
 	if(isGreaterOrEqual(a,b)){
 		pair_int1024 d = division_with_modulo(a,b);
 		pair_int1024 r = Extended_Euclidean_Algorithm(d.se,b);
@@ -359,7 +361,9 @@ key RSA(){
 	p = add(multiply(dwies,dziel.fi),jeden);
 	dziel = division_with_modulo(q,dwies);
 	q = add(multiply(dwies,dziel.fi),jeden);
+	debug("!!!!");
 	while(!RabinMiller(p,10)){
+debug("??>>D");
 		p = subtract(p,dwies);
 	}
 	while(!RabinMiller(q,10)){
@@ -418,12 +422,16 @@ int1024 fast_modulo(int1024 A, int b){
 
 
 Montgomery_pack init_Montgomery_algorithm(int1024 N){
+	debug("sus");
 	Montgomery_pack pack;
 	pack.R.chunk[1024/32]=1;
 	pack.N = N;
+	debug("bus");
 	pair_int1024 para = Extended_Euclidean_Algorithm(pack.R,N);
+	debug("eus");
 	int1024 ax = multiply(pack.R,para.fi);
 	int1024 by = multiply(N,para.se);
+	debug("rus");
 	if(!isGreaterOrEqual(ax,by)){
 		para.fi = subtract(N,para.fi);
 		para.se = subtract(pack.R,para.se);
@@ -487,7 +495,7 @@ int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgom
 
 int main(){
 	srand(time(NULL));
-
+		debug("Windows");
 	int1024 a,b,c,d,e;
 
 	/*a.chunk[0] = 1701064644;
