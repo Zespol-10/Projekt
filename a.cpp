@@ -12,6 +12,22 @@ public:
 		}
 	}
 };
+
+
+struct Montgomery_pack{
+	int1024 R;
+	int1024 R_;
+	int1024 N;
+	int1024 M;
+};
+
+
+Montgomery_pack init_Montgomery_algorithm(int1024 N);
+int1024 ConvertToMontgomeryForm(int1024 a, Montgomery_pack pack);
+int1024 ConvertFromMontgomeryForm(int1024 a, Montgomery_pack pack);
+int1024 REDC(int1024 T, Montgomery_pack pack);
+int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgomery_pack pack);
+
 void print(int1024 a);
 
 int1024 multiply(int1024 a, int1024 b){
@@ -205,6 +221,9 @@ bool isEqual(int1024 a, int1024 b){
 
 
 bool RabinMiller(int1024 p, int k){
+	Montgomery_pack pack = init_Montgomery_algorithm(p);
+
+
 	if(p.chunk[0]%2 == 0) return false; 
 	int1024 c; int1024 jeden; jeden.chunk[0] = 1;
 	c = subtract(p,jeden);
@@ -215,7 +234,17 @@ bool RabinMiller(int1024 p, int k){
 		int1024 a = random_int1024(c);
 		int1024 jeden; jeden.chunk[0] = 1;
 		bool ok = true;
+		debug("!");
+		debug("<begin>");
+		print(a);
+		print(d);
+		print(p);
+		debug("???????");
 		int1024 res = fast_exponentation(a,d,p);
+		print(res);
+		int1024 res2 = fast_montgomery_exponentation(a,d,p,pack);
+		print(res2);
+		assert(isEqual(res,res2));
 		if(isEqual(res,jeden)) ok = false;
 		if(!ok) continue;
 		for(int r = 0; r < s; r++){
@@ -379,18 +408,19 @@ int1024 fast_modulo(int1024 A, int b){
 	return C;
 }
 
-struct Montgomery_pack{
-	int1024 R;
-	int1024 R_;
-	int1024 N;
-	int1024 M;
-};
+
 
 Montgomery_pack init_Montgomery_algorithm(int1024 N){
 	Montgomery_pack pack;
 	pack.R.chunk[1024/32]=1;
 	pack.N = N;
 	pair_int1024 para = Extended_Euclidean_Algorithm(pack.R,N);
+	int1024 ax = multiply(pack.R,para.fi);
+	int1024 by = multiply(N,para.se);
+	if(!isGreaterOrEqual(ax,by)){
+		para.fi = subtract(N,para.fi);
+		para.se = subtract(pack.R,para.se);
+	} 
 	pack.R_ = para.fi;
 	pack.M = para.se;
 	return pack;
@@ -422,6 +452,12 @@ int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgom
 	int1024 c; c.chunk[0] = 1;
 	a = ConvertToMontgomeryForm(a,pack);
 	c = ConvertToMontgomeryForm(c,pack);
+	print(pack.N);
+	print(pack.M);
+	print(pack.R);
+	print(pack.R_);
+	print(a);
+	print(c);
 	for(int i = 1024/32 - 1; i >= 0 ; i-- ){
 		for(int j = 31; j >= 0; j--){
 			int bit = (b.chunk[i]&(1<<j))>>j;
@@ -445,9 +481,18 @@ int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgom
 int main(){
 	srand(time(NULL));
 
-	int1024 a,b,c,d;
+	int1024 a,b,c,d,e;
 
-	a.chunk[1] = 1000;
+	/*a.chunk[0] = 1701064644;
+	b.chunk[0] = 1775086845;
+	c.chunk[0] = 3550173691;
+	Montgomery_pack pack = init_Montgomery_algorithm(c);
+	d = fast_montgomery_exponentation(a,b,c,pack);
+	e = fast_exponentation(a,b,c);
+	print(d);
+	print(e);*/
+
+	/*a.chunk[1] = 1000;
 	b.chunk[2] = 1000;
 	c.chunk[0] = 2137;
 	Montgomery_pack pack = init_Montgomery_algorithm(c);
@@ -460,7 +505,7 @@ int main(){
 	a = REDC(a,pack);
 //	print(a);
 	a =ConvertFromMontgomeryForm(a,pack);
-	print(a);
+	print(a);*/
 
 	//print(pack.N);
 	//print(pack.M);
@@ -470,13 +515,13 @@ int main(){
 
 
 
-/*	key klucz = RSA();
+	key klucz = RSA();
 	string s = "lubie kwiatki";
 	s = RSA_encode(s,klucz.publickey);
 	print(klucz.publickey.e);
 	print(klucz.publickey.n);
 	print(klucz.privatekey.d);
-	cout<<s<<"\n";*/
+	cout<<s<<"\n";
 
 
 /*	a.chunk[0]=1;
