@@ -1,3 +1,5 @@
+// g++ -O3 -march=native -funroll-loops -fno-strict-aliasing -o a a.cpp
+
 #include <bits/stdc++.h>
 #define debug(x) cout<<#x<<" = "<<x<<"\n"
 using ll = unsigned long long;
@@ -245,14 +247,19 @@ bool RabinMiller(int1024 p, int k){
 		int1024 res = fast_montgomery_exponentation(a,d,p,pack);
 	//	print(res2);
 	//	assert(isEqual(res,res2));
-		if(isEqual(res,jeden)) ok = false;
-		if(!ok) continue;
+		
+		
 		for(int r = 0; r < s; r++){
 			int1024 q = bitshift(d,r);
 			res = fast_montgomery_exponentation(a,q,p,pack);
+			if(r == 0){
+				if(isEqual(res,jeden)) ok = false;
+				if(!ok) break;
+			}
 			if(isEqual(res,c)) ok = false;
 			if(!ok) break;
 		}
+		if(!ok) continue;
 		if(ok) return false;
 	}
 	return true;
