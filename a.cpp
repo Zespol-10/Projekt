@@ -14,7 +14,7 @@ public:
 };
 void print(int1024 a);
 
-int1024 multiply(int1024 a, int1024 b){ //błądddd!!!!
+int1024 multiply(int1024 a, int1024 b){
 	int1024 c;
 	for(int i  = 0; i < 2048/32; i++){
 		ll res = 0; 
@@ -45,7 +45,7 @@ int1024 right_shift(int1024 a, int s){
 	return c;
 }
 
-int1024 subtract(int1024 a, int1024 b){ //a-b
+int1024 subtract(int1024 a, int1024 b){
 	int1024 c;
 	for(int i = 0; i < 2048/32; i++){
 		if(a.chunk[i]  < b.chunk[i]){
@@ -64,7 +64,7 @@ int1024 subtract(int1024 a, int1024 b){ //a-b
 
 
 
-int1024 add(int1024 a, int1024 b){ //a+b
+int1024 add(int1024 a, int1024 b){
 	int1024 c;
 	for(int i = 0; i < 2048/32; i++){
 		c.chunk[i] += a.chunk[i]+b.chunk[i];
@@ -78,7 +78,7 @@ int1024 add(int1024 a, int1024 b){ //a+b
 	return c;
 }
 
-bool isGreaterOrEqual(int1024 a, int1024 b){ //a>=b
+bool isGreaterOrEqual(int1024 a, int1024 b){
 	for(int i = 2048/32-1; i >= 0; i--){
 		if(a.chunk[i] > b.chunk[i]) return true;
 		if(a.chunk[i] < b.chunk[i]) return false;
@@ -139,10 +139,6 @@ int get_bits(int1024 a){
 		int czunk = i/32;
 		int j = i%32;
 		if(a.chunk[czunk]&(ll(1)<<j)) return i+1;
-
-
-
-
 	}
 	return 0;
 }
@@ -183,32 +179,16 @@ int1024 random_int1024(int1024 n){
 }
 
 
-int1024 fast_exponentation(int1024 a, int1024 b, int1024 mod){//wyglada ok
-//	cout<<"a = ";print(a);
-//	cout<<"b = ";print(b);
-//	cout<<"mod = ";print(mod);
+int1024 fast_exponentation(int1024 a, int1024 b, int1024 mod){
 	int1024 c; c.chunk[0] = 1;
 	for(int i = 1024/32 - 1; i >= 0 ; i-- ){
 		for(int j = 31; j >= 0; j--){
 			int bit = (b.chunk[i]&(1<<j))>>j;
-	//		debug(i);
-	//		debug(b.chunk[i]);
-	//		debug(i*32+j);
-	//		debug(bit);
-	//		cout<<"c = ";print(c);
-	//		debug("square");
 			c = multiply(c,c);
-	//		cout<<"c = ";print(c);
 			c = modulo(c,mod);
-	//		debug("modulo");
-	//		cout<<"c = ";print(c);
 			if(bit == 1){
-	//			debug("multiply by a");
 				c = multiply(c,a);
-	//			cout<<"c = ";print(c);
-	//			debug("modulo");
 				c = modulo(c,mod);
-	//			cout<<"c = ";print(c);
 			}
 		}
 		
@@ -223,38 +203,25 @@ bool isEqual(int1024 a, int1024 b){
 
 
 bool RabinMiller(int1024 p, int k){
-	//przydałoby się jeszcze sprawdzanie czy p > 2....
-	if(p.chunk[0]%2 == 0) return false; // oczywiście to nie działa dla 2, ale to nie ważne
+	if(p.chunk[0]%2 == 0) return false; 
 	int1024 c; int1024 jeden; jeden.chunk[0] = 1;
 	c = subtract(p,jeden);
-//	cout<<"c = ";print(c);
 	int s= count_zeroes(c);
-//	debug(s);
 	int1024 d = right_bitshift(c,s);
-//	print(d);
 	while(k--){
 		debug(k);
 		int1024 a = random_int1024(c);
-//		cout<<"a = ";print(a);
 		int1024 jeden; jeden.chunk[0] = 1;
 		bool ok = true;
 		int1024 res = fast_exponentation(a,d,p);
 		if(isEqual(res,jeden)) ok = false;
-//		debug(ok);
 		if(!ok) continue;
 		for(int r = 0; r < s; r++){
-//			debug(r);
 			int1024 q = bitshift(d,r);
-//			print(a);
-//			print(q);
-//			print(p);
 			res = fast_exponentation(a,q,p);
-//			print(res);
 			if(isEqual(res,c)) ok = false;
-//			debug(ok);
 			if(!ok) break;
 		}
-//		debug(ok);
 		if(ok) return false;
 	}
 	return true;
@@ -342,7 +309,7 @@ struct key{
 };
 
 key RSA(){
-	int1024 Z; Z.chunk[32/32] = 1;
+	int1024 Z; Z.chunk[512/32] = 1;
 	int1024 p,q;
 	p = random_int1024(Z);
 	q = random_int1024(Z);
@@ -363,10 +330,7 @@ key RSA(){
 	int1024 phi = multiply(subtract(p,jeden),subtract(q,jeden));
 	int1024 e = random_int1024(phi);
 	int1024 d;
-	//check if e is coprime to phi...
 	bool ok = false;
-	cout<<"p = ";print(p);
-	cout<<"q = ";print(q);
 	while(!ok){
 		pair_int1024 ab = Extended_Euclidean_Algorithm(e,phi);
 		int1024 ax = multiply(ab.fi,e);
@@ -374,7 +338,6 @@ key RSA(){
 		int1024 diff;
 		if(isGreaterOrEqual(ax,by)) diff = subtract(ax,by);
 		else diff = subtract(by,ax);
-		cout<<"diff = ";print(diff);
 		if(isEqual(diff,jeden)) ok = true;
 		d = modulo(ab.fi,phi);
 		if(ok){
@@ -384,13 +347,7 @@ key RSA(){
 			break;
 		}
 		e = random_int1024(phi);
-		
-		debug(ok);
-		print(e);
 	}
-//	print(d);
-//	print(e);
-//	print(n);
 	key klucz;
 	klucz.privatekey.d = d;
 	klucz.privatekey.n = n;
@@ -401,46 +358,13 @@ key RSA(){
 
 
 string RSA_encode(string s, public_key klucz){
-	string res;
-	int rozm = get_bits(klucz.n)-1;
-	if(rozm <= 10) assert(0 == 5);
-	rozm/=8;
-	for(int i = 0; i < s.size(); i+= rozm){
-		int1024 liczba;
-		int1024 asci; asci.chunk[0] = 256;
-		int1024 lit; 
-		for(int j = rozm*i; j < s.size(); j++){
-			lit.chunk[0]= int(s[j]);
-			liczba = multiply(liczba,asci);
-			liczba = add(liczba, lit);
-		}
-		for(int j = s.size(); j < rozm*(i+1); j++){
-			lit.chunk[0]= 0;
-			liczba = multiply(liczba,asci);
-			liczba = add(liczba, lit);
-		}
-		liczba =fast_exponentation(liczba,klucz.e, klucz.n);
-		string g; 
-		asci.chunk[0] = 16;
-		for(int j = 0; j < 2*rozm; j++){
-			pair_int1024 dziel =  division_with_modulo(liczba, asci);
-			g+=char(dziel.se.chunk[0]+'0');
-			liczba = dziel.fi;
-
-
-		}
-		reverse(g.begin(),g.end());
-		res+=g;
-	}
-
-
+	string res = s;
+	
+	
 	return res;
-
-
-
-
-
 }
+
+
 
 
 
@@ -452,6 +376,9 @@ int main(){
 	key klucz = RSA();
 	string s = "lubie kwiatki";
 	s = RSA_encode(s,klucz.publickey);
+	print(klucz.publickey.e);
+	print(klucz.publickey.n);
+	print(klucz.privatekey.d);
 	cout<<s<<"\n";
 
 
