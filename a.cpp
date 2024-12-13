@@ -234,22 +234,22 @@ bool RabinMiller(int1024 p, int k){
 		int1024 a = random_int1024(c);
 		int1024 jeden; jeden.chunk[0] = 1;
 		bool ok = true;
-		debug("!");
-		debug("<begin>");
-		print(a);
-		print(d);
-		print(p);
-		debug("???????");
-		int1024 res = fast_exponentation(a,d,p);
-		print(res);
-		int1024 res2 = fast_montgomery_exponentation(a,d,p,pack);
-		print(res2);
-		assert(isEqual(res,res2));
+	//	debug("!");
+	//	debug("<begin>");
+	//	print(a);
+	//	print(d);
+	//	print(p);
+	//	debug("???????");
+	//	int1024 res = fast_exponentation(a,d,p);
+	//	print(res);
+		int1024 res = fast_montgomery_exponentation(a,d,p,pack);
+	//	print(res2);
+	//	assert(isEqual(res,res2));
 		if(isEqual(res,jeden)) ok = false;
 		if(!ok) continue;
 		for(int r = 0; r < s; r++){
 			int1024 q = bitshift(d,r);
-			res = fast_exponentation(a,q,p);
+			res = fast_montgomery_exponentation(a,q,p,pack);
 			if(isEqual(res,c)) ok = false;
 			if(!ok) break;
 		}
@@ -452,12 +452,12 @@ int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgom
 	int1024 c; c.chunk[0] = 1;
 	a = ConvertToMontgomeryForm(a,pack);
 	c = ConvertToMontgomeryForm(c,pack);
-	print(pack.N);
-	print(pack.M);
-	print(pack.R);
-	print(pack.R_);
-	print(a);
-	print(c);
+	//print(pack.N);
+	// print(pack.M);
+	// print(pack.R);
+	// print(pack.R_);
+	// print(a);
+	// print(c);
 	for(int i = 1024/32 - 1; i >= 0 ; i-- ){
 		for(int j = 31; j >= 0; j--){
 			int bit = (b.chunk[i]&(1<<j))>>j;
