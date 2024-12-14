@@ -1,5 +1,6 @@
 // g++ -O3 -march=native -funroll-loops -fno-strict-aliasing -o a a.cpp
 // g++ -O3 -march=native -funroll-loops -ffast-math -Wl,--stack,16777216 -o a.exe a.cpp
+//g++ -O3 -march=native -funroll-loops -fno-strict-aliasing,--stack,33554432 -o a.exe a.cpp
 
 #include <bits/stdc++.h>
 #define debug(x) cout<<#x<<" = "<<x<<"\n"
@@ -251,23 +252,11 @@ bool RabinMiller(int1024 p, int k){
 	int s= count_zeroes(c);
 	int1024 d = right_bitshift(c,s);
 	while(k--){
-		debug(k);
+	//	debug(k);
 		int1024 a = random_int1024(c);
 		int1024 jeden; jeden.chunk[0] = 1;
 		bool ok = true;
-//		debug("!");
-	//	debug("<begin>");
-	//	print(a);
-	//	print(d);
-	//	print(p);
-	//	debug("???????");
-	//	int1024 res = fast_exponentation(a,d,p);
-	//	print(res);
 		int1024 res = fast_montgomery_exponentation(a,d,p,pack);
-	//	print(res2);
-	//	assert(isEqual(res,res2));
-		
-		
 		for(int r = 0; r < s; r++){
 			int1024 q = bitshift(d,r);
 			res = fast_montgomery_exponentation(a,q,p,pack);
@@ -571,9 +560,12 @@ int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgom
 	// print(pack.R_);
 	// print(a);
 	// print(c);
+	bool ok = false;
 	for(int i = 1024/32 - 1; i >= 0 ; i-- ){
 		for(int j = 31; j >= 0; j--){
 			int bit = (b.chunk[i]&(1<<j))>>j;
+			if(bit) ok =true;
+			if(!ok) continue;
 			c = multiply(c,c);
 			c = REDC(c,pack);
 			if(bit == 1){
@@ -640,9 +632,9 @@ int main(){
 	key klucz = RSA();
 	string s = "lubie kwiatki";
 	s = RSA_encode(s,klucz.publickey);
-	print(klucz.publickey.e);
-	print(klucz.publickey.n);
-	print(klucz.privatekey.d);
+	//print(klucz.publickey.e);
+	//print(klucz.publickey.n);
+	//print(klucz.privatekey.d);
 	cout<<s<<"\n";
 
 
