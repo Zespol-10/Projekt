@@ -38,4 +38,39 @@ std::string encode(const std::string_view input) {
 
     return output;
 }
+
+std::string decode(const std::string_view input) {
+    const std::string alphabet =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    const char pad = '=';
+
+    std::uint8_t map[255] = {};
+    for (size_t i = 0; i < alphabet.length(); i++) {
+        map[(size_t)alphabet[i]] = i;
+    }
+
+    std::uint8_t buffer = 0;
+    std::uint8_t chunk_len = 0;
+    std::string output = "";
+
+    for (const auto ch : input) {
+        if (ch == pad) {
+            break;
+        }
+
+        std::uint8_t val = map[(size_t)ch];
+
+        if (chunk_len == 0) {
+            chunk_len = 8;
+        } else {
+            buffer |= val >> (chunk_len - 2);
+            output += buffer;
+        }
+
+        buffer = (val << (10 - chunk_len)) & 0b11111111;
+        chunk_len -= 2;
+    }
+
+    return output;
+}
 } // namespace base64
