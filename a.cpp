@@ -17,14 +17,12 @@ public:
 	}
 };
 
-
 struct Montgomery_pack{
 	int1024 R;
 	int1024 R_;
 	int1024 N;
 	int1024 M;
 };
-
 
 Montgomery_pack init_Montgomery_algorithm(int1024 N);
 int1024 ConvertToMontgomeryForm(int1024 a, Montgomery_pack pack);
@@ -50,9 +48,6 @@ int1024 multiply(int1024 a, int1024 b){
 			break;
 		}
 	}
-
-
-
 	for(int i  = 0; i < min(2048/32,a_len+b_len+2); i++){
 		ll res = 0; 
 		for(int j = 0; j <= i; j++){
@@ -98,8 +93,6 @@ int1024 subtract(int1024 a, int1024 b){
 	}
 	return c;
 }
-
-
 
 int1024 add(int1024 a, int1024 b){
 	int1024 c;
@@ -153,10 +146,8 @@ int1024 fast_divide_by_two(int1024 a){
 		carry = a.chunk[i]&ll(1);
 		a.chunk[i]>>=1;
 		a.chunk[i]|=(ocarry<<31); 
-		ocarry = carry;
-		
+		ocarry = carry;	
 	}
-
 	return a;
 }
 
@@ -196,7 +187,6 @@ int get_bits(int1024 a){
 	}
 	return 0;
 }
-
 
 pair_int1024 division_with_modulo(int1024 a, int1024 b){ //to też
 	int1024 c;
@@ -244,8 +234,7 @@ int1024 fast_exponentation(int1024 a, int1024 b, int1024 mod){
 				c = multiply(c,a);
 				c = modulo(c,mod);
 			}
-		}
-		
+		}	
 	}
 	return c;
 }
@@ -267,10 +256,8 @@ bool RabinMiller(int1024 p, int k){
 		//debug(k);
 		int1024 a = random_int1024(c);
 		int1024 jeden; jeden.chunk[0] = 1;
-		bool ok = true;
-	
+		bool ok = true;	
 		int1024 res = fast_montgomery_exponentation(a,d,p,pack);
-	
 		for(int r = 0; r < s; r++){
 			int1024 q = bitshift(d,r);
 			res = fast_montgomery_exponentation(a,q,p,pack);
@@ -290,12 +277,6 @@ bool RabinMiller(int1024 p, int k){
 pair_int1024 Extended_Euclidean_Algorithm(int1024 &a , int1024 &b);
 
 pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
-	//return Extended_Euclidean_Algorithm(a,b);
-	//debug("!");
-	//if(rand()%10 == 0) print(a);
-	//debug("!!!@@#");
-	//debug(get_bits(a));
-	//debug(get_bits(b));
 	int1024 zero;
 	int1024 x;
 	int1024 y;
@@ -341,8 +322,6 @@ pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 				r.se  = fast_divide_by_two(r.se);
 				return r;
 			}
-
-
 		}
 	}else{
 		if(b.chunk[0]&jed){
@@ -359,7 +338,6 @@ pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 				return r;
 			}
 		}else{	
-			//nie zdarza sie...
 			return Binary_Euclidean_Algorithm(fast_divide_by_two(a),fast_divide_by_two(b));
 		}
 	}
@@ -368,8 +346,6 @@ pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 }
 
 pair_int1024 Extended_Euclidean_Algorithm(int1024 &a , int1024 &b){ //musimy znalezc takie x,y > 0, że ax-by=gcd(a,b)
-
-	
 	int1024 zero;
 	int1024 x;
 	int1024 y;
@@ -386,7 +362,6 @@ pair_int1024 Extended_Euclidean_Algorithm(int1024 &a , int1024 &b){ //musimy zna
 		result.se = y;
 		return result;
 	}
-	//debug("zus");
 	if(isGreaterOrEqual(a,b)){
 		pair_int1024 d = division_with_modulo(a,b);
 		pair_int1024 r = Extended_Euclidean_Algorithm(d.se,b);
@@ -421,17 +396,10 @@ void print(int1024 a){
 	while(!isEqual(a,zero)){
 		pair_int1024 d = division_with_modulo(a,dzies);
 		a = d.fi;
-	//	debug(d.se.chunk[0]);
 		s += char(d.se.chunk[0]+'0');
 	}
 	reverse(s.begin(),s.end());
 	cout<<s<<"\n";
-
-
-
-
-
-
 }
 
 struct public_key{
@@ -443,7 +411,6 @@ struct private_key{
 	int1024 d;
 	int1024 n;
 };
-
 
 struct key{
 	public_key publickey;
@@ -462,9 +429,7 @@ key RSA(){
 	p = add(multiply(dwies,dziel.fi),jeden);
 	dziel = division_with_modulo(q,dwies);
 	q = add(multiply(dwies,dziel.fi),jeden);
-	
 	while(!RabinMiller(p,10)){
-
 		p = subtract(p,dwies);
 	}
 	while(!RabinMiller(q,10)){
@@ -503,7 +468,6 @@ key RSA(){
 
 string RSA_encode(string s, public_key klucz){
 	string res = s;
-	
 	
 	return res;
 }
@@ -553,12 +517,7 @@ inline int1024 ConvertFromMontgomeryForm(int1024 a, Montgomery_pack pack){
 int1024 REDC(int1024 T, Montgomery_pack pack){ //N*M = -1 mod R, R > N, gcd(R,N) = 1, T < RN, return S = TR^-1 mod N
 	int1024 S;
 	int1024 m = fast_modulo(multiply(fast_modulo(T,512),pack.M),512);
-	//print(m);
-	//debug("!");
-	//S = division_with_modulo(add(T,multiply(m,pack.N)),pack.R).fi;
 	S = fast_divide(add(T,multiply(m,pack.N)),512);
-	//print(pack.N);
-	//print(add(T,multiply(m,pack.N)));
 	if(isGreaterOrEqual(S,pack.N)) return subtract(S,pack.N);
 	return S;
 }
@@ -566,23 +525,8 @@ int1024 REDC(int1024 T, Montgomery_pack pack){ //N*M = -1 mod R, R > N, gcd(R,N)
 
 int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgomery_pack pack){
 	int1024 c; c.chunk[0] = 1;
-	/*print(pack.R);
-	print(pack.R_);
-	print(pack.N);
-	print(pack.M);
-	print(a);
-	print(c);*/
 	a = ConvertToMontgomeryForm(a,pack);
 	c = ConvertToMontgomeryForm(c,pack);
-	/*print(a);
-	print(c);
-	debug("&&&&&&&&&&&");*/
-	//print(pack.N);
-	// print(pack.M);
-	// print(pack.R);
-	// print(pack.R_);
-	// print(a);
-	// print(c);
 	bool ok = false;
 	for(int i = 1024/32 - 1; i >= 0 ; i-- ){
 		for(int j = 31; j >= 0; j--){
@@ -607,95 +551,12 @@ int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgom
 
 
 int main(){
-	srand(time(NULL));
-		
+	srand(time(NULL));	
 	int1024 a,b,c,d,e;
-
-//	a.chunk[0]  =2536;
-//	b.chunk[0] = 2224;
-//	pair_int1024 r = Binary_Euclidean_Algorithm(a,b);
-//	print(r.fi);
-//	print(r.se);
-
-
-//	return 0;
-
-	/*a.chunk[0] = 1701064644;
-	b.chunk[0] = 1775086845;
-	c.chunk[0] = 3550173691;
-	Montgomery_pack pack = init_Montgomery_algorithm(c);
-	d = fast_montgomery_exponentation(a,b,c,pack);
-	e = fast_exponentation(a,b,c);
-	print(d);
-	print(e);*/
-
-	/*a.chunk[1] = 1000;
-	b.chunk[2] = 1000;
-	c.chunk[0] = 2137;
-	Montgomery_pack pack = init_Montgomery_algorithm(c);
-	a = ConvertToMontgomeryForm(a,pack);
-	b = ConvertToMontgomeryForm(b,pack);
-	//print(a);
-	//print(b);
-	a = multiply(a,b);
-//	print(a);
-	a = REDC(a,pack);
-//	print(a);
-	a =ConvertFromMontgomeryForm(a,pack);
-	print(a);*/
-
-	//print(pack.N);
-	//print(pack.M);
-	//print(pack.R);
-	//print(pack.R_);
-
-
-
-
 	key klucz = RSA();
 	string s = "lubie kwiatki";
 	s = RSA_encode(s,klucz.publickey);
-	//print(klucz.publickey.e);
-	//print(klucz.publickey.n);
-	//print(klucz.privatekey.d);
 	cout<<s<<"\n";
 
-
-/*	a.chunk[0]=1;
-	b.chunk[1] = 1;
-	c = random_int1024(b);
-	while(!RabinMiller(c,10)){
-		c = subtract(c,a);
-	}*/
-	/*c.chunk[0] = 1;
-	a.chunk[3] = 83;
-	b = random_int1024(a);
-	int1024 jeden; jeden.chunk[0] = 1;
-	int1024 dwies; dwies.chunk[0] = 210;
-	pair_int1024 dziel = division_with_modulo(b,dwies);
-	b = add(multiply(dwies,dziel.fi),jeden);
-
-	
-	while(!RabinMiller(b,10)){
-		print(b);
-		b = subtract(b,dwies);
-
-	}
-	
-	print(b);*/
-	//int1024 P;
-/*	P.chunk[0] = 366841091;
-	P.chunk[1] = 1940089343;
-	P.chunk[2] = 1584104064;
-	P.chunk[3] = 78;
-	print(P);
-	debug(RabinMiller(P,10));*/
-
-
-	// c = e.fi;
-
-
-	//cout<<c.chunk[0]<<","<<c.chunk[1]<<","<<c.chunk[2]<<"\n";
-	//RSA();
 	return 0;
 }
