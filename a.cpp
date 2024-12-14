@@ -36,9 +36,26 @@ void print(int1024 a);
 
 int1024 multiply(int1024 a, int1024 b){
 	int1024 c;
-	for(int i  = 0; i < 2048/32; i++){
+	int a_len = -1;
+	int b_len = -1;
+	for(int i = 2048/32-1; i >= 0; i--){
+		if(a.chunk[i] != 0){
+			a_len = i;
+			break;
+		}
+	}
+	for(int i = 2048/32-1; i >= 0; i--){
+		if(b.chunk[i] != 0){
+			b_len = i;
+			break;
+		}
+	}
+
+
+
+	for(int i  = 0; i < min(2048/32,a_len+b_len+2); i++){
 		ll res = 0; 
-		for(int j = 0; j <=i; j++){
+		for(int j = 0; j <= i; j++){
 			if(i+1 < 2048/32) c.chunk[i+1]+=c.chunk[i]>>32;
 			c.chunk[i]=c.chunk[i]-((c.chunk[i]>>32)<<32);
 			c.chunk[i]+=a.chunk[j]*b.chunk[i-j];
@@ -139,12 +156,7 @@ int1024 fast_divide_by_two(int1024 a){
 		ocarry = carry;
 		
 	}
-	if(isGreaterOrEqual(a,c)) {
-		debug("?");
-		print(a);
-		print(c);
-		assert(0 == 1);
-	}
+
 	return a;
 }
 
@@ -252,11 +264,13 @@ bool RabinMiller(int1024 p, int k){
 	int s= count_zeroes(c);
 	int1024 d = right_bitshift(c,s);
 	while(k--){
-	//	debug(k);
+		//debug(k);
 		int1024 a = random_int1024(c);
 		int1024 jeden; jeden.chunk[0] = 1;
 		bool ok = true;
+	
 		int1024 res = fast_montgomery_exponentation(a,d,p,pack);
+	
 		for(int r = 0; r < s; r++){
 			int1024 q = bitshift(d,r);
 			res = fast_montgomery_exponentation(a,q,p,pack);
@@ -511,7 +525,7 @@ int1024 fast_modulo(int1024 A, int b){
 Montgomery_pack init_Montgomery_algorithm(int1024 N){
 	
 	Montgomery_pack pack;
-	pack.R.chunk[1024/32]=1;
+	pack.R.chunk[512/32]=1; //potrzeba więcej przy szyfrowaniu -> 1024, 512 dla Millera-rabina
 	pack.N = N;
 	
 	pair_int1024 para = Binary_Euclidean_Algorithm(pack.R,N);
@@ -538,11 +552,11 @@ inline int1024 ConvertFromMontgomeryForm(int1024 a, Montgomery_pack pack){
 
 int1024 REDC(int1024 T, Montgomery_pack pack){ //N*M = -1 mod R, R > N, gcd(R,N) = 1, T < RN, return S = TR^-1 mod N
 	int1024 S;
-	int1024 m = fast_modulo(multiply(fast_modulo(T,1024),pack.M),1024);
+	int1024 m = fast_modulo(multiply(fast_modulo(T,512),pack.M),512);
 	//print(m);
 	//debug("!");
 	//S = division_with_modulo(add(T,multiply(m,pack.N)),pack.R).fi;
-	S = fast_divide(add(T,multiply(m,pack.N)),1024);
+	S = fast_divide(add(T,multiply(m,pack.N)),512);
 	//print(pack.N);
 	//print(add(T,multiply(m,pack.N)));
 	if(isGreaterOrEqual(S,pack.N)) return subtract(S,pack.N);
@@ -552,8 +566,17 @@ int1024 REDC(int1024 T, Montgomery_pack pack){ //N*M = -1 mod R, R > N, gcd(R,N)
 
 int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgomery_pack pack){
 	int1024 c; c.chunk[0] = 1;
+	/*print(pack.R);
+	print(pack.R_);
+	print(pack.N);
+	print(pack.M);
+	print(a);
+	print(c);*/
 	a = ConvertToMontgomeryForm(a,pack);
 	c = ConvertToMontgomeryForm(c,pack);
+	/*print(a);
+	print(c);
+	debug("&&&&&&&&&&&");*/
 	//print(pack.N);
 	// print(pack.M);
 	// print(pack.R);
