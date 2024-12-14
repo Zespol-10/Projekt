@@ -127,6 +127,26 @@ int1024 right_bitshift(int1024 a, ll s){
 	return b;
 }
 
+int1024 fast_divide_by_two(int1024 a){
+	int1024 c = a;
+	ll carry = 0; 
+	ll ocarry = 0;
+	for(int i = 2048/32 - 1; i>=0 ;i--){
+		carry = a.chunk[i]&ll(1);
+		a.chunk[i]>>=1;
+		a.chunk[i]|=(ocarry<<31); 
+		ocarry = carry;
+		
+	}
+	if(isGreaterOrEqual(a,c)) {
+		debug("?");
+		print(a);
+		print(c);
+		assert(0 == 1);
+	}
+	return a;
+}
+
 int count_zeroes(int1024 a){
 	int i =0;
 	while(i < 1024){
@@ -224,10 +244,7 @@ bool isEqual(int1024 a, int1024 b){
 
 
 bool RabinMiller(int1024 p, int k){
-	debug("o");
 	Montgomery_pack pack = init_Montgomery_algorithm(p);
-debug("mont");
-
 	if(p.chunk[0]%2 == 0) return false; 
 	int1024 c; int1024 jeden; jeden.chunk[0] = 1;
 	c = subtract(p,jeden);
@@ -267,9 +284,89 @@ debug("mont");
 	return true;
 }
 
+pair_int1024 Extended_Euclidean_Algorithm(int1024 &a , int1024 &b);
 
+pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
+	//return Extended_Euclidean_Algorithm(a,b);
+	//debug("!");
+	//if(rand()%10 == 0) print(a);
+	//debug("!!!@@#");
+	//debug(get_bits(a));
+	//debug(get_bits(b));
+	int1024 zero;
+	int1024 x;
+	int1024 y;
+	pair_int1024 result;
+	const ll jed = 1;
+
+	if(isEqual(a,zero) ){
+		y.chunk[0]=1;
+		result.fi = x;
+		result.se = y;
+		return result;
+	}
+	if(isEqual(b,zero)){
+		x.chunk[0]=1;
+		result.fi = x;
+		result.se = y;
+		return result;
+	}
+	if(a.chunk[0]&jed){
+		if(b.chunk[0]&jed){
+			// nieparzyste a,b
+			if(isGreaterOrEqual(a,b)){
+				//a>b
+				pair_int1024 r = Binary_Euclidean_Algorithm(subtract(a,b),b);
+				r.se = add(r.fi,r.se);
+				return r;
+
+			}else{
+				pair_int1024 r = Binary_Euclidean_Algorithm(a,subtract(b,a));
+				r.fi = add(r.fi,r.se);
+				return r;
+			}
+		}else{
+			//b parzyste, a nieparzyste
+			int1024 pol = fast_divide_by_two(b);
+			pair_int1024 r = Binary_Euclidean_Algorithm(a,pol);
+			if(r.se.chunk[0]&jed){
+				r.fi =add(r.fi,pol);
+				r.se =fast_divide_by_two(add(r.se,a));
+				return r;
+			}else{
+				//r.se parzyste
+				r.se  = fast_divide_by_two(r.se);
+				return r;
+			}
+
+
+		}
+	}else{
+		if(b.chunk[0]&jed){
+			// a parzyste, b nieparzyste
+			int1024 pol = fast_divide_by_two(a);
+			pair_int1024 r = Binary_Euclidean_Algorithm(pol,b);
+			if(r.fi.chunk[0]&jed){
+				r.fi =fast_divide_by_two(add(r.fi,b));
+				r.se =add(r.se,pol);
+				return r;
+			}else{
+				//r.se parzyste
+				r.fi  = fast_divide_by_two(r.fi);
+				return r;
+			}
+		}else{	
+			//nie zdarza sie...
+			return Binary_Euclidean_Algorithm(fast_divide_by_two(a),fast_divide_by_two(b));
+		}
+	}
+	assert(0==5);
+	return result;
+}
 
 pair_int1024 Extended_Euclidean_Algorithm(int1024 &a , int1024 &b){ //musimy znalezc takie x,y > 0, że ax-by=gcd(a,b)
+
+	
 	int1024 zero;
 	int1024 x;
 	int1024 y;
@@ -428,7 +525,7 @@ Montgomery_pack init_Montgomery_algorithm(int1024 N){
 	pack.R.chunk[1024/32]=1;
 	pack.N = N;
 	
-	pair_int1024 para = Extended_Euclidean_Algorithm(pack.R,N);
+	pair_int1024 para = Binary_Euclidean_Algorithm(pack.R,N);
 
 	int1024 ax = multiply(pack.R,para.fi);
 	int1024 by = multiply(N,para.se);
@@ -498,6 +595,15 @@ int main(){
 	srand(time(NULL));
 		
 	int1024 a,b,c,d,e;
+
+//	a.chunk[0]  =2536;
+//	b.chunk[0] = 2224;
+//	pair_int1024 r = Binary_Euclidean_Algorithm(a,b);
+//	print(r.fi);
+//	print(r.se);
+
+
+//	return 0;
 
 	/*a.chunk[0] = 1701064644;
 	b.chunk[0] = 1775086845;
