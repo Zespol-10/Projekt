@@ -253,7 +253,7 @@ bool RabinMiller(int1024 p, int k){
 	int s= count_zeroes(c);
 	int1024 d = right_bitshift(c,s);
 	while(k--){
-		//debug(k);
+		debug(k);
 		int1024 a = random_int1024(c);
 		int1024 jeden; jeden.chunk[0] = 1;
 		bool ok = true;	
@@ -276,7 +276,10 @@ bool RabinMiller(int1024 p, int k){
 
 pair_int1024 Extended_Euclidean_Algorithm(int1024 &a , int1024 &b);
 
+pair_int1024 Binary_Euclidean_Algorithm2(int1024 a , int1024 b);
+
 pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
+	return Binary_Euclidean_Algorithm2(a ,  b);
 	int1024 zero;
 	int1024 x;
 	int1024 y;
@@ -342,6 +345,88 @@ pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 		}
 	}
 	assert(0==5);
+	return result;
+}
+
+int1024 tab[5000];
+int1024 tab2[5000];
+
+
+pair_int1024 Binary_Euclidean_Algorithm2(int1024 a , int1024 b){
+	int1024 zero;
+	int1024 x;
+	int1024 y;
+	pair_int1024 result;
+	const ll jed = 1;
+	stack<pair<int,int> > stos;
+	vector<int1024> vec;
+	int t = 0;
+	while(!isEqual(a,zero) && !isEqual(b,zero)){
+		if(a.chunk[0]&jed){
+			if(b.chunk[0]&jed){
+				if(isGreaterOrEqual(a,b)){
+					//a>b
+					a = subtract(a,b);
+					stos.push({1,0});
+				}else{
+					b = subtract(b,a);
+					stos.push({2,0});
+				}
+			}else{
+				b = fast_divide_by_two(b);
+				t++; tab[t] = b; tab2[t] = a;
+				stos.push({3,t});
+			}
+		}else{
+			if(b.chunk[0]&jed){
+				a = fast_divide_by_two(a);
+				t++; tab[t] = a; tab2[t] = b;
+				stos.push({4,t});
+			}else{	
+				a = fast_divide_by_two(a);
+				b = fast_divide_by_two(b);
+				stos.push({5,0});
+			}
+		}
+	}
+	if(isEqual(a,zero)) y.chunk[0]=1;
+	if(isEqual(b,zero))	x.chunk[0]=1;
+
+	while(!stos.empty()){
+		pair<int,int> wierzch = stos.top();
+		switch(wierzch.first){
+			case 1:
+					y = add(x,y);
+				break;
+			case 2:
+					x = add(x,y);
+				break;
+			case 3:
+					if(y.chunk[0]&jed){
+						x =add(x,tab[wierzch.second]);
+						y =fast_divide_by_two(add(y,tab2[wierzch.second]));
+					}else{
+						y  = fast_divide_by_two(y);
+					}
+				break;
+			case 4:
+					if(x.chunk[0]&jed){
+						x = fast_divide_by_two(add(x,tab2[wierzch.second]));
+						y = add(y,tab[wierzch.second]);
+					}else{
+						x  = fast_divide_by_two(x);
+					}
+				break;
+			case 5:
+					// nic
+				break;
+		}
+		stos.pop();
+	}
+	//debug(t);
+//	assert(0==5);
+	result.fi = x;
+	result.se = y;
 	return result;
 }
 
@@ -555,6 +640,9 @@ int main(){
 	int1024 a,b,c,d,e;
 	key klucz = RSA();
 	string s = "lubie kwiatki";
+	print(klucz.privatekey.d);
+	print(klucz.publickey.e);
+	print(klucz.publickey.n);
 	s = RSA_encode(s,klucz.publickey);
 	cout<<s<<"\n";
 
