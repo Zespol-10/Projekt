@@ -3,7 +3,8 @@
 #include <cstdint>
 
 std::string _encode(const std::string_view input,
-                    const std::string_view alphabet, const char pad) {
+                    const std::string_view alphabet, const char pad,
+                    size_t line_len, const std::string_view line_sep) {
     std::uint8_t reminder = 0;
     std::uint8_t chunk_len = 6;
     std::uint8_t mask = 0b11;
@@ -18,6 +19,10 @@ std::string _encode(const std::string_view input,
         }
 
         output += alphabet[(reminder << chunk_len) | (ch >> (8 - chunk_len))];
+        if (line_len != 0 && output.length() % line_len == 0) {
+            output += line_sep;
+        }
+
         reminder = ch & mask;
 
         chunk_len -= 2;
@@ -26,17 +31,24 @@ std::string _encode(const std::string_view input,
 
     if (chunk_len != 6) {
         output += alphabet[(reminder << chunk_len)];
+        if (line_len != 0 && output.length() % line_len == 0) {
+            output += line_sep;
+        }
     }
 
     for (size_t i = 0; i < output.length() % 4; i++) {
         output += pad;
+        if (line_len != 0 && output.length() % line_len == 0) {
+            output += line_sep;
+        }
     }
 
     return output;
 }
 
 std::string _decode(const std::string_view input,
-                    const std::string_view alphabet, const char pad) {
+                    const std::string_view alphabet, const char pad,
+                    const std::string_view line_sep) {
     std::uint8_t map[255] = {};
     for (size_t i = 0; i < alphabet.length(); i++) {
         map[(size_t)alphabet[i]] = i;
@@ -47,7 +59,9 @@ std::string _decode(const std::string_view input,
     std::string output = "";
 
     for (const auto ch : input) {
-        if (ch == pad) {
+        if (line_sep.find(ch) != std::string_view::npos) {
+            continue;
+        } else if (ch == pad) {
             break;
         }
 
@@ -78,7 +92,7 @@ std::string encode(const std::string_view input) {
 std::string decode(const std::string_view input) {
     return _decode(
         input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
-        '=');
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
+        "\r\n");
 }
 } // namespace base64
