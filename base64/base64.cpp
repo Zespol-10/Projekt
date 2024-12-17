@@ -82,14 +82,98 @@ std::string _decode(const std::string_view input,
 }
 
 namespace base64 {
-std::string encode(const std::string_view input) {
+std::string encode1421(const std::string_view input) {
     return _encode(
         input,
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
         '=');
 }
 
-std::string decode(const std::string_view input) {
+std::string decode1421(const std::string_view input) {
+    return _decode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
+        "\r\n");
+}
+
+std::string encode2045(const std::string_view input) {
+    return _encode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
+        76, "\r\n");
+}
+
+std::string decode2045(const std::string_view input) {
+    return _decode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
+        "\r\n");
+}
+
+std::string encode2152(const std::string_view input) {
+    return _encode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '\0',
+        0, "");
+}
+
+std::string decode2152(const std::string_view input) {
+    return _decode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '\0',
+        "");
+}
+
+std::string encode3501(const std::string_view input) {
+    return _encode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,", '\0',
+        0, "");
+}
+
+std::string decode3501(const std::string_view input) {
+    return _decode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,", '\0',
+        "");
+}
+
+std::string encode4648_4(const std::string_view input) {
+    return _encode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
+        0, "");
+}
+
+std::string decode4648_4(const std::string_view input) {
+    return _decode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
+        "");
+}
+
+std::string encode4648_5(const std::string_view input) {
+    return _encode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+_", '=',
+        0, "");
+}
+
+std::string decode4648_5(const std::string_view input) {
+    return _decode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+_", '=',
+        "");
+}
+
+std::string encode4880(const std::string_view input) {
+    return _encode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
+        76, "\r\n");
+}
+
+std::string decode4880(const std::string_view input) {
     return _decode(
         input,
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
