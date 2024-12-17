@@ -2,12 +2,8 @@
 
 #include <cstdint>
 
-namespace base64 {
-std::string encode(const std::string_view input) {
-    const std::string alphabet =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    const char pad = '=';
-
+std::string _encode(const std::string_view input,
+                    const std::string_view alphabet, const char pad) {
     std::uint8_t reminder = 0;
     std::uint8_t chunk_len = 6;
     std::uint8_t mask = 0b11;
@@ -39,11 +35,8 @@ std::string encode(const std::string_view input) {
     return output;
 }
 
-std::string decode(const std::string_view input) {
-    const std::string alphabet =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    const char pad = '=';
-
+std::string _decode(const std::string_view input,
+                    const std::string_view alphabet, const char pad) {
     std::uint8_t map[255] = {};
     for (size_t i = 0; i < alphabet.length(); i++) {
         map[(size_t)alphabet[i]] = i;
@@ -72,5 +65,20 @@ std::string decode(const std::string_view input) {
     }
 
     return output;
+}
+
+namespace base64 {
+std::string encode(const std::string_view input) {
+    return _encode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+        '=');
+}
+
+std::string decode(const std::string_view input) {
+    return _decode(
+        input,
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+        '=');
 }
 } // namespace base64
