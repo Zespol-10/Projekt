@@ -18,13 +18,14 @@ public:
 };
 
 struct Montgomery_pack{
+	int R_wykladnik;
 	int1024 R;
 	int1024 R_;
 	int1024 N;
 	int1024 M;
 };
 
-Montgomery_pack init_Montgomery_algorithm(int1024 N);
+Montgomery_pack init_Montgomery_algorithm(int1024 N, int wykladnik);
 int1024 ConvertToMontgomeryForm(int1024 a, Montgomery_pack pack);
 int1024 ConvertFromMontgomeryForm(int1024 a, Montgomery_pack pack);
 int1024 REDC(int1024 T, Montgomery_pack pack);
@@ -246,7 +247,7 @@ bool isEqual(int1024 a, int1024 b){
 
 
 bool RabinMiller(int1024 p, int k){
-	Montgomery_pack pack = init_Montgomery_algorithm(p);
+	Montgomery_pack pack = init_Montgomery_algorithm(p,512);
 	if(p.chunk[0]%2 == 0) return false; 
 	int1024 c; int1024 jeden; jeden.chunk[0] = 1;
 	c = subtract(p,jeden);
@@ -553,6 +554,8 @@ key RSA(){
 
 string RSA_encode(string s, public_key klucz){
 	string res = s;
+	int dlug = s.size();
+
 	
 	return res;
 }
@@ -571,10 +574,11 @@ int1024 fast_modulo(int1024 A, int b){
 
 
 
-Montgomery_pack init_Montgomery_algorithm(int1024 N){
+Montgomery_pack init_Montgomery_algorithm(int1024 N, int wykladnik){
 	
 	Montgomery_pack pack;
-	pack.R.chunk[512/32]=1; //potrzeba więcej przy szyfrowaniu -> 1024, 512 dla Millera-rabina
+	pack.R_wykladnik = wykladnik;
+	pack.R.chunk[wykladnik/32]=1; //potrzeba więcej przy szyfrowaniu -> 1024, 512 dla Millera-rabina
 	pack.N = N;
 	
 	pair_int1024 para = Binary_Euclidean_Algorithm(pack.R,N);
@@ -601,8 +605,8 @@ inline int1024 ConvertFromMontgomeryForm(int1024 a, Montgomery_pack pack){
 
 int1024 REDC(int1024 T, Montgomery_pack pack){ //N*M = -1 mod R, R > N, gcd(R,N) = 1, T < RN, return S = TR^-1 mod N
 	int1024 S;
-	int1024 m = fast_modulo(multiply(fast_modulo(T,512),pack.M),512);
-	S = fast_divide(add(T,multiply(m,pack.N)),512);
+	int1024 m = fast_modulo(multiply(fast_modulo(T,pack.R_wykladnik),pack.M),pack.R_wykladnik);
+	S = fast_divide(add(T,multiply(m,pack.N)),pack.R_wykladnik);
 	if(isGreaterOrEqual(S,pack.N)) return subtract(S,pack.N);
 	return S;
 }
