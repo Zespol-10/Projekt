@@ -253,7 +253,6 @@ bool RabinMiller(int1024 p, int k){
 	int s= count_zeroes(c);
 	int1024 d = right_bitshift(c,s);
 	while(k--){
-		debug(k);
 		int1024 a = random_int1024(c);
 		int1024 jeden; jeden.chunk[0] = 1;
 		bool ok = true;	
@@ -508,7 +507,7 @@ key RSA(){
 	p = random_int1024(Z);
 	q = random_int1024(Z);
 	int1024 jeden; jeden.chunk[0] = 1;
-	int1024 dwies; dwies.chunk[0] = 210;
+	int1024 dwies; dwies.chunk[0] = 510510;
 	pair_int1024 dziel;
 	dziel = division_with_modulo(p,dwies);
 	p = add(multiply(dwies,dziel.fi),jeden);
@@ -526,7 +525,8 @@ key RSA(){
 	int1024 d;
 	bool ok = false;
 	while(!ok){
-		pair_int1024 ab = Extended_Euclidean_Algorithm(e,phi);
+		//pair_int1024 ab = Extended_Euclidean_Algorithm(e,phi);
+		pair_int1024 ab = Binary_Euclidean_Algorithm(e,phi);
 		int1024 ax = multiply(ab.fi,e);
 		int1024 by = multiply(ab.se,phi);
 		int1024 diff;
@@ -640,9 +640,9 @@ int main(){
 	int1024 a,b,c,d,e;
 	key klucz = RSA();
 	string s = "lubie kwiatki";
-	print(klucz.privatekey.d);
-	print(klucz.publickey.e);
-	print(klucz.publickey.n);
+	//print(klucz.privatekey.d);
+//	print(klucz.publickey.e);
+//	print(klucz.publickey.n);
 	s = RSA_encode(s,klucz.publickey);
 	cout<<s<<"\n";
 
