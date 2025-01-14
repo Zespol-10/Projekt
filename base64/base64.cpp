@@ -2,9 +2,63 @@
 
 #include <cstdint>
 
-std::string _encode(const std::string_view input,
-                    const std::string_view alphabet, const char pad,
-                    size_t line_len, const std::string_view line_sep) {
+struct Specification {
+    const std::string_view alphabet;
+    const char padding;
+    const size_t line_len;
+    const std::string_view line_separator;
+};
+
+const Specification RFC1421 = {
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    '=',
+    64,
+    "\r\n",
+};
+
+const Specification RFC2045 = {
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    '=',
+    76,
+    "\r\n",
+};
+
+const Specification RFC2152 = {
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    '\0',
+    0,
+    "",
+};
+
+const Specification RFC3501 = {
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,",
+    '\0',
+    0,
+    "",
+};
+
+const Specification RFC4648_4 = {
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    '=',
+    0,
+    "",
+};
+
+const Specification RFC4648_5 = {
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+_",
+    '=',
+    0,
+    "",
+};
+
+const Specification RFC4880 = {
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    '=',
+    76,
+    "\r\n",
+};
+
+std::string _encode(const std::string_view input, const Specification &spec) {
     std::uint8_t reminder = 0;
     std::uint8_t chunk_len = 6;
     std::uint8_t mask = 0b11;
@@ -12,15 +66,16 @@ std::string _encode(const std::string_view input,
 
     for (const auto ch : input) {
         if (chunk_len == 0) {
-            output += alphabet[reminder];
+            output += spec.alphabet[reminder];
             reminder = 0;
             chunk_len = 6;
             mask = 0b11;
         }
 
-        output += alphabet[(reminder << chunk_len) | (ch >> (8 - chunk_len))];
-        if (line_len != 0 && output.length() % line_len == 0) {
-            output += line_sep;
+        output +=
+            spec.alphabet[(reminder << chunk_len) | (ch >> (8 - chunk_len))];
+        if (spec.line_len != 0 && output.length() % spec.line_len == 0) {
+            output += spec.line_separator;
         }
 
         reminder = ch & mask;
@@ -30,28 +85,26 @@ std::string _encode(const std::string_view input,
     }
 
     if (chunk_len != 6) {
-        output += alphabet[(reminder << chunk_len)];
-        if (line_len != 0 && output.length() % line_len == 0) {
-            output += line_sep;
+        output += spec.alphabet[(reminder << chunk_len)];
+        if (spec.line_len != 0 && output.length() % spec.line_len == 0) {
+            output += spec.line_separator;
         }
     }
 
     for (size_t i = 0; i < output.length() % 4; i++) {
-        output += pad;
-        if (line_len != 0 && output.length() % line_len == 0) {
-            output += line_sep;
+        output += spec.padding;
+        if (spec.line_len != 0 && output.length() % spec.line_len == 0) {
+            output += spec.line_separator;
         }
     }
 
     return output;
 }
 
-std::string _decode(const std::string_view input,
-                    const std::string_view alphabet, const char pad,
-                    const std::string_view line_sep) {
+std::string _decode(const std::string_view input, const Specification &spec) {
     std::uint8_t map[255] = {};
-    for (size_t i = 0; i < alphabet.length(); i++) {
-        map[(size_t)alphabet[i]] = i;
+    for (size_t i = 0; i < spec.alphabet.length(); i++) {
+        map[(size_t)spec.alphabet[i]] = i;
     }
 
     std::uint8_t buffer = 0;
@@ -59,9 +112,9 @@ std::string _decode(const std::string_view input,
     std::string output = "";
 
     for (const auto ch : input) {
-        if (line_sep.find(ch) != std::string_view::npos) {
+        if (spec.line_separator.find(ch) != std::string_view::npos) {
             continue;
-        } else if (ch == pad) {
+        } else if (ch == spec.padding) {
             break;
         }
 
@@ -83,100 +136,58 @@ std::string _decode(const std::string_view input,
 
 namespace base64 {
 std::string encode1421(const std::string_view input) {
-    return _encode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
-        '=');
+    return _encode(input, RFC1421);
 }
 
 std::string decode1421(const std::string_view input) {
-    return _decode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
-        "\r\n");
+    return _decode(input, RFC1421);
 }
 
 std::string encode2045(const std::string_view input) {
-    return _encode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
-        76, "\r\n");
+    return _encode(input, RFC2045);
 }
 
 std::string decode2045(const std::string_view input) {
-    return _decode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
-        "\r\n");
+    return _decode(input, RFC2045);
 }
 
 std::string encode2152(const std::string_view input) {
-    return _encode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '\0',
-        0, "");
+    return _encode(input, RFC2152);
 }
 
 std::string decode2152(const std::string_view input) {
-    return _decode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '\0',
-        "");
+    return _decode(input, RFC2152);
 }
 
 std::string encode3501(const std::string_view input) {
-    return _encode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,", '\0',
-        0, "");
+    return _encode(input, RFC3501);
 }
 
 std::string decode3501(const std::string_view input) {
-    return _decode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,", '\0',
-        "");
+    return _decode(input, RFC3501);
 }
 
 std::string encode4648_4(const std::string_view input) {
-    return _encode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
-        0, "");
+    return _encode(input, RFC4648_4);
 }
 
 std::string decode4648_4(const std::string_view input) {
-    return _decode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
-        "");
+    return _decode(input, RFC4648_4);
 }
 
 std::string encode4648_5(const std::string_view input) {
-    return _encode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+_", '=',
-        0, "");
+    return _encode(input, RFC4648_5);
 }
 
 std::string decode4648_5(const std::string_view input) {
-    return _decode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+_", '=',
-        "");
+    return _decode(input, RFC4648_5);
 }
 
 std::string encode4880(const std::string_view input) {
-    return _encode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
-        76, "\r\n");
+    return _encode(input, RFC4880);
 }
 
 std::string decode4880(const std::string_view input) {
-    return _decode(
-        input,
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", '=',
-        "\r\n");
+    return _decode(input, RFC4880);
 }
 } // namespace base64
