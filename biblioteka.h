@@ -18,6 +18,8 @@ void statystyki(const char *text, TextStats *stats);
 void wyszukiwanie_wzorca(const char *text, const char *pattern);
 void wyszukiwanie_znaku_specjalnego (const char* text, const char *znak);
 void ignorowanie_wielkosci_liter(const char* text, const char *pattern);
+void wypisz_tekst_wersja1(const char* text, int x, int pattern_len);
+void wypisz_tekst_wersja2(const char* text, int x, int pattern_len);
 int zliczanie_wzorca(const char *text, const char *pattern);
 void podmiana_wzorca(const char *text, const char *pattern, const char *rereplacement, char *result);
 

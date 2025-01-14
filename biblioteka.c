@@ -166,53 +166,83 @@ void wyszukiwanie_znaku_specjalnego(const char *text, const char *znak) {
 
 void ignorowanie_wielkosci_liter(const char *text, const char *pattern) {
 
-    char text_copy[strlen(text)];
-    char pattern_copy[strlen(pattern)];
-    if (text_copy == NULL || pattern_copy == NULL) {
+    if (text == NULL || pattern == NULL) {
         perror("Błąd alokacji pamięci");
         return;
     }
 
-    strcpy(text_copy, text);
+    if (strlen(pattern) > strlen(text)) return;
+
+    /*strcpy(text_copy, text);
     strcpy(pattern_copy, pattern);
     int text_len = strlen(text), pattern_len = strlen(pattern);
 
     for (int i = 0; i < text_len; i++) text_copy[i] = toupper(text_copy[i]);
-    for (int i = 0; i < pattern_len; i++) pattern_copy[i] = toupper(pattern_copy[i]);
+    for (int i = 0; i < pattern_len; i++) pattern_copy[i] = toupper(pattern_copy[i]);*/
+    //for (int i = 0; i < strlen(text); i++) text_copy[i] = tolower(text_copy[i]);
+    //for (int i = 0; i < strlen(pattern); i++) pattern_copy[i] = tolower(pattern_copy[i]);
 
-    char word[pattern_len + 1];
-    for (int i = 0; i < text_len - pattern_len; i++) {
-        for (int j = 0; j < pattern_len; j++) word[j] = text_copy[i+j];
-        word[pattern_len] = '\0';
-        if (strcmp(word, pattern_copy) == 0) {
-            char buffer[MAX_TEXT_SIZE];
-            int licznik = -i+1;
-            while ((i - licznik) >= 0 && text[-licznik] != '\t' && text[-licznik] != '\n' && text[-licznik] != '-' && text[-licznik] != '.'  && text[-licznik] != '!'  && text[-licznik] != '?') {
-                buffer[i+licznik-1] = text[-licznik];
-                licznik++;
+
+    for (int i = 0; i <= strlen(text) - strlen(pattern); i++) {
+        if (tolower(text[i]) != tolower(pattern[0])) continue;
+
+        for (int j = i; j < i + strlen(pattern); j++) {
+            if (tolower(text[j]) != tolower(pattern[j-i])) {
+                i = j;
+                break;
             }
-            int licznik2 = 1;
-            while (buffer[strlen(buffer)-licznik2] == ' ') licznik2++;
-            for (int j = strlen(buffer)-licznik2; j >= 0; j--) printf("%c", buffer[j]);
-            memset(buffer, 0, sizeof(buffer));
-
-            //pattern
-            printf("\033[0;31m");
-            for (int j = 0; j < strlen(pattern); j++) printf("%c", text[i+j]);
-            printf("\033[0m");
-
-            // reszta zdania
-            int k = strlen(pattern);
-            while (text[i+k] != '\n' && text[i+k] != '.'  && text[i+k] != '!'  && text[i+k] != '?' && text[i+k] != '\0') {
-                printf("%c", text[i+k]);
-                k++;
+            if (j == i + strlen(pattern) - 1 && tolower(text[j]) == tolower(pattern[j-i])) {
+                wypisz_tekst_wersja1(text, i, strlen(pattern));
+                i = j;
             }
-            printf("%c", text_copy[i+k]);
-
-            putchar('\n');
         }
-        memset(word, 0, sizeof(word));
+    } 
+}
+
+void wypisz_tekst_wersja1(const char* text, int x, int pattern_len) {
+    int end = x-1;
+    char buffer[MAX_TEXT_SIZE];
+    while (end >= 0 && text[end] != '.' && text[end] != '!' && text[end] != '?' && text[end] != '\n' && text[end] != '\t') {
+        buffer[x-1-end] = text[end];
+        end--;
     }
+    int licznik = 1;
+    while (buffer[strlen(buffer)-licznik] == ' ') licznik++;
+    if (buffer[strlen(buffer)-licznik] == '-') licznik += 2;
+    if (buffer[strlen(buffer)-licznik] == '"') licznik++;
+    for (int i = strlen(buffer)-licznik; i >= 0; i--) printf("%c", buffer[i]);
+    memset(buffer, 0, sizeof(buffer));
+
+    printf("\033[0;31m");
+    for (int j = x; j < x + pattern_len; j++) printf("%c", text[j]);
+    printf("\033[0m");
+
+    int i;
+    for (i = x + pattern_len; text[i] != '.' && text[i] != '\n' && text[i] != '\t' && text[i] != '!' && text[i] != '?' && text[i] != EOF; i++) printf("%c", text[i]);
+    if (text[i] != '\n' && text[i] != '\t' && text[i] != EOF) printf("%c", text[i]);
+
+    putchar('\n');
+}
+
+void wypisz_tekst_wersja2(const char *text, int x, int pattern_len) {
+    int end = x-1;
+    char buffer[MAX_TEXT_SIZE];
+    while (end >= 0 && text[end] != '\t') {
+        buffer[x-1-end] = text[end];
+        end--;
+    }
+    for (int i = strlen(buffer)-1; i >= 0; i--) printf("%c", buffer[i]);
+    memset(buffer, 0, sizeof(buffer));
+
+    printf("\033[0;31m");
+    for (int j = x; j < x + pattern_len; j++) printf("%c", text[j]);
+    printf("\033[0m");
+
+    int i, licznik = 0;
+    for (i = x + pattern_len; text[i] != '\t' && text[i] != EOF && licznik <= 30; i++, licznik++) printf("%c", text[i]);
+    if (licznik == 60) printf(" ...");
+
+    putchar('\n');
 }
 
 int zliczanie_wzorca(const char *text, const char *pattern) {
