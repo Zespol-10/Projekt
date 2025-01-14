@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -29,7 +30,7 @@ std::string encode1421(const std::string_view input);
 ///
 /// This was the first known standardized base64 encoding, but is now
 /// deprecated in favor of RFC 2045 (MIME).
-std::string decode1421(const std::string_view input);
+std::optional<std::string> decode1421(const std::string_view input);
 
 /// @brief Base64 encoding using RFC 2045 (MIME) specification
 ///
@@ -49,7 +50,8 @@ std::string encode2045(const std::string_view input);
 /// Uses `+` as 62nd and `/` as 63rd characters
 /// The encoded data is padded to multiple of 4 bytes with `=` (mandatory)
 /// Lines are at most 76 bytes long and separated with `CR+LF` (`\r\n`)
-std::string decode2045(const std::string_view input);
+/// Discards non-encoding characters
+std::optional<std::string> decode2045(const std::string_view input);
 
 /// @brief Base64 encoding using RFC 2152 (UTF-7) specification
 ///
@@ -69,7 +71,7 @@ std::string encode2152(const std::string_view input);
 /// Uses `+` as 62nd and `/` as 63rd characters
 /// The encoded data is is not padded
 /// Lines are not separated
-std::string decode2152(const std::string_view input);
+std::optional<std::string> decode2152(const std::string_view input);
 
 /// @brief Base64 encoding using RFC 3501 (IMAP mailbox names) specification
 ///
@@ -89,7 +91,7 @@ std::string encode3501(const std::string_view input);
 /// Uses `+` as 62nd and `,` as 63rd characters
 /// The encoded data is is not padded
 /// Lines are not separated
-std::string decode3501(const std::string_view input);
+std::optional<std::string> decode3501(const std::string_view input);
 
 /// @brief Base64 encoding using RFC 4648.4 (standard) specification
 ///
@@ -109,7 +111,7 @@ std::string encode4648_4(const std::string_view input);
 /// Uses `+` as 62nd and `/` as 63rd characters
 /// The encoded data is padded with `=` (optional)
 /// Lines are not separated
-std::string decode4648_4(const std::string_view input);
+std::optional<std::string> decode4648_4(const std::string_view input);
 
 /// @brief Base64 encoding using RFC 4648.4 (URL and filename safe)
 /// specification
@@ -131,7 +133,7 @@ std::string encode4648_5(const std::string_view input);
 /// Uses `-` as 62nd and `_` as 63rd characters
 /// The encoded data is padded with `=` (optional)
 /// Lines are not separated
-std::string decode4648_5(const std::string_view input);
+std::optional<std::string> decode4648_5(const std::string_view input);
 
 /// @brief Base64 encoding using RFC 4880 (Radix-64 - OpenPGP) specification
 ///
@@ -151,5 +153,5 @@ std::string encode4880(const std::string_view input);
 /// Uses `-` as 62nd and `_` as 63rd characters
 /// The encoded data is padded with `=` (optional)
 /// Lines are at most 76 bytes long and separated with `CR+LF` (`\r\n`)
-std::string decode4880(const std::string_view input);
+std::optional<std::string> decode4880(const std::string_view input);
 } // namespace base64
