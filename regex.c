@@ -1,16 +1,16 @@
-include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
- 
+
 enum {FALSE, TRUE};
- 
+
 int match(const char *text, const char * expr){
     while (* text != '\0'){
     if(match_pos(text, expr)) return TRUE;
     return FALSE;
     }
 }
- 
+
 int match_pos(const char *text, const char * expr){
     if(expr[0] == '\0') return TRUE;
     if(expr[1] == '*') return reg_ast(expr[0], expr + 2, text);
@@ -34,13 +34,13 @@ int match_pos(const char *text, const char * expr){
     }
     return FALSE;
 }
- 
+
 void reverse(char * s){
     int i, j;
     char c;
     for(i = 0, j = strlen(s) - 1; i < j; i++, j--) c = s[i], s[i] = s[j], s[j] = c;
 }
- 
+
 void int_str(int n, char * s){
     int rem;
     short i = 0;
@@ -53,10 +53,29 @@ void int_str(int n, char * s){
     s[i] = '\0';
     reverse(s);
 }
- 
+
 int reg_ast(char c, const char *text, const char *expr){
     while(* text != '\0' && (* text == c || c == '.')){
         if(match_here(expr, text++)) return TRUE;
     }
     return FALSE;
+}
+
+int reg_pl(char c, const char *text, const char *expr) {
+    if (*text != '\0' && (*text == c || c == '.')) return match_star(c, expr, text + 1);
+    return FALSE;
+}
+
+int reg_br(char c, int m, int n, const char *text, const char *expr) {
+    int i;
+    for(i = 0; i < m; ++i){
+        if(*text == '\0' || (*text != c && c != '.')) return FALSE;
+        text++;
+    }
+    for (i; i < n; ++i){
+        if(match_pos(text, expr)) return TRUE;
+        if (*text == '\0' || (*text != c && c != '.')) return FALSE;
+        text++;
+    }
+    return match_here(text, expr);
 }
