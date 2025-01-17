@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <limits>
 
+namespace {
 struct Specification {
     const std::string_view alphabet;
     const char padding;
@@ -172,6 +173,7 @@ class Decoder {
         return this->buf;
     }
 };
+} // namespace
 
 namespace base64 {
 std::string encode1421(const std::string_view input) {
