@@ -15,7 +15,7 @@ char *readString()
         if(len+1 >=size)
         {
             size *=2;
-            char *new_str=realloc(str,size);
+            char *new_str=(char *)realloc(str,size);
             if(!new_str)
             {
                 printf("Błędna alokacja pamięci. Spróbuj ponownie");
@@ -76,6 +76,12 @@ void szyfruj()
     }
 
     int dep=atoi(depth);
+	if(dep==1)
+	{
+	printf("Zaszyfrowany tekst to: %s",tekst);
+	return;
+	}
+
     int length=strlen(tekst);
     char **arr=(char **)malloc(dep*sizeof(char *));
     if(!arr)
