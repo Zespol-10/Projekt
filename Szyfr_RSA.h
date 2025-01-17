@@ -248,6 +248,7 @@ void push_vec_pair_int(vec_pair_int* a, int f, int s){
 
 void free_vec_pair_int(vec_pair_int* a){
 	free(a->wsk);
+	
 }
 
 pair_int top_vec_pair_int(vec_pair_int* a){
@@ -502,88 +503,95 @@ void push_c_string(c_string* a, char z){
 }
 
 void free_c_string(c_string* a){
-	free(a->wsk);
+	if(a != NULL){
+		if(a->wsk != NULL){
+			free(a->wsk);
+			a->wsk = NULL;
+		}
+		
+	}
 }
 
 char get_c_string(c_string* a, int i){
 	return a->wsk[i];
 }
 
-c_string RSA_encode(c_string s, public_key klucz){
-	c_string res;  init_c_string(&res);
-	int dlug = s.rozm;
+void RSA_encode(c_string* s, public_key klucz, c_string* res){
+	free_c_string(res);
+	init_c_string(res);
+	int dlug = s->rozm;
 	const int czunk_size = 124;
 	int czunki = dlug/(czunk_size);
 	Montgomery_pack pack = init_Montgomery_algorithm(klucz.n,1024);
 	for(int i = 0; i < czunki+1; i++){
 		int1024 c = {0};
 		for(int j = 0; j < czunk_size; j++){
-			if(i*czunk_size+j < (int)(s.rozm)) c.chunk[j/4]+=(((ll)( get_c_string( &s,i*czunk_size+j) ) )<<(8*(j%4)));
+			if(i*czunk_size+j < (int)(s->rozm)) c.chunk[j/4]+=(((ll)( get_c_string( s,i*czunk_size+j) ) )<<(8*(j%4)));
 		}
 		c = fast_montgomery_exponentation(c,klucz.e,klucz.n,pack);
 		for(int j = 0; j < 256; j++){
-			push_c_string(&res,(char)(70+((c.chunk[j/8]&((ll)(15)<< ((j%8)*4)))>>((j%8)*4)))); 
+			push_c_string(res,(char)(70+((c.chunk[j/8]&((ll)(15)<< ((j%8)*4)))>>((j%8)*4)))); 
 		}
 	}
-	return res;
 }
 
-c_string RSA_decode(c_string s, private_key klucz){
-	c_string res; init_c_string(&res);
-	int dlug = s.rozm;
+void RSA_decode(c_string* s, private_key klucz, c_string* res){
+	//assert(res!=s || "RSA_decode powinno przyjmowac rozne wskazniki do c_stringow");
+	free_c_string(res);
+	init_c_string(res);
+	int dlug = s->rozm;
 	const int czunk_size = 256;
 	int czunki = dlug/(czunk_size); 
 	Montgomery_pack pack = init_Montgomery_algorithm(klucz.n,1024);
 	for(int i = 0; i < czunki; i++){
 		int1024 c = {0};
 		for(int j = 0; j < 256; j++){
-			c.chunk[j/8] += (((ll)(  get_c_string(&s, i*256+j) )-(ll)(70))<<((j%8)*4));
+			c.chunk[j/8] += (((ll)(  get_c_string(s, i*256+j) )-(ll)(70))<<((j%8)*4));
 		}
 		
 		c = fast_montgomery_exponentation(c,klucz.d,klucz.n,pack);
 		for(int j = 0; j < 124; j++){
-			push_c_string(&res,  (char)(( (c.chunk[j/4])&(  255<<(8*(j%4))  ) )>>(8*(j%4))) ); 
+			push_c_string(res,  (char)(( (c.chunk[j/4])&(  255<<(8*(j%4))  ) )>>(8*(j%4))) ); 
 			
-		}
-		
+		}	
 	}
-	return res;
 }
 
-c_string print_hex(int1024 a){
-	c_string res; init_c_string(&res);
+void print_hex(int1024 a, c_string* res){
+	free_c_string(res);
+	init_c_string(res);
 	for(int i = 0; i < 2048/32; i++){
 		for(int j = 0; j < 32; j+=4){
-			push_c_string(	&res , (char)('A'+((a.chunk[i]&((ll)(15)<<j))>>j)) );
+			push_c_string(	res , (char)('A'+((a.chunk[i]&((ll)(15)<<j))>>j)) );
 		}
 	}
-	return res;
 }
 
-int1024 read_hex(c_string a){
+int1024 read_hex(c_string* a){
 	int1024 res = {0};
 	for(int i = 0; i < 2048/32; i++){
 		for(int j = 0; j < 32; j+=4){
-			res.chunk[i] += (ll)(get_c_string(&a,8*i+j/4) -'A')<<j;   
+			res.chunk[i] += (ll)(get_c_string(a,8*i+j/4) -'A')<<j;   
 		}
 	}
 	return res;
 
 }
-void print_c_string(c_string a){
-	for(int i = 0; i < a.rozm; i++){
-		putchar(a.wsk[i]);
+void print_c_string(c_string* a){
+	for(int i = 0; i < a->rozm; i++){
+		putchar(a->wsk[i]);
 	}
 	putchar('\n');
 }
-c_string read_c_string(){
-	c_string z; init_c_string(&z);
+void read_c_string(c_string* res){
+
+	 free_c_string(res);
+	 init_c_string(res);
 	char litera = 'a';
 	while(litera!='\n'){
 		litera = getchar();
-		if(litera!='\n') push_c_string(&z,litera);
+		if(litera!='\n') push_c_string(res,litera);
 	}
-	return z;
 }
 
 
