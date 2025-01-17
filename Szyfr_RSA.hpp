@@ -7,6 +7,9 @@
 #include <vector>
 #endif
 #define ll unsigned long long
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define true 1
+#define false 0
 using namespace std;
 
 struct int1024{
@@ -122,6 +125,8 @@ int1024 add(int1024 a, int1024 b){
 	}
 	return c;
 }
+
+
 bool isGreaterOrEqual(int1024 *a, int1024 *b){
 	for(int i = 2048/32-1; i >= 0; i--){
 		if(a->chunk[i] > b->chunk[i]) return true;
@@ -217,9 +222,47 @@ bool isEqual(int1024 a, int1024 b){
 	return false;
 }
 
+struct pair_int{
+	int fi;
+	int se;
+	
+};
+struct vec_pair_int{
+	int rozm;
+	int rozm_max;
+	pair_int* wsk;
+};
 
+void init_vec_pair_int(vec_pair_int* a){
+	a->rozm = 0;
+	a->rozm_max = 1;
+	a->wsk = (struct pair_int *)malloc(a->rozm_max * sizeof(struct pair_int));
+}
 
+void push_vec_pair_int(vec_pair_int* a, int f, int s){
+	a->wsk[(a->rozm)+1].fi = f;
+	a->wsk[(a->rozm)+1].se = s;
+	a->rozm+=1;
+	if(a->rozm == a->rozm_max){
+		a->rozm_max*=2;
+		a->wsk = (struct pair_int *)realloc(a->wsk, a->rozm_max * sizeof(struct pair_int));
+	}
 
+}
+
+void free_vec_pair_int(vec_pair_int* a, pair_int* b){
+	free(a->wsk);
+}
+
+pair_int top_vec_pair_int(vec_pair_int* a){
+	return a->wsk[(a->rozm)];
+}
+
+void pop_vec_pair_int(vec_pair_int* a){
+	a->rozm-=1;
+}
+
+//C compliant so far...
 pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 	static int1024 tab[5000];
 	static int1024 tab2[5000];
@@ -228,41 +271,41 @@ pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 	int1024 y = {0};
 	pair_int1024 result = {0};
 	const ll jed = 1;
-	stack<pair<int,int> > stos;
-	vector<int1024> vec;
+	vec_pair_int stos; init_vec_pair_int(&stos);
+	
 	int t = 0;
 	while(!isEqual(a,zero) && !isEqual(b,zero)){
 		if(a.chunk[0]&jed){
 			if(b.chunk[0]&jed){
 				if(isGreaterOrEqual(&a,&b)){
 					a = subtract(a,b);
-					stos.push({1,0});
+					push_vec_pair_int(&stos,1,0);
 				}else{
 					b = subtract(b,a);
-					stos.push({2,0});
+					push_vec_pair_int(&stos,2,0);
 				}
 			}else{
 				b = fast_divide_by_two(b);
 				t++; tab[t] = b; tab2[t] = a;
-				stos.push({3,t});
+				push_vec_pair_int(&stos,3,t);
 			}
 		}else{
 			if(b.chunk[0]&jed){
 				a = fast_divide_by_two(a);
 				t++; tab[t] = a; tab2[t] = b;
-				stos.push({4,t});
+				push_vec_pair_int(&stos,4,t);
 			}else{	
 				a = fast_divide_by_two(a);
 				b = fast_divide_by_two(b);
-				stos.push({5,0});
+				push_vec_pair_int(&stos,5,0);
 			}
 		}
 	}
 	if(isEqual(a,zero)) y.chunk[0]=1;
 	if(isEqual(b,zero))	x.chunk[0]=1;
-	while(!stos.empty()){
-		pair<int,int> wierzch = stos.top();
-		switch(wierzch.first){
+	while(stos.rozm > 0){
+		pair_int wierzch = top_vec_pair_int(&stos);
+		switch(wierzch.fi){
 			case 1:
 					y = add(x,y);
 				break;
@@ -271,16 +314,16 @@ pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 				break;
 			case 3:
 					if(y.chunk[0]&jed){
-						x =add(x,tab[wierzch.second]);
-						y =fast_divide_by_two(add(y,tab2[wierzch.second]));
+						x =add(x,tab[wierzch.se]);
+						y =fast_divide_by_two(add(y,tab2[wierzch.se]));
 					}else{
 						y  = fast_divide_by_two(y);
 					}
 				break;
 			case 4:
 					if(x.chunk[0]&jed){
-						x = fast_divide_by_two(add(x,tab2[wierzch.second]));
-						y = add(y,tab[wierzch.second]);
+						x = fast_divide_by_two(add(x,tab2[wierzch.se]));
+						y = add(y,tab[wierzch.se]);
 					}else{
 						x  = fast_divide_by_two(x);
 					}
@@ -288,7 +331,7 @@ pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 			case 5:
 				break;
 		}
-		stos.pop();
+		pop_vec_pair_int(&stos);
 	}
 	result.fi = x;
 	result.se = y;
