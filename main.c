@@ -1,15 +1,8 @@
-#ifndef bits_stdcpp_H
-#define bits_stdcpp_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
-
-#endif
 #include "Szyfr_RSA.h"
-
-
-
 
 int main(){
 
