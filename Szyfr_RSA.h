@@ -6,39 +6,39 @@
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define true 1
 #define false 0
-using namespace std;
 
-struct int1024{
+
+typedef struct int1024{
 	ll chunk[2048/32];
-};
+} int1024;
 
-struct public_key{
-	int1024 e;
+typedef struct public_key{
+	struct int1024 e;
 	int1024 n;
-};
+} public_key;
 
-struct private_key{
+typedef struct private_key{
 	int1024 d;
 	int1024 n;
-};
+} private_key;
 
-struct key{
+typedef struct key{
 	public_key publickey;
 	private_key privatekey;
-};
+} key;
 
-struct Montgomery_pack{
+typedef struct Montgomery_pack{
 	int R_wykladnik;
 	int1024 R;
 	int1024 R_;
 	int1024 N;
 	int1024 M;
-};
+} Montgomery_pack;
 
-struct pair_int1024{
+typedef struct pair_int1024{
 	int1024 fi;
 	int1024 se;
-};
+} pair_int1024;
 
 
 int1024 multiply(int1024 a, int1024 b){
@@ -192,7 +192,7 @@ pair_int1024 division_with_modulo(int1024 a, int1024 b){
 	res.fi = c; res.se = a;
 	return res;
 }
-int1024 random_int1024(){
+int1024 random_int1024_v(){
 	int1024 a = {0};
 	for(int i = 1024/32-1; i  >= 0; i-- ){
 		for(int j = 31; j>=0; j--){	
@@ -203,7 +203,7 @@ int1024 random_int1024(){
 	return a;
 }
 int1024 random_int1024(int1024 n){ 
-	int1024 a = modulo(random_int1024(), n);
+	int1024 a = modulo(random_int1024_v(), n);
 	return a;
 }
 
@@ -218,16 +218,16 @@ bool isEqual(int1024 a, int1024 b){
 	return false;
 }
 
-struct pair_int{
+typedef struct pair_int{
 	int fi;
 	int se;
 	
-};
-struct vec_pair_int{
+} pair_int;
+typedef struct vec_pair_int{
 	int rozm;
 	int rozm_max;
 	pair_int* wsk;
-};
+} vec_pair_int;
 
 void init_vec_pair_int(vec_pair_int* a){
 	a->rozm = 0;
@@ -335,7 +335,7 @@ pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 	return result;
 }
 
-inline int1024 fast_divide(int1024 A, int b){
+int1024 fast_divide(int1024 A, int b){
 	return right_shift(A,b/32);
 }
 
@@ -363,11 +363,11 @@ Montgomery_pack init_Montgomery_algorithm(int1024 N, int wykladnik){
 	return pack;
 }
 
-inline int1024 ConvertToMontgomeryForm(int1024 a, Montgomery_pack pack){
+int1024 ConvertToMontgomeryForm(int1024 a, Montgomery_pack pack){
 	return modulo(multiply(a,pack.R),pack.N);
 }
 
-inline int1024 ConvertFromMontgomeryForm(int1024 a, Montgomery_pack pack){
+int1024 ConvertFromMontgomeryForm(int1024 a, Montgomery_pack pack){
 	return modulo(multiply(a,pack.R_),pack.N);
 }
 
@@ -477,13 +477,13 @@ key RSA(){
 	klucz.publickey.n = n;
 	return klucz; 
 }
-//C compliant so far...
 
-struct c_string{
+
+typedef struct c_string{
 	int rozm;
 	int rozm_max;
 	char* wsk;
-};
+} c_string;
 
 void init_c_string(c_string* a){
 	a->rozm = 0;
@@ -518,11 +518,11 @@ c_string RSA_encode(c_string s, public_key klucz){
 	for(int i = 0; i < czunki+1; i++){
 		int1024 c = {0};
 		for(int j = 0; j < czunk_size; j++){
-			if(i*czunk_size+j < int(s.rozm)) c.chunk[j/4]+=(((ll)( get_c_string( &s,i*czunk_size+j) ) )<<(8*(j%4)));
+			if(i*czunk_size+j < (int)(s.rozm)) c.chunk[j/4]+=(((ll)( get_c_string( &s,i*czunk_size+j) ) )<<(8*(j%4)));
 		}
 		c = fast_montgomery_exponentation(c,klucz.e,klucz.n,pack);
 		for(int j = 0; j < 256; j++){
-			push_c_string(&res,char(70+((c.chunk[j/8]&((ll)(15)<< ((j%8)*4)))>>((j%8)*4)))); 
+			push_c_string(&res,(char)(70+((c.chunk[j/8]&((ll)(15)<< ((j%8)*4)))>>((j%8)*4)))); 
 		}
 	}
 	return res;
@@ -542,7 +542,7 @@ c_string RSA_decode(c_string s, private_key klucz){
 		
 		c = fast_montgomery_exponentation(c,klucz.d,klucz.n,pack);
 		for(int j = 0; j < 124; j++){
-			push_c_string(&res,  char(( (c.chunk[j/4])&(  255<<(8*(j%4))  ) )>>(8*(j%4))) ); 
+			push_c_string(&res,  (char)(( (c.chunk[j/4])&(  255<<(8*(j%4))  ) )>>(8*(j%4))) ); 
 			
 		}
 		
@@ -554,7 +554,7 @@ c_string print_hex(int1024 a){
 	c_string res; init_c_string(&res);
 	for(int i = 0; i < 2048/32; i++){
 		for(int j = 0; j < 32; j+=4){
-			push_c_string(	&res , char('A'+((a.chunk[i]&((ll)(15)<<j))>>j)) );
+			push_c_string(	&res , (char)('A'+((a.chunk[i]&((ll)(15)<<j))>>j)) );
 		}
 	}
 	return res;

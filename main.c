@@ -1,13 +1,14 @@
 #ifndef bits_stdcpp_H
 #define bits_stdcpp_H
 #include <stdio.h>
-#include <cstdlib>
+#include <stdlib.h>
 #include <time.h>
+#include <stdbool.h>
 
 #endif
-#include "Szyfr_RSA.hpp"
+#include "Szyfr_RSA.h"
 
-using namespace std;
+
 
 
 int main(){
