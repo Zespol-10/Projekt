@@ -1,11 +1,7 @@
 #ifndef Szyfr_RSA_H
 #define Szyfr_RSA_H
 
-#ifndef bits_stdcpp_H
-#define bits_stdcpp_H
-#include <string>
-#include <vector>
-#endif
+
 #define ll unsigned long long
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define true 1
@@ -250,7 +246,7 @@ void push_vec_pair_int(vec_pair_int* a, int f, int s){
 
 }
 
-void free_vec_pair_int(vec_pair_int* a, pair_int* b){
+void free_vec_pair_int(vec_pair_int* a){
 	free(a->wsk);
 }
 
@@ -262,7 +258,7 @@ void pop_vec_pair_int(vec_pair_int* a){
 	a->rozm-=1;
 }
 
-//C compliant so far...
+
 pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 	static int1024 tab[5000];
 	static int1024 tab2[5000];
@@ -335,25 +331,8 @@ pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 	}
 	result.fi = x;
 	result.se = y;
+	free_vec_pair_int(&stos);
 	return result;
-}
-
-void print(int1024 a){
-	int1024 dzies = {0}; dzies.chunk[0] = 10;
-	int1024 zero = {0};
-	string s;
-	if(isEqual(a,zero)){
-		s = "0";
-		cout<<s<<"\n";
-		return;
-	}
-	while(!isEqual(a,zero)){
-		pair_int1024 d = division_with_modulo(a,dzies);
-		a = d.fi;
-		s += char(d.se.chunk[0]+'0');
-	}
-	reverse(s.begin(),s.end());
-	cout<<s<<"\n";
 }
 
 inline int1024 fast_divide(int1024 A, int b){
@@ -399,6 +378,7 @@ int1024 REDC(int1024 T, Montgomery_pack pack){
 	if(isGreaterOrEqual(&S,&pack.N)) return subtract(S,pack.N);
 	return S;
 }
+
 int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgomery_pack pack){
 	int1024 c = {0}; c.chunk[0] = 1;
 	a = ConvertToMontgomeryForm(a,pack);
@@ -421,10 +401,6 @@ int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgom
 	c = ConvertFromMontgomeryForm(c,pack);
 	return c;
 }
-
-
-
-
 
 bool RabinMiller(int1024 p, int k){
 	Montgomery_pack pack = init_Montgomery_algorithm(p,512);
@@ -453,9 +429,6 @@ bool RabinMiller(int1024 p, int k){
 	}
 	return true;
 }
-
-
-
 
 key RSA(){
 	int1024 Z = {0}; Z.chunk[512/32] = 1;
@@ -504,67 +477,115 @@ key RSA(){
 	klucz.publickey.n = n;
 	return klucz; 
 }
+//C compliant so far...
 
+struct c_string{
+	int rozm;
+	int rozm_max;
+	char* wsk;
+};
 
-string RSA_encode(string s, public_key klucz){
-	string res;
-	int dlug = s.size();
+void init_c_string(c_string* a){
+	a->rozm = 0;
+	a->rozm_max = 1;
+	a->wsk = (char *)malloc(a->rozm_max * sizeof(char));
+}
+
+void push_c_string(c_string* a, char z){
+	a->wsk[(a->rozm)] = z;
+	a->rozm+=1;
+	if(a->rozm == a->rozm_max){
+		a->rozm_max*=2;
+		a->wsk = (char *)realloc(a->wsk, a->rozm_max * sizeof(char));
+	}
+
+}
+
+void free_c_string(c_string* a){
+	free(a->wsk);
+}
+
+char get_c_string(c_string* a, int i){
+	return a->wsk[i];
+}
+
+c_string RSA_encode(c_string s, public_key klucz){
+	c_string res;  init_c_string(&res);
+	int dlug = s.rozm;
 	const int czunk_size = 124;
 	int czunki = dlug/(czunk_size);
 	Montgomery_pack pack = init_Montgomery_algorithm(klucz.n,1024);
 	for(int i = 0; i < czunki+1; i++){
 		int1024 c = {0};
 		for(int j = 0; j < czunk_size; j++){
-			if(i*czunk_size+j < int(s.size())) c.chunk[j/4]+=(((ll)(s[i*czunk_size+j]))<<(8*(j%4)));
+			if(i*czunk_size+j < int(s.rozm)) c.chunk[j/4]+=(((ll)( get_c_string( &s,i*czunk_size+j) ) )<<(8*(j%4)));
 		}
 		c = fast_montgomery_exponentation(c,klucz.e,klucz.n,pack);
 		for(int j = 0; j < 256; j++){
-			res += char(70+((c.chunk[j/8]&((ll)(15)<< ((j%8)*4)))>>((j%8)*4))); 
+			push_c_string(&res,char(70+((c.chunk[j/8]&((ll)(15)<< ((j%8)*4)))>>((j%8)*4)))); 
 		}
 	}
 	return res;
 }
 
-string RSA_decode(string s, private_key klucz){
-	string res;
-	int dlug = s.size();
+c_string RSA_decode(c_string s, private_key klucz){
+	c_string res; init_c_string(&res);
+	int dlug = s.rozm;
 	const int czunk_size = 256;
 	int czunki = dlug/(czunk_size); 
 	Montgomery_pack pack = init_Montgomery_algorithm(klucz.n,1024);
 	for(int i = 0; i < czunki; i++){
 		int1024 c = {0};
 		for(int j = 0; j < 256; j++){
-			c.chunk[j/8] += (((ll)(s[i*256+j])-(ll)(70))<<((j%8)*4));
+			c.chunk[j/8] += (((ll)(  get_c_string(&s, i*256+j) )-(ll)(70))<<((j%8)*4));
 		}
 		
 		c = fast_montgomery_exponentation(c,klucz.d,klucz.n,pack);
 		for(int j = 0; j < 124; j++){
-			res += char(( (c.chunk[j/4])&(  255<<(8*(j%4))  ) )>>(8*(j%4)) ); 
+			push_c_string(&res,  char(( (c.chunk[j/4])&(  255<<(8*(j%4))  ) )>>(8*(j%4))) ); 
+			
 		}
+		
 	}
 	return res;
 }
 
-string print_hex(int1024 a){
-	string res;
+c_string print_hex(int1024 a){
+	c_string res; init_c_string(&res);
 	for(int i = 0; i < 2048/32; i++){
 		for(int j = 0; j < 32; j+=4){
-			res += char('A'+((a.chunk[i]&((ll)(15)<<j))>>j));
+			push_c_string(	&res , char('A'+((a.chunk[i]&((ll)(15)<<j))>>j)) );
 		}
 	}
 	return res;
 }
 
-int1024 read_hex(string a){
+int1024 read_hex(c_string a){
 	int1024 res = {0};
 	for(int i = 0; i < 2048/32; i++){
 		for(int j = 0; j < 32; j+=4){
-			res.chunk[i] += (ll)(a[8*i+j/4]-'A')<<j;   
+			res.chunk[i] += (ll)(get_c_string(&a,8*i+j/4) -'A')<<j;   
 		}
 	}
 	return res;
 
 }
+void print_c_string(c_string a){
+	for(int i = 0; i < a.rozm; i++){
+		putchar(a.wsk[i]);
+	}
+	putchar('\n');
+}
+c_string read_c_string(){
+	c_string z; init_c_string(&z);
+	char litera = 'a';
+	while(litera!='\n'){
+		litera = getchar();
+		if(litera!='\n') push_c_string(&z,litera);
+	}
+	return z;
+}
+
 
 
 
