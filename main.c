@@ -1,13 +1,20 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
 #include "Szyfr_RSA.h"
 
+
+
+
+
 int main(){
 
 	//Zainicjanilizuj generator liczb pseudolosowych
-	srand(time(NULL));	
+	long seed = time(NULL);
+	srand(seed);	
+
 	//Wygeneruj klucz RSA
 	key klucz = RSA();
 	//Zadeklaruj obiekt c_string i wczytaj do niego tekst
@@ -20,8 +27,10 @@ int main(){
 	//zaszyfruj tekst
 	c_string* zaszyfrowany_tekst = (c_string *)malloc(sizeof(c_string)); init_c_string(zaszyfrowany_tekst);
 	RSA_encode(tekst,klucz.publickey,zaszyfrowany_tekst);
+	
 	//wypisz zaszyfrowany tekst na ekran
 	print_c_string(zaszyfrowany_tekst);
+
 
 	//wypisz klucz prywatny w miare przyjaznej do skopiowania postaci
 	c_string* prywatny_klucz_d = (c_string *)malloc(sizeof(c_string)); init_c_string(prywatny_klucz_d);

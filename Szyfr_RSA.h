@@ -3,9 +3,11 @@
 #define true 1
 #define false 0
 //structy
+
 typedef struct int1024{
-	ll chunk[2048/32];
+	ll chunk[66];
 } int1024;
+
 typedef struct public_key{
 	struct int1024 e;
 	int1024 n;

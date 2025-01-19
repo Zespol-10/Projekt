@@ -1,7 +1,7 @@
 def konwertuj():
     c_header = """
 typedef struct int1024{
-	unsigned long long chunk[64];
+	unsigned long long chunk[66];
 } int1024;
 typedef struct public_key{
 	struct int1024 e;

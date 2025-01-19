@@ -10,31 +10,29 @@
 #define true 1
 #define false 0
 
-
-
  int1024 multiply(int1024 a, int1024 b){
 	int1024 c = {0};
 	int a_len = -1;
 	int b_len = -1;
-	for(int i = 2048/32-1; i >= 0; i--){
+	for(int i = 66-1; i >= 0; i--){
 		if(a.chunk[i] != 0){
 			a_len = i;
 			break;
 		}
 	}
-	for(int i = 2048/32-1; i >= 0; i--){
+	for(int i = 66-1; i >= 0; i--){
 		if(b.chunk[i] != 0){
 			b_len = i;
 			break;
 		}
 	}
-	for(int i  = 0; i < min(2048/32,a_len+b_len+2); i++){
+	for(int i  = 0; i < min(66,a_len+b_len+2); i++){
 		for(int j = 0; j <= i; j++){
-			if(i+1 < 2048/32) c.chunk[i+1]+=c.chunk[i]>>32;
+			if(i+1 < 66) c.chunk[i+1]+=c.chunk[i]>>32;
 			c.chunk[i]=c.chunk[i]-((c.chunk[i]>>32)<<32);
 			c.chunk[i]+=a.chunk[j]*b.chunk[i-j];
 		}
-		if(i+1 < 2048/32) c.chunk[i+1]+=c.chunk[i]>>32;
+		if(i+1 < 66) c.chunk[i+1]+=c.chunk[i]>>32;
 		c.chunk[i]=c.chunk[i]-((c.chunk[i]>>32)<<32);	
 	}
 	return c;
@@ -43,20 +41,20 @@
 
  int1024 shift(int1024 a, int s){
 	int1024 c = {0};
-	for(int i = s; i < 2048/32; i++){
+	for(int i = s; i < 66; i++){
 		c.chunk[i] = a.chunk[i-s];
 	}
 	return c;
 }
  int1024 right_shift(int1024 a, int s){
 	int1024 c = {0};
-	for(int  i = 2048/32-s-1; i >= 0; i--){
+	for(int  i = 66-s-1; i >= 0; i--){
 		c.chunk[i] = a.chunk[i+s];
 	}
 	return c;
 }
  int get_bits(int1024 a){
-	for(int i = 2048-1; i >= 0; i--){
+	for(int i = 2102-1; i >= 0; i--){
 		int czunk = i/32;
 		int j = i%32;
 		if(a.chunk[czunk]&((ll)(1)<<j)) return i+1;
@@ -65,7 +63,7 @@
 }
  int1024 subtract(int1024 a, int1024 b){
 	int1024 c = {0};
-	for(int i = 0; i < 2048/32; i++){
+	for(int i = 0; i < 66; i++){
 		if(a.chunk[i]  < b.chunk[i]){
 			a.chunk[i]+=((ll)(1)<<32);
 			int j = i+1;
@@ -81,10 +79,10 @@
 }
  int1024 add(int1024 a, int1024 b){
 	int1024 c = {0};
-	for(int i = 0; i < 2048/32; i++){
+	for(int i = 0; i < 66; i++){
 		c.chunk[i] += a.chunk[i]+b.chunk[i];
 		if(c.chunk[i] >= ((ll)(1)<<32)){
-			if(i < 2048/32-1){
+			if(i < 66-1){
 				c.chunk[i+1] += (c.chunk[i]/((ll)(1)<<32));
 			}
 			c.chunk[i] %= ((ll)(1)<<32);
@@ -95,7 +93,7 @@
 
 
  bool isGreaterOrEqual(int1024 *a, int1024 *b){
-	for(int i = 2048/32-1; i >= 0; i--){
+	for(int i = 66-1; i >= 0; i--){
 		if(a->chunk[i] > b->chunk[i]) return true;
 		if(a->chunk[i] < b->chunk[i]) return false;
 	}
@@ -106,7 +104,7 @@
 	ll bity = s%32;
 	ll czunki = s/32;
 	ll carry = 0;
-	for(int i = czunki; i < 2048/32; i++){
+	for(int i = czunki; i < 66; i++){
 		b.chunk[i] = ((ll)(a.chunk[i-czunki])<<(ll)(bity)) + (ll)(carry);
 		carry = (b.chunk[i]/((ll)(1)<<32));
 		b.chunk[i]%=((ll)(1)<<32);
@@ -123,7 +121,7 @@
  int1024 fast_divide_by_two(int1024 a){
 	ll carry = 0; 
 	ll ocarry = 0;
-	for(int i = 2048/32 - 1; i>=0 ;i--){
+	for(int i = 66 - 1; i>=0 ;i--){
 		carry = a.chunk[i]&((ll)(1));
 		a.chunk[i]>>=1;
 		a.chunk[i]|=(ocarry<<31); 
@@ -140,7 +138,7 @@
 	return i;
 }
  int1024 modulo(int1024 a, int1024 b){
-	for(int i = 2048-get_bits(b); i>=0; i--){  
+	for(int i = 2102-get_bits(b); i>=0; i--){  
 		int1024 d = bitshift(b,i);
 		if(isGreaterOrEqual(&a,&d)) {
 			a = subtract(a,d);
@@ -153,7 +151,7 @@
  pair_int1024 division_with_modulo(int1024 a, int1024 b){ 
 	int1024 c = {0};
 	pair_int1024 res;
-	for(int i = 2048-get_bits(b); i>=0; i--){
+	for(int i = 2102-get_bits(b); i>=0; i--){
 		int1024 d = bitshift(b,i);
 		if(isGreaterOrEqual(&a,&d)) {
 			a = subtract(a,d);
@@ -352,10 +350,12 @@
 	return S;
 }
 
+
  int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgomery_pack pack){
 	int1024 c = {0}; c.chunk[0] = 1;
 	a = ConvertToMontgomeryForm(a,pack);
 	c = ConvertToMontgomeryForm(c,pack);
+
 	bool ok = false;
 	for(int i = 1024/32 - 1; i >= 0 ; i-- ){
 		for(int j = 31; j >= 0; j--){
@@ -482,6 +482,8 @@
 	return a->wsk[i];
 }
 
+
+
  void RSA_encode(c_string* s, public_key klucz, c_string* res){
 	free_c_string(res);
 	init_c_string(res);
@@ -492,14 +494,19 @@
 	for(int i = 0; i < czunki+1; i++){
 		int1024 c = {0};
 		for(int j = 0; j < czunk_size; j++){
-			if(i*czunk_size+j < (int)(s->rozm)) c.chunk[j/4]+=(((ll)( get_c_string( s,i*czunk_size+j) ) )<<(8*(j%4)));
+			if(i * czunk_size + j < dlug){
+				if(i*czunk_size+j < (int)(s->rozm)) c.chunk[j/4]+=(((ll)( get_c_string( s,i*czunk_size+j) ) )<<(8*(j%4)));
+			}
 		}
 		c = fast_montgomery_exponentation(c,klucz.e,klucz.n,pack);
 		for(int j = 0; j < 256; j++){
 			push_c_string(res,(char)(70+((c.chunk[j/8]&((ll)(15)<< ((j%8)*4)))>>((j%8)*4)))); 
 		}
 	}
+
 }
+
+
 
  void RSA_decode(c_string* s, private_key klucz, c_string* res){
 	//assert(res!=s || "RSA_decode powinno przyjmowac rozne wskazniki do c_stringow");
@@ -514,18 +521,18 @@
 		for(int j = 0; j < 256; j++){
 			c.chunk[j/8] += (((ll)(  get_c_string(s, i*256+j) )-(ll)(70))<<((j%8)*4));
 		}
-		
 		c = fast_montgomery_exponentation(c,klucz.d,klucz.n,pack);
 		for(int j = 0; j < 124; j++){
 			push_c_string(res,  (char)(( (c.chunk[j/4])&(  255<<(8*(j%4))  ) )>>(8*(j%4))) ); 
 			
 		}	
+		
 	}
 }
  void print_hex(int1024 a, c_string* res){
 	free_c_string(res);
 	init_c_string(res);
-	for(int i = 0; i < 2048/32; i++){
+	for(int i = 0; i < 66; i++){
 		for(int j = 0; j < 32; j+=4){
 			push_c_string(	res , (char)('A'+((a.chunk[i]&((ll)(15)<<j))>>j)) );
 		}
@@ -533,7 +540,7 @@
 }
  int1024 read_hex(c_string* a){
 	int1024 res = {0};
-	for(int i = 0; i < 2048/32; i++){
+	for(int i = 0; i < 66; i++){
 		for(int j = 0; j < 32; j+=4){
 			res.chunk[i] += (ll)(get_c_string(a,8*i+j/4) -'A')<<j;   
 		}

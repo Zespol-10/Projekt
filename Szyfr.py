@@ -30,7 +30,7 @@ elif os.name == 'nt':
 
 class int1024(ctypes.Structure):
 	_fields_ = [
-		('chunk',ctypes.c_ulonglong*64),
+		('chunk',ctypes.c_ulonglong*66),
 	]
 class public_key(ctypes.Structure):
 	_fields_ = [

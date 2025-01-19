@@ -14,13 +14,20 @@ gcc main.c Szyfr_RSA.c -o main
 ```
 Żeby przetestować wersję pythonową wpisz w terminalu:
 ```bash
-gcc -shared -o Szyfr_RSA.so -fPIC Szyfr_RSA.c
 python3 Szyfr.py
 
 ```
+lub
+```bash
+py Szyfr.py
+```
 Musisz mieć nadzieję, że wersja twojego Pythona (32/64-bitowa) zgadza się z wersją twojego gcc.
-Musisz mieć też zainstalowaną bibliotekę ctypes.
+W przypadku Windowsa musisz mieć zainstalowanego x86_64-w64-mingw32-gcc pod ścieżką C:\msys64\mingw64\bin.
+Musisz mieć też zainstalowaną pythonowe biblioteki:
+ctypes, subprocess, os
 Jeśli jej nie masz zainstaluj ją za pomocą polecenia:
 ```bash
 pip install ctypes
+pip install subprocess
+pip install os
 ```
