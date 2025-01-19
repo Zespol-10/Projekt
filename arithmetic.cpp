@@ -98,6 +98,37 @@ class Model {
             frozen = true;
         }
     }
+
+    code_t get_count() { return cumulative.back(); }
+
+    std::tuple<Probability, code_t> get_char(code_t value) {
+        std::uint16_t left = 0;
+        std::uint16_t right = CODE_EOF;
+        std::uint16_t mid = 0;
+
+        while (left <= right) {
+            mid = left + (right - left) / 2;
+
+            // Found the right range
+            if (cumulative[mid] <= value && cumulative[mid + 1] > value) {
+                break;
+            }
+
+            // Overstepped by one range
+            if (cumulative[mid] > value && cumulative[mid + 1] <= value) {
+                mid--;
+                break;
+            }
+
+            if (cumulative[mid] > value) { // Check left half
+                right = mid - 1;
+            } else { // Check right half
+                left = mid + 1;
+            }
+        }
+
+        return {get_probability(mid), mid};
+    }
 };
 
 class Compressor {
@@ -155,10 +186,70 @@ class Compressor {
         return output;
     }
 };
+
+class Decompressor {
+    code_t current;
+    Range range;
+    Model model;
+    std::string output;
+
+  public:
+    Decompressor() : current(0), range() {}
+
+    std::string decompress(const std::vector<bool> &input) {
+        auto curr_bit = input.begin();
+
+        for (size_t i = 0; i < CODE_VALUE_BITS; i++) {
+            current = (current << 1) | *(curr_bit++);
+        }
+
+        while (true) {
+            auto width = range.right - range.left + 1;
+            auto scaled_current =
+                ((current - range.left + 1) * model.get_count() - 1) / width;
+            auto [prob, ch] = model.get_char(scaled_current);
+
+            if (ch == CODE_EOF) {
+                break;
+            }
+
+            output.push_back(ch);
+            range.update(prob);
+
+            // The range width is less than 0.5 and both ends are in the same
+            // half - scale up the range
+            while (range.left >= QUARTER2 || range.right < QUARTER2) {
+                if (range.left >= QUARTER2) {
+                    range.decrease(QUARTER2);
+                    current -= QUARTER2;
+                }
+
+                range.left <<= 1;
+                range.right = (range.right << 1) + 1;
+                current = (current << 1) | *(curr_bit++);
+            }
+
+            // The range width is less than 0.5, and both ends are in the 0.25
+            // to 0.75 range - scale up the range
+            while (range.left >= QUARTER1 && range.right < QUARTER3) {
+                range.decrease(QUARTER1);
+                range.left <<= 1;
+                range.right = (range.right << 1) + 1;
+                current = ((current - QUARTER1) << 1) | *(curr_bit++);
+            }
+        }
+
+        return output;
+    }
+};
 } // namespace
 
 namespace arithmetic {
 std::vector<bool> compress(const std::string_view input) {
     return Compressor().compress(input);
+}
+
+std::string decompress(const std::vector<bool> &input) {
+    return Decompressor().decompress(input);
 }
 } // namespace arithmetic
