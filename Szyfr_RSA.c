@@ -12,7 +12,7 @@
 
 
 
-int1024 multiply(int1024 a, int1024 b){
+__declspec(dllexport) int1024 multiply(int1024 a, int1024 b){
 	int1024 c = {0};
 	int a_len = -1;
 	int b_len = -1;
@@ -41,21 +41,21 @@ int1024 multiply(int1024 a, int1024 b){
 }
 
 
-int1024 shift(int1024 a, int s){
+__declspec(dllexport) int1024 shift(int1024 a, int s){
 	int1024 c = {0};
 	for(int i = s; i < 2048/32; i++){
 		c.chunk[i] = a.chunk[i-s];
 	}
 	return c;
 }
-int1024 right_shift(int1024 a, int s){
+__declspec(dllexport) int1024 right_shift(int1024 a, int s){
 	int1024 c = {0};
 	for(int  i = 2048/32-s-1; i >= 0; i--){
 		c.chunk[i] = a.chunk[i+s];
 	}
 	return c;
 }
-int get_bits(int1024 a){
+__declspec(dllexport) int get_bits(int1024 a){
 	for(int i = 2048-1; i >= 0; i--){
 		int czunk = i/32;
 		int j = i%32;
@@ -63,7 +63,7 @@ int get_bits(int1024 a){
 	}
 	return 0;
 }
-int1024 subtract(int1024 a, int1024 b){
+__declspec(dllexport) int1024 subtract(int1024 a, int1024 b){
 	int1024 c = {0};
 	for(int i = 0; i < 2048/32; i++){
 		if(a.chunk[i]  < b.chunk[i]){
@@ -79,7 +79,7 @@ int1024 subtract(int1024 a, int1024 b){
 	}
 	return c;
 }
-int1024 add(int1024 a, int1024 b){
+__declspec(dllexport) int1024 add(int1024 a, int1024 b){
 	int1024 c = {0};
 	for(int i = 0; i < 2048/32; i++){
 		c.chunk[i] += a.chunk[i]+b.chunk[i];
@@ -94,14 +94,14 @@ int1024 add(int1024 a, int1024 b){
 }
 
 
-bool isGreaterOrEqual(int1024 *a, int1024 *b){
+__declspec(dllexport) bool isGreaterOrEqual(int1024 *a, int1024 *b){
 	for(int i = 2048/32-1; i >= 0; i--){
 		if(a->chunk[i] > b->chunk[i]) return true;
 		if(a->chunk[i] < b->chunk[i]) return false;
 	}
 	return true;
 }
-int1024 bitshift(int1024 a, ll s){
+__declspec(dllexport) int1024 bitshift(int1024 a, ll s){
 	int1024 b = {0};
 	ll bity = s%32;
 	ll czunki = s/32;
@@ -113,14 +113,14 @@ int1024 bitshift(int1024 a, ll s){
 	}
 	return b;
 }
-int1024 right_bitshift(int1024 a, ll s){
+__declspec(dllexport) int1024 right_bitshift(int1024 a, ll s){
 	int1024 b = {0};
 	ll bity = s%32;
 	ll czunki = s/32;
 	b = right_shift(bitshift(a,32-bity),czunki+1);
 	return b;
 }
-int1024 fast_divide_by_two(int1024 a){
+__declspec(dllexport) int1024 fast_divide_by_two(int1024 a){
 	ll carry = 0; 
 	ll ocarry = 0;
 	for(int i = 2048/32 - 1; i>=0 ;i--){
@@ -131,7 +131,7 @@ int1024 fast_divide_by_two(int1024 a){
 	}
 	return a;
 }
-int count_zeroes(int1024 a){
+__declspec(dllexport) int count_zeroes(int1024 a){
 	int i =0;
 	while(i < 1024){
 		if( (a.chunk[i/32]&(1<<(ll)(i%32)) ) != 0 ) return i;
@@ -139,7 +139,7 @@ int count_zeroes(int1024 a){
 	}
 	return i;
 }
-int1024 modulo(int1024 a, int1024 b){
+__declspec(dllexport) int1024 modulo(int1024 a, int1024 b){
 	for(int i = 2048-get_bits(b); i>=0; i--){  
 		int1024 d = bitshift(b,i);
 		if(isGreaterOrEqual(&a,&d)) {
@@ -150,7 +150,7 @@ int1024 modulo(int1024 a, int1024 b){
 }
 
 
-pair_int1024 division_with_modulo(int1024 a, int1024 b){ 
+__declspec(dllexport) pair_int1024 division_with_modulo(int1024 a, int1024 b){ 
 	int1024 c = {0};
 	pair_int1024 res;
 	for(int i = 2048-get_bits(b); i>=0; i--){
@@ -163,7 +163,7 @@ pair_int1024 division_with_modulo(int1024 a, int1024 b){
 	res.fi = c; res.se = a;
 	return res;
 }
-int1024 random_int1024_v(){
+__declspec(dllexport) int1024 random_int1024_v(){
 	int1024 a = {0};
 	for(int i = 1024/32-1; i  >= 0; i-- ){
 		for(int j = 31; j>=0; j--){	
@@ -173,7 +173,7 @@ int1024 random_int1024_v(){
 	}
 	return a;
 }
-int1024 random_int1024(int1024 n){ 
+__declspec(dllexport) int1024 random_int1024(int1024 n){ 
 	int1024 a = modulo(random_int1024_v(), n);
 	return a;
 }
@@ -184,20 +184,21 @@ int1024 random_int1024(int1024 n){
 
 
 
-bool isEqual(int1024 a, int1024 b){
+__declspec(dllexport) bool isEqual(int1024 a, int1024 b){
 	if(isGreaterOrEqual(&a,&b) && isGreaterOrEqual(&b,&a)) return true;
 	return false;
 }
 
-void init_vec_pair_int(vec_pair_int* a){
+__declspec(dllexport) void init_vec_pair_int(vec_pair_int* a){
 	a->rozm = 0;
 	a->rozm_max = 1;
 	a->wsk = (struct pair_int *)malloc(a->rozm_max * sizeof(struct pair_int));
 }
 
-void push_vec_pair_int(vec_pair_int* a, int f, int s){
-	a->wsk[(a->rozm)+1].fi = f;
-	a->wsk[(a->rozm)+1].se = s;
+__declspec(dllexport) void push_vec_pair_int(vec_pair_int* a, int f, int s){
+
+	a->wsk[(a->rozm)].fi = f;
+	a->wsk[(a->rozm)].se = s;
 	a->rozm+=1;
 	if(a->rozm == a->rozm_max){
 		a->rozm_max*=2;
@@ -206,21 +207,21 @@ void push_vec_pair_int(vec_pair_int* a, int f, int s){
 
 }
 
-void free_vec_pair_int(vec_pair_int* a){
+__declspec(dllexport) void free_vec_pair_int(vec_pair_int* a){
 	free(a->wsk);
 	
 }
 
-pair_int top_vec_pair_int(vec_pair_int* a){
-	return a->wsk[(a->rozm)];
+__declspec(dllexport) pair_int top_vec_pair_int(vec_pair_int* a){
+	return a->wsk[(a->rozm)-1];
 }
 
-void pop_vec_pair_int(vec_pair_int* a){
+__declspec(dllexport) void pop_vec_pair_int(vec_pair_int* a){
 	a->rozm-=1;
 }
 
 
-pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
+__declspec(dllexport) pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 	static int1024 tab[5000];
 	static int1024 tab2[5000];
 	int1024 zero = {0};
@@ -233,6 +234,7 @@ pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 	int t = 0;
 	while(!isEqual(a,zero) && !isEqual(b,zero)){
 		if(a.chunk[0]&jed){
+			
 			if(b.chunk[0]&jed){
 				if(isGreaterOrEqual(&a,&b)){
 					a = subtract(a,b);
@@ -246,17 +248,27 @@ pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 				t++; tab[t] = b; tab2[t] = a;
 				push_vec_pair_int(&stos,3,t);
 			}
+		
 		}else{
+			
 			if(b.chunk[0]&jed){
+				
 				a = fast_divide_by_two(a);
+				
 				t++; tab[t] = a; tab2[t] = b;
+				
 				push_vec_pair_int(&stos,4,t);
+				
+				
 			}else{	
+				
 				a = fast_divide_by_two(a);
 				b = fast_divide_by_two(b);
 				push_vec_pair_int(&stos,5,0);
+				
 			}
 		}
+		
 	}
 	if(isEqual(a,zero)) y.chunk[0]=1;
 	if(isEqual(b,zero))	x.chunk[0]=1;
@@ -296,18 +308,18 @@ pair_int1024 Binary_Euclidean_Algorithm(int1024 a , int1024 b){
 	return result;
 }
 
-int1024 fast_divide(int1024 A, int b){
+__declspec(dllexport) int1024 fast_divide(int1024 A, int b){
 	return right_shift(A,b/32);
 }
 
-int1024 fast_modulo(int1024 A, int b){
+__declspec(dllexport) int1024 fast_modulo(int1024 A, int b){
 	int1024 C = {0};
 	int czunki = b/32;
 	for(int i = 0; i < czunki; i++) C.chunk[i] = A.chunk[i];
 	return C;
 }
 
-Montgomery_pack init_Montgomery_algorithm(int1024 N, int wykladnik){
+__declspec(dllexport) Montgomery_pack init_Montgomery_algorithm(int1024 N, int wykladnik){
 	Montgomery_pack pack = {0};
 	pack.R_wykladnik = wykladnik;
 	pack.R.chunk[wykladnik/32]=1; 
@@ -324,15 +336,15 @@ Montgomery_pack init_Montgomery_algorithm(int1024 N, int wykladnik){
 	return pack;
 }
 
-int1024 ConvertToMontgomeryForm(int1024 a, Montgomery_pack pack){
+__declspec(dllexport) int1024 ConvertToMontgomeryForm(int1024 a, Montgomery_pack pack){
 	return modulo(multiply(a,pack.R),pack.N);
 }
 
-int1024 ConvertFromMontgomeryForm(int1024 a, Montgomery_pack pack){
+__declspec(dllexport) int1024 ConvertFromMontgomeryForm(int1024 a, Montgomery_pack pack){
 	return modulo(multiply(a,pack.R_),pack.N);
 }
 
-int1024 REDC(int1024 T, Montgomery_pack pack){
+__declspec(dllexport) int1024 REDC(int1024 T, Montgomery_pack pack){
 	int1024 S = {0};
 	int1024 m = fast_modulo(multiply(fast_modulo(T,pack.R_wykladnik),pack.M),pack.R_wykladnik);
 	S = fast_divide(add(T,multiply(m,pack.N)),pack.R_wykladnik);
@@ -340,7 +352,7 @@ int1024 REDC(int1024 T, Montgomery_pack pack){
 	return S;
 }
 
-int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgomery_pack pack){
+__declspec(dllexport) int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgomery_pack pack){
 	int1024 c = {0}; c.chunk[0] = 1;
 	a = ConvertToMontgomeryForm(a,pack);
 	c = ConvertToMontgomeryForm(c,pack);
@@ -363,7 +375,7 @@ int1024 fast_montgomery_exponentation(int1024 a, int1024 b, int1024 mod, Montgom
 	return c;
 }
 
-bool RabinMiller(int1024 p, int k){
+__declspec(dllexport) bool RabinMiller(int1024 p, int k){
 	Montgomery_pack pack = init_Montgomery_algorithm(p,512);
 	if(p.chunk[0]%2 == 0) return false; 
 	int1024 c = {0}; int1024 jeden = {0}; jeden.chunk[0] = 1;
@@ -391,7 +403,7 @@ bool RabinMiller(int1024 p, int k){
 	return true;
 }
 
-key RSA(){
+__declspec(dllexport) key RSA(){
 	int1024 Z = {0}; Z.chunk[512/32] = 1;
 	int1024 p = {0}; int1024 q = {0};
 	p = random_int1024(Z);
@@ -440,13 +452,13 @@ key RSA(){
 }
 
 
-void init_c_string(c_string* a){
+__declspec(dllexport) void init_c_string(c_string* a){
 	a->rozm = 0;
 	a->rozm_max = 1;
 	a->wsk = (char *)malloc(a->rozm_max * sizeof(char));
 }
 
-void push_c_string(c_string* a, char z){
+__declspec(dllexport) void push_c_string(c_string* a, char z){
 	a->wsk[(a->rozm)] = z;
 	a->rozm+=1;
 	if(a->rozm == a->rozm_max){
@@ -456,7 +468,7 @@ void push_c_string(c_string* a, char z){
 
 }
 
-void free_c_string(c_string* a){
+__declspec(dllexport) void free_c_string(c_string* a){
 	if(a != NULL){
 		if(a->wsk != NULL){
 			free(a->wsk);
@@ -466,11 +478,11 @@ void free_c_string(c_string* a){
 	}
 }
 
-char get_c_string(c_string* a, int i){
+__declspec(dllexport) char get_c_string(c_string* a, int i){
 	return a->wsk[i];
 }
 
-void RSA_encode(c_string* s, public_key klucz, c_string* res){
+__declspec(dllexport) void RSA_encode(c_string* s, public_key klucz, c_string* res){
 	free_c_string(res);
 	init_c_string(res);
 	int dlug = s->rozm;
@@ -489,7 +501,7 @@ void RSA_encode(c_string* s, public_key klucz, c_string* res){
 	}
 }
 
-void RSA_decode(c_string* s, private_key klucz, c_string* res){
+__declspec(dllexport) void RSA_decode(c_string* s, private_key klucz, c_string* res){
 	//assert(res!=s || "RSA_decode powinno przyjmowac rozne wskazniki do c_stringow");
 	free_c_string(res);
 	init_c_string(res);
@@ -510,7 +522,7 @@ void RSA_decode(c_string* s, private_key klucz, c_string* res){
 		}	
 	}
 }
-void print_hex(int1024 a, c_string* res){
+__declspec(dllexport) void print_hex(int1024 a, c_string* res){
 	free_c_string(res);
 	init_c_string(res);
 	for(int i = 0; i < 2048/32; i++){
@@ -519,7 +531,7 @@ void print_hex(int1024 a, c_string* res){
 		}
 	}
 }
-int1024 read_hex(c_string* a){
+__declspec(dllexport) int1024 read_hex(c_string* a){
 	int1024 res = {0};
 	for(int i = 0; i < 2048/32; i++){
 		for(int j = 0; j < 32; j+=4){
@@ -529,13 +541,13 @@ int1024 read_hex(c_string* a){
 	return res;
 
 }
-void print_c_string(c_string* a){
+__declspec(dllexport) void print_c_string(c_string* a){
 	for(int i = 0; i < a->rozm; i++){
 		putchar(a->wsk[i]);
 	}
 	putchar('\n');
 }
-void read_c_string(c_string* res){
+__declspec(dllexport) void read_c_string(c_string* res){
 
 	 free_c_string(res);
 	 init_c_string(res);

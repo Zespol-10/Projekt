@@ -14,24 +14,17 @@ if os.name == 'posix':
 	try:
 		subprocess.run(compile_command, check=True)
 	except:
-		print("Cos poszlo zle :(")
+		print("Cos poszlo zle :( Upewnij sie ze masz zainstalowane gcc")
 		exit()
 	lib = ctypes.CDLL("./Szyfr_RSA.so")
 elif os.name == 'nt':
-	compile_command = [
-		"gcc",
-		"-shared",
-		"-fPIC",
-		"Szyfr_RSA.c",
-		"-o",
-		"Szyfr_RSA.dll"
-        ]
-	try:
-		subprocess.run(compile_command, check=True)
-	except:
-		print("Cos poszlo zle :(")
-		exit()
-	lib = ctypes.CDLL("./Szyfr_RSA.dll")
+        try:
+                os.environ['PATH'] = r'C:\msys64\mingw64\bin;' + os.environ['PATH']
+                subprocess.run(['x86_64-w64-mingw32-gcc', '-shared', 'Szyfr_RSA.c', '-o', 'Szyfr_RSA.dll'], check=True)
+        except:
+                print("Cos poszlo zle :( Upewnij sie ze masz zainstalowane x86_64-w64-mingw32-gcc.exe pod sciezka C:\\msys64\\mingw64\\bin ")
+                exit()
+        lib = ctypes.CDLL("./Szyfr_RSA.dll")
 #kod z konwerter.py
 
 
@@ -186,10 +179,8 @@ szyfr.push_c_string(ctypes.byref(tekst),ctypes.c_char('o'.encode('utf-8')))
 szyfr.push_c_string(ctypes.byref(tekst),ctypes.c_char('g'.encode('utf-8')))
 szyfr.push_c_string(ctypes.byref(tekst),ctypes.c_char('u'.encode('utf-8')))
 szyfr.push_c_string(ctypes.byref(tekst),ctypes.c_char('s'.encode('utf-8')))
-
 klucz = szyfr.RSA()
 print(klucz)
-
 zaszyfrowany_tekst = c_string()
 szyfr.init_c_string(ctypes.byref(zaszyfrowany_tekst))
 
