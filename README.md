@@ -41,11 +41,3 @@ Funkcja `find_longest_palindrome` znajduje najdłuższy palindrom w danym tekśc
 
 #### Zwracana wartość:
 - `char *`: Najdłuższy palindrom znaleziony w tekście. Zwracany łańcuch znaków jest zakończony znakiem `'\0'` i zawiera tylko litery z oryginalnego tekstu, bez dodatkowych separatorów czy znaków krańcowych.
-
-#### Przykład:
-Wejście:
-```c
-const char *text = "babad";
-char *longest_palindrome = find_longest_palindrome(text);
-printf("%s", longest_palindrome);  // Wydrukuje: "bab" lub "aba"
-
