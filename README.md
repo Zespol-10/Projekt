@@ -39,7 +39,7 @@ pip install os
 Testowy program może zostać skompilowany i uruchomiony przy pomocy:
 
 ```bash
-g++ -o main.cpp base64.cpp arithmetic.cpp -o main
+g++ -std=c++17 main.cpp base64.cpp arithmetic.cpp -o main
 ./main base64
 ```
 
@@ -48,7 +48,7 @@ g++ -o main.cpp base64.cpp arithmetic.cpp -o main
 Testowy program może zostać skompilowany i uruchomiony przy pomocy:
 
 ```bash
-g++ -o main.cpp base64.cpp arithmetic.cpp -o main
+g++ -std=c++17 main.cpp base64.cpp arithmetic.cpp -o main
 ./main arithmetic "${FILE_PATH}"
 ```
 
