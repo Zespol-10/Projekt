@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "reg.c"
+#include "regex.h"
 
 int main() {
     char *expr[] = {"a*b", "a+b", "a{2,4}b", "a.c", ".*ab$", NULL};
