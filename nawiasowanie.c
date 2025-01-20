@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include "nawiasowanie.h"
- 
+
 #define MAXLENGTH 4096
 #define COMMENT 1
 #define REPLACEMENT ' '
- 
+
 int getinput(char line[], int max){
     int c, i;
     for(i = 0; i < max - 1 && (c = getchar()) != EOF; i++){
@@ -13,7 +13,7 @@ int getinput(char line[], int max){
     line[i] = '\0';
     return i;
 }
- 
+
 void removecomments(char code[], int length, char replacewith){
     int commentstart, state;
     commentstart = 0;
@@ -35,7 +35,7 @@ void removecomments(char code[], int length, char replacewith){
         }
     }
 }
- 
+
 int check(char code[], int length){
     int nparentheses, nbrackets, nbraces, nsinglequotes, ndoublequotes, state;
     nparentheses = nbrackets = nbraces = nsinglequotes = ndoublequotes = 0;
@@ -59,18 +59,27 @@ int check(char code[], int length){
         }
         else if(code[i] == ')'){
             nparentheses--;
+            if(nparentheses < 0){
+                return 0;
+            }
         }
         else if(code[i] == '['){
             nbrackets++;
         }
         else if(code[i] == ']'){
             nbrackets--;
+            if(nbrackets < 0){
+                return 0;
+            }
         }
         else if(code[i] == '{'){
             nbraces++;
         }
         else if(code[i] == '}'){
             nbraces--;
+            if(nbraces < 0){
+                return 0;
+            }
         }
         else if(code[i] == '\''){
             nsinglequotes = (nsinglequotes + 1) % 2;
