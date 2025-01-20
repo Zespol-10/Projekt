@@ -1,5 +1,7 @@
 # Projekt
 Biblioteka w C/C++ zajmująca się operacjami na tekstach. 
+
+Część Szyfr RSA:
 Żeby przetestować projekt wpisz w terminalu:
 ```bash
 gcc -c main.c -o main.o
@@ -31,3 +33,13 @@ pip install ctypes
 pip install subprocess
 pip install os
 ```
+--------------------------------------
+Część base64
+
+Testowy program może zostać skompilowany i uruchomiony przy pomocy:
+
+```bash
+g++ -o main.cpp base64.cpp
+./a
+```
+
