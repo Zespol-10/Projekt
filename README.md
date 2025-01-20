@@ -68,6 +68,8 @@ Funkcja `detect_language` analizuje tekst i określa, w jakim języku został na
 #### Zwracana wartość:
 - `const char *`: Kod języka w formacie trzyliterowym (np. `"ENG"`, `"POL"`).
 
+---
+
 ### `char *find_longest_palindrome(const char *text)`
 
 #### Opis:
@@ -84,6 +86,7 @@ Funkcja `find_longest_palindrome` znajduje najdłuższy palindrom w danym tekśc
 #### Zwracana wartość:
 - `char *`: Najdłuższy palindrom znaleziony w tekście. Zwracany łańcuch znaków jest zakończony znakiem `'\0'` i zawiera tylko litery z oryginalnego tekstu, bez dodatkowych separatorów czy znaków krańcowych.
 
+---
 
 ### `void szyfruj()`
 
@@ -99,6 +102,8 @@ Gdy otrzyma oba parametry, umieszcza litery w odpowiednich dla nich rzędach i n
 #### Parametry i zwracana wartość
 Funkcja nie przyjmuje żadnych parametrów, ani nic nie zwraca
 
+---
+
 ### `char* readString()`
 
 #### Opis:
@@ -111,4 +116,200 @@ Funkcja alokuje dynamicznie tablicę i dopóki użytkownik nie zakończy wpisywa
 Funkcja nie przyjmuje żadnych argumentów
   
 Zwraca `char *` - ciąg znaków w której zapisane są dane podane ze standardowego wejścia przez użytkownika.
+
+---
+
+### `void statystyki(const char *text, TextStats *stats)`
+
+#### Opis:
+Funkcja `statystyki` analizuje podany tekst i oblicza szczegółowe statystyki związane z jego zawartością.
+
+#### Jak działa:
+1. **Inicjalizacja struktury**: Wszystkie pola struktury `TextStats` są zerowane na początku.
+2. **Iteracja przez tekst**: Funkcja przechodzi przez każdy znak w tekście i analizuje go:
+   - Zlicza znaki alfabetyczne, cyfry, znaki specjalne, wyrazy, zdania oraz akapity.
+   - Oblicza minimalną, maksymalną i średnią długość słów oraz zdań.
+   - Wyznacza złożoność leksykalną na podstawie unikalnych słów.
+3. **Aktualizacja tablicy**: Tablica `tablica_liter` w strukturze jest aktualizowana, aby przechowywać liczbę wystąpień każdej litery alfabetu (zarówno małych, jak i wielkich).
+
+#### Parametry:
+- `const char *text`: Tekst wejściowy, który ma zostać przeanalizowany.
+- `TextStats *stats`: Wskaźnik do struktury, w której zostaną zapisane wyniki analizy.
+
+#### Struktura `TextStats`:
+```c
+typedef struct {
+    int liczba_znakow;                // Liczba wszystkich znaków w tekście
+    int liczba_liter;                 // Liczba liter (od a do z oraz od A do Z)
+    int liczba_wyrazow;               // Liczba wyrazów w tekście
+    int liczba_zdan;                  // Liczba zdań w tekście
+    int liczba_akapitow;              // Liczba akapitów w tekście
+    int liczba_znakow_specjalnych;    // Liczba znaków specjalnych (!, @, #, itp.)
+    int liczba_cyfr;                  // Liczba cyfr w tekście
+    int min_dlugosc_slowa;            // Minimalna długość słowa
+    int max_dlugosc_slowa;            // Maksymalna długość słowa
+    float srednia_dlugosc_slowa;      // Średnia długość słowa
+    float srednia_dlugosc_zdania;     // Średnia długość zdania
+    float zlozonosc_leksykalna;       // Złożoność leksykalna tekstu (np. unikalne słowa / wszystkie słowa)
+    int tablica_liter[52];            // Tablica wystąpień liter (0-25: a-z, 26-51: A-Z)
+} TextStats;
+```
+
+#### Zwracana wartość:
+- Funkcja nie zwraca wartości. Wyniki są zapisane w strukturze `TextStats`, na którą wskazuje parametr `stats`.
+
+---
+
+### `void wyszukiwanie_wzorca(const char *text, const char *pattern)`
+
+#### Opis:
+Funkcja wyszukuje wszystkie wystąpienia wzorca (pattern) w podanym tekście (text) i wypisuje ich pozycje.
+
+#### Jak działa:
+1. **Iteracja przez tekst**: Funkcja przeszukuje tekst znak po znaku, próbując dopasować wzorzec od bieżącej pozycji.
+2. **Porównanie znaków**: Porównuje ciągi znaków w tekście z wzorcem.
+3. **Wynik**: Jeśli wzorzec zostanie znaleziony, wypisuje indeks początkowej pozycji wzorca.
+
+#### Parametry:
+- const char *text: Tekst, w którym szukamy wzorca.
+- const char *pattern: Wzorzec, który ma zostać znaleziony.
+
+#### Zwracana wartość:
+Funkcja nie zwraca wartości. Wyniki są wypisywane na standardowe wyjście.
+
+---
+
+### `void wyszukiwanie_znaku_specjalnego(const char* text, const char *znak)`
+
+#### Opis:
+Funkcja wyszukuje podany znak specjalny (znak) w tekście (text) i wypisuje jego pozycje.
+
+#### Jak działa:
+1. **Iteracja przez tekst**: Funkcja przeszukuje tekst znak po znaku.
+2. **Porównanie**: Sprawdza, czy aktualny znak w tekście odpowiada podanemu znakowi specjalnemu.
+3. **Wynik**: Wypisuje indeksy wystąpień znaku specjalnego.
+
+#### Parametry:
+- const char *text: Tekst wejściowy, w którym szukamy znaku.
+- const char *znak: Znak specjalny, który ma zostać znaleziony.
+
+#### Zwracana wartość:
+Funkcja nie zwraca wartości. Wyniki są wypisywane na standardowe wyjście.
+
+---
+
+### `void ignorowanie_wielkosci_liter(const char* text, const char *pattern)`
+
+#### Opis:
+Funkcja wyszukuje wzorzec (pattern) w tekście (text) z ignorowaniem wielkości liter.
+
+#### Jak działa:
+1. **Konwersja znaków**: Tekst i wzorzec są konwertowane do wspólnego formatu (np. małych liter).
+2. **Porównanie**: Funkcja przeszukuje tekst podobnie jak w przypadku funkcji wyszukiwania wzorca.
+3. **Wynik**: Wypisuje pozycje dopasowań wzorca, ignorując wielkość liter.
+
+#### Parametry:
+- const char *text: Tekst, w którym szukamy wzorca.
+- const char *pattern: Wzorzec, który ma zostać znaleziony.
+
+#### Zwracana wartość:
+Funkcja nie zwraca wartości. Wyniki są wypisywane na standardowe wyjście.
+
+---
+
+### `void wypisz_tekst_wersja1(const char* text, int x, int pattern_len)`
+
+#### Opis:
+Funkcja wypisuje fragment tekstu (text), rozpoczynając od pozycji x i obejmując pattern_len znaków.
+
+#### Jak działa:
+1. **Pobranie fragmentu**: Wyodrębnia podciąg tekstu o długości pattern_len, zaczynając od pozycji x.
+2. **Wypisanie**: Wypisuje wybrany fragment tekstu na standardowe wyjście.
+
+#### Parametry:
+- const char *text: Tekst wejściowy.
+- int x: Indeks początkowy fragmentu tekstu.
+- int pattern_len: Długość fragmentu tekstu do wypisania.
+
+#### Zwracana wartość:
+Funkcja nie zwraca wartości. Fragment tekstu jest wypisywany na standardowe wyjście.
+
+---
+
+### `void wypisz_tekst_wersja2(const char* text, int x, int pattern_len)`
+
+#### Opis:
+Funkcja wypisuje fragment tekstu (text) w formacie, który podkreśla dopasowany wzorzec.
+
+#### Jak działa:
+1. **Pobranie fragmentu**: Wyodrębnia podciąg tekstu o długości pattern_len, zaczynając od pozycji x.
+2. **Formatowanie**: Oznacza dopasowany wzorzec w specjalny sposób (np. za pomocą nawiasów).
+3. **Wypisanie**: Wypisuje sformatowany fragment tekstu na standardowe wyjście.
+
+#### Parametry:
+- const char *text: Tekst wejściowy.
+- int x: Indeks początkowy fragmentu tekstu.
+- int pattern_len: Długość fragmentu tekstu do wypisania.
+
+#### Zwracana wartość:
+Funkcja nie zwraca wartości. Wyniki są wypisywane na standardowe wyjście.
+
+---
+
+### `void wypisanie_statystyk_liter(TextStats stats)`
+
+#### Opis:
+Funkcja wypisuje statystyki liter zapisane w strukturze TextStats.
+
+#### Jak działa:
+1. **Iteracja przez statystyki**: Przechodzi przez strukturę TextStats.
+2. **Wypisanie**: Wypisuje liczbę wystąpień każdej litery w tekście w przejrzystym formacie.
+
+#### Parametry:
+- TextStats stats: Struktura zawierająca liczności wystąpień liter od a do z.
+
+#### Zwracana wartość:
+Funkcja nie zwraca wartości. Wyniki są wypisywane na standardowe wyjście.
+
+---
+
+### `int zliczanie_wzorca(const char *text, const char *pattern)`
+
+#### Opis:
+Funkcja zlicza liczbę wystąpień wzorca (pattern) w tekście (text).
+
+#### Jak działa:
+1. **Iteracja przez tekst**: Przeszukuje tekst znak po znaku.
+2. **Porównanie**: Sprawdza, czy fragment tekstu od bieżącej pozycji odpowiada wzorcowi.
+3. **Zliczanie**: Każde dopasowanie zwiększa licznik o 1.
+
+#### Parametry:
+- const char *text: Tekst, w którym szukamy wzorca.
+- const char *pattern: Wzorzec, który ma zostać zliczony.
+
+#### Zwracana wartość:
+- int: Liczba wystąpień wzorca w tekście.
+
+---
+
+### `void podmiana_wzorca(const char *text, const char *pattern, const char *replacement, char *result)`
+
+#### Opis:
+Funkcja `podmiana_wzorca` pozwala na znalezienie wszystkich wystąpień wzorca w tekście i zastąpienie ich innym ciągiem znaków.
+
+#### Jak działa:
+1. **Wyszukiwanie wzorca**: Funkcja przeszukuje tekst w celu znalezienia wszystkich wystąpień zadanego wzorca znaków.
+2. **Zastąpienie wzorca**: Dla każdego wystąpienia wzorca, jest on zastępowany ciągiem znaków wskazanym w parametrze `replacement`.
+3. **Kopiowanie tekstu**: Nowy tekst z podmienionymi wzorcami jest kopiowany do bufora wynikowego `result`.
+
+#### Parametry:
+- `const char *text`: Tekst wejściowy, w którym ma być przeprowadzona operacja podmiany.
+- `const char *pattern`: Wzorzec znaków, który ma zostać zastąpiony.
+- `const char *replacement`: Ciąg znaków, który zastąpi znaleziony wzorzec.
+- `char *result`: Bufor wynikowy, do którego zostanie zapisany nowy tekst z podmienionymi wzorcami. Musi być wystarczająco duży, aby pomieścić wynik.
+
+#### Zwracana wartość:
+- Funkcja nie zwraca wartości. Wynik operacji jest zapisywany w buforze `result`.
+
+---
 
