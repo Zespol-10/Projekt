@@ -1,6 +1,6 @@
 #include "podzial.h"
 int main() {
-    char *plik_slownika = "polski.txt";
+    const char *plik_slownika = "polski.txt";
     int rozmiar_slownika;
     char **slownik = wczytaj_slownik(plik_slownika, &rozmiar_slownika);
     if (!slownik) {
