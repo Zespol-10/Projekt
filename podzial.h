@@ -25,6 +25,5 @@ void zwolnij_zdania(char **zdania, int liczba_zdan);
 //funckja łaczy dzielenia słów i zdań by wynik był jedna zmienną
 void polacz_wyniki_do_ciagu(char **zdania, int liczba_zdan, char **wynik, char **slownik, int rozmiar_slownika);
 
-//sprawdza podstawowe zasady gramatyki - czy zdanie zaczyna sie dużą literą, czy po znakach interpunkcyjnych jest spacja, czy pomiędzy wyrazami jest spacja 
+//sprawdza podstawowe zasady gramatyki - czy zdanie zaczyna sie dużą literą, czy po znakach interpunkcyjnych jest spacja, czy pomiędzy wyrazami jest spacja
 void sprawdz_gramatyke(const char *tekst);
-

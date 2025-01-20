@@ -1,4 +1,3 @@
-
 #include "podzial.h"
 void zwolnij(char **tablica, int liczba) {
     if (tablica) {
@@ -171,7 +170,7 @@ void polacz_wyniki_do_ciagu(char **zdania, int liczba_zdan, char **wynik, char *
       }
       *wynik = malloc(calkowita_dlugosc + 1);
       if (!*wynik) {
-          printf("Błąd alokacji pamięci dla wyniku.");
+          printf("Blad alokacji pamieci dla wyniku.");
           return;
       }
       (*wynik)[0] = '\0';
@@ -202,7 +201,7 @@ void sprawdz_gramatyke(const char *tekst) {
             if (isalpha(znak) && isupper(znak)) {
                 oczekuj_duzej_litery = false;
             } else {
-                printf("Zdanie zaczyna się od małej litery (znajduje sie na pozycji: %d)\n", indeks+1);
+                printf("Zdanie zaczyna się od malej litery (znajduje sie na pozycji: %d)\n", indeks+1);
                 poprawny = false;
                 oczekuj_duzej_litery = false;
             }
@@ -210,13 +209,13 @@ void sprawdz_gramatyke(const char *tekst) {
         // Sprawdzanie spacji po znakach interpunkcyjnych
         if (( znak == ';' || znak == ':' || znak == '.' || znak == ',' || znak == '!' || znak == '?') && tekst[indeks + 1] != '\0') {
             if (!isspace(tekst[indeks + 1]) && tekst[indeks + 1] != '"') {
-                printf("Brak spacji po znaku interpunkcyjnym (znajduje się na pozycji: %d)\n", indeks+1);
+                printf("Brak spacji po znaku interpunkcyjnym (znajduje sie na pozycji: %d)\n", indeks+1);
                 poprawny = false;
             }
         }
         // Sprawdzanie liczby spacji między wyrazami
         if (isspace(znak) && isspace(tekst[indeks + 1])) {
-            printf("Po słowie zbyt wiele spacji (specje zaczynają się na pozycji %d)\n", indeks+1);
+            printf("Po slowie zbyt wiele spacji (specje zaczynaja sie na pozycji %d)\n", indeks+1);
             poprawny = false;
         }
         if (znak == '.' || znak == '!' || znak == '?') {

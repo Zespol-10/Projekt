@@ -4,7 +4,7 @@ int main() {
     int rozmiar_slownika;
     char **slownik = wczytaj_slownik(plik_slownika, &rozmiar_slownika);
     if (!slownik) {
-        printf("Błąd wczytywania słownika z pliku: %s\n", plik_slownika);
+        printf("Blad wczytywania slownika z pliku: %s\n", plik_slownika);
         return 1;
     }
 
@@ -12,7 +12,7 @@ int main() {
     int liczba_zdan;
     char **zdania = podziel_na_zdania(tekst, &liczba_zdan);
     if (!zdania) {
-        printf("\nBłąd podczas dzielenia tekstu na zdania.\n");
+        printf("\nBlad podczas dzielenia tekstu na zdania.\n");
         zwolnij(slownik, rozmiar_slownika);
         return 1;
     }
