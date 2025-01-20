@@ -38,9 +38,11 @@ void szyfruj()
     {
     printf("Podaj tekst do zaszyfrowania: ");
     tekst=readString();
+    if (!tekst) return;
     if(strlen(tekst)==0)
     {
         printf("Nie podano tekstu. Sprobuj ponownie\n");
+        free(tekst);
     }
     else
     break;
@@ -50,10 +52,15 @@ void szyfruj()
     printf("Podaj glebokosc szyfru: ");
     depth=readString();
     int deplen=strlen(depth);
-
+    if(!depth){
+        free(tekst);
+        return;
+    }
     if(deplen==0)
     {
         printf("Nie podano glebokosci szyfru. Sprobuj ponownie\n");
+        free(depth);
+
         continue;
     }
     int flag=1;
@@ -76,17 +83,20 @@ void szyfruj()
     }
 
     int dep=atoi(depth);
-	if(dep==1)
-	{
-	printf("Zaszyfrowany tekst to: %s",tekst);
-	return;
-	}
-
+    if(dep ==1)
+    {
+        printf("Zaszyfrowany tekst to: %s", tekst);
+        free(depth);
+        free(tekst);
+        return;
+    }
     int length=strlen(tekst);
     char **arr=(char **)malloc(dep*sizeof(char *));
     if(!arr)
     {
         printf("Bledna alokacja pamieci!");
+        free(depth);
+        free(tekst);
         return;
     }
     for(int i=0;i<dep;i++)
@@ -94,8 +104,14 @@ void szyfruj()
         arr[i]=(char *)malloc((length+1)*sizeof(char));
         if(!arr[i])
         {
-        printf("Bledna alokacja pamieci!");
-        return;
+         printf("Błędna alokacja pamięci!\n");
+            for (int j = 0; j < i; j++) {
+                free(arr[j]);
+            }
+            free(arr);
+            free(tekst);
+            free(depth);
+            return;
         }
         arr[i][0]='\0';
     }
@@ -117,6 +133,8 @@ void szyfruj()
         free(arr[i]);
     }
     free(arr);
+    free(depth);
+    free(tekst);
     printf("\n");
     
 }
