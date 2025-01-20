@@ -112,7 +112,7 @@ Funkcja nie przyjmuje żadnych argumentów
   
 Zwraca `char *` - ciąg znaków w której zapisane są dane podane ze standardowego wejścia przez użytkownika.
 
-Dzielenie tekstu na słowa, zdania i sprawdzanie gramatyki (funkcje w podzial.c:
+Dzielenie tekstu na słowa, zdania i sprawdzanie gramatyki (funkcje w podzial.c):
 
 - void zwolnij (char **tablica, int liczba)
 opis: funkcja zwalnia pamięć zarezerwowaną dla tablicy wskaźników oraz pamięć, na którą wskazują poszczególne elementy tablicy 
