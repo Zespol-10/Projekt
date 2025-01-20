@@ -28,7 +28,7 @@ int main() {
     sprawdz_gramatyke(wynik);
 
     free(wynik);
-    zwolnij_zdania(zdania, liczba_zdan);
+    zwolnij(zdania, liczba_zdan);
     zwolnij(slownik, rozmiar_slownika);
 
     return 0;

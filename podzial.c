@@ -149,12 +149,7 @@ char **podziel_na_zdania(const char *tekst, int *liczba_zdan) {
     *liczba_zdan = licznik;
     return zdania;
 }
-void zwolnij_zdania(char **zdania, int liczba_zdan) {
-    for (int i = 0; i < liczba_zdan; i++) {
-        free(zdania[i]);
-    }
-    free(zdania);
-}
+
 void polacz_wyniki_do_ciagu(char **zdania, int liczba_zdan, char **wynik, char **slownik, int rozmiar_slownika) {
       size_t calkowita_dlugosc = 0;
       for (int i = 0; i < liczba_zdan; i++) {
