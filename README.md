@@ -86,3 +86,35 @@ Funkcja `find_longest_palindrome` znajduje najdłuższy palindrom w danym tekśc
 
 #### Zwracana wartość:
 - `char *`: Najdłuższy palindrom znaleziony w tekście. Zwracany łańcuch znaków jest zakończony znakiem `'\0'` i zawiera tylko litery z oryginalnego tekstu, bez dodatkowych separatorów czy znaków krańcowych.
+
+## Specyfikacja funkcji
+
+### `void szyfruj()`
+
+#### Opis:
+
+Funkcja  `szyfruj` pobiera ze standardowego wejścia dwa argumenty od użytkownika  
+	- tekst do zaszyfrowania – niepusty ciąg znaków ASCII  
+	- głębokość szyfru – dodatnia liczba naturalna   
+   
+Funkcja sprawdza poprawność wejścia, w przypadku podania nieprawidłowego wyświetla komunikat i ponownie oczekuje na wejście.
+Gdy otrzyma oba parametry, umieszcza litery w odpowiednich dla nich rzędach i na koniec wypisuje na standardowe wyjście zaszyfrowany tekst.
+
+#### Parametry i zwracana wartość
+Funkcja nie przyjmuje żadnych parametrów, ani nic nie zwraca
+
+## Specyfikacja funkcji
+
+### `char* readString()`
+
+#### Opis:
+
+Jest to funkcja pomocnicza, która zapisuje podane przez użytkownika argumenty jako ciągi znaków.
+Funkcja alokuje dynamicznie tablicę i dopóki użytkownik nie zakończy wpisywania klawiszem ENTER, zapisuje w niej podane znaki.
+
+
+#### Parametry i zwracana wartość
+Funkcja nie przyjmuje żadnych argumentów
+  
+Zwraca `char *` - ciąg znaków w której zapisane są dane podane ze standardowego wejścia przez użytkownika.
+
