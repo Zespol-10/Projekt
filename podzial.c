@@ -22,7 +22,7 @@ char **wczytaj_slownik(const char *nazwa_pliku, int *rozmiar_slownika) {
     int licznik = 0;
     while (fgets(linia, sizeof(linia), plik)) {
         linia[strcspn(linia, "\n")] = '\0';
-        char **tmp = realloc(slownik, (licznik + 1) * sizeof(char *));
+        char **tmp = (char**)realloc(slownik, (licznik + 1) * sizeof(char *));
         if (!tmp) {
             for (int i = 0; i < licznik; i++) free(slownik[i]);
             free(slownik);
@@ -48,7 +48,7 @@ int najlepszy_podzial(const char *tekst, char **slownik, int rozmiar_slownika, c
     if (*tekst == '\0') {
         if (*najlepsza_liczba == -1 || *licznik < *najlepsza_liczba) {
             zwolnij(*najlepszy, *najlepsza_liczba);
-            *najlepszy = malloc(*licznik * sizeof(char *));
+            *najlepszy = (char**)malloc(*licznik * sizeof(char *));
             if (!*najlepszy) return 0;
             for (int i = 0; i < *licznik; i++) {
                 (*najlepszy)[i] = strdup((*wynik)[i]);
@@ -81,10 +81,10 @@ int najlepszy_podzial(const char *tekst, char **slownik, int rozmiar_slownika, c
             znak_interpunkcyjny = *tekst_po_slowniku;
             tekst_po_slowniku++;
         }
-        char **tmp = realloc(*wynik, (*licznik + 1) * sizeof(char *));
+        char **tmp = (char**)realloc(*wynik, (*licznik + 1) * sizeof(char *));
         if (!tmp) return 0;
         *wynik = tmp;
-        (*wynik)[*licznik] = malloc(dlugosc_slowa + 2);
+        (*wynik)[*licznik] = (char*)malloc(dlugosc_slowa + 2);
         if (!(*wynik)[*licznik]) return 0;
         for (size_t j = 0; j < dlugosc_slowa; j++) {
             (*wynik)[*licznik][j] = zmniejszono[j] ? toupper((unsigned char)slownik[i][j]) : slownik[i][j];
@@ -118,7 +118,7 @@ char **podziel_na_zdania(const char *tekst, int *liczba_zdan) {
             koniec = tekst + strlen(tekst);
         }
         size_t dlugosc = koniec - start + (*koniec ? 1 : 0);
-        char *zdanie = malloc(dlugosc + 1);
+        char *zdanie = (char*)malloc(dlugosc + 1);
         if (!zdanie) {
             for (int i = 0; i < licznik; i++) {
                 free(zdania[i]);
@@ -128,7 +128,7 @@ char **podziel_na_zdania(const char *tekst, int *liczba_zdan) {
         }
         strncpy(zdanie, start, dlugosc);
         zdanie[dlugosc] = '\0';
-        char **tmp = realloc(zdania, (licznik + 1) * sizeof(char *));
+        char **tmp = (char**)realloc(zdania, (licznik + 1) * sizeof(char *));
         if (!tmp) {
             free(zdanie);
             for (int i = 0; i < licznik; i++) {
@@ -168,7 +168,7 @@ void polacz_wyniki_do_ciagu(char **zdania, int liczba_zdan, char **wynik, char *
           }
           zwolnij(najlepszy, najlepsza_liczba);
       }
-      *wynik = malloc(calkowita_dlugosc + 1);
+      *wynik =(char*)malloc(calkowita_dlugosc + 1);
       if (!*wynik) {
           printf("Blad alokacji pamieci dla wyniku.");
           return;
