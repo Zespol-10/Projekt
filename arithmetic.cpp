@@ -243,6 +243,10 @@ class Decompressor {
 
 namespace arithmetic {
 
+/******************************* INPUT STREAM *******************************/
+
+/*                             BASE INPUT STREAM                            */
+
 bit_istream::bit_istream() : buf(0), mask(0) {}
 
 bool bit_istream::get_bit() {
@@ -258,6 +262,8 @@ bool bit_istream::get_bit() {
 
 bool bit_istream::eof() const { return mask == 0 && stream_eof(); }
 
+/*                             FILE INPUT STREAM                            */
+
 bit_ifstream::bit_ifstream(const std::string &filename)
     : std::ifstream(filename, std::ios::binary) {}
 
@@ -265,12 +271,18 @@ char bit_ifstream::get_char() { return std::ifstream::get(); }
 
 bool bit_ifstream::stream_eof() const { return std::ifstream::eof(); }
 
+/*                            STRING INPUT STREAM                           */
+
 bit_string_istream::bit_string_istream(const std::string_view input)
     : iter(input.begin()), end(input.end()) {}
 
 char bit_string_istream::get_char() { return *(iter++); }
 
 bool bit_string_istream::stream_eof() const { return iter == end; }
+
+/****************************** OUTPUT  STREAM ******************************/
+
+/*                            BASE OUTPUT STREAM                            */
 
 bit_ostream::bit_ostream() : buf(0), count(0) {}
 
@@ -294,6 +306,8 @@ void bit_ostream::put_bit(bool bit) {
     }
 };
 
+/*                            FILE OUTPUT STREAM                            */
+
 bit_ofstream::bit_ofstream(const std::string &filename)
     : std::ofstream(filename, std::ios::binary) {}
 
@@ -306,6 +320,8 @@ void bit_ofstream::flush() {
 
 void bit_ofstream::close() { std::ofstream::close(); }
 
+/*                           STRING OUTPUT STREAM                           */
+
 bit_string_ostream::bit_string_ostream() {}
 
 void bit_string_ostream::put_char(std::uint8_t ch) { output.push_back(ch); }
@@ -315,6 +331,8 @@ void bit_string_ostream::flush() {
 }
 
 std::string bit_string_ostream::result() { return output; }
+
+/****************************** MAIN FUNCTIONS ******************************/
 
 void compress(std::istream &input, bit_ostream &output) {
     Compressor(output).compress(input);
