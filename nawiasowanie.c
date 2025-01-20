@@ -1,95 +1,60 @@
 #include <stdio.h>
+#include <string.h>
 #include "nawiasowanie.h"
-
+ 
+enum {FALSE, TRUE};
+ 
 #define MAXLENGTH 4096
 #define COMMENT 1
 #define REPLACEMENT ' '
-
-int getinput(char line[], int max){
-    int c, i;
-    for(i = 0; i < max - 1 && (c = getchar()) != EOF; i++){
-        line[i] = c;
-    }
-    line[i] = '\0';
-    return i;
+#define INCOMMENT 1
+#define OUTOFCOMMENT 0
+ 
+int checkMatch(char c1, char c2){
+    if(c1 == '(' && c2 == ')') return TRUE;
+    if(c1 == '[' && c2 == ']') return TRUE;
+    if(c1 == '{' && c2 == '}') return TRUE;
+    return FALSE;
 }
-
-void removecomments(char code[], int length, char replacewith){
+ 
+int check(char s[]) {
+    int head = -1;
+    char stack[MAXLENGTH];
+    for(int i = 0; i < strlen(s); ++i) {
+        if(s[i] == '(' || s[i] == '[' || s[i] == '{') {
+            stack[++head] = s[i];
+        }else if(s[i] == ')' || s[i] == ']' || s[i] == '}') {
+            if(head < 0 || !checkMatch(stack[head], s[i])) {
+                return 0;
+            }
+            --head;
+        }else {
+            continue;
+        }
+    }
+    return head == -1;
+}
+ 
+ 
+void removecomments(char code[], char replacewith){
     int commentstart, state;
     commentstart = 0;
-    state = !COMMENT;
+    state = OUTOFCOMMENT;
+    int length = strlen(code);
     for(int i = 0; i < length; i++){
-        if(code[i] == '/' && state == !COMMENT && i + 1 < length){
+        if(code[i] == '/' && state == OUTOFCOMMENT && i + 1 < length){
             if(code[++i] == '*'){
                 commentstart = i - 1;
-                state = COMMENT;
+                state = INCOMMENT;
             }
         }
-        if(code[i] == '*' && state == COMMENT && i + 1 < length){
+        if(code[i] == '*' && state == INCOMMENT && i + 1 < length){
             if(code[++i] == '/'){
                 for(int j = commentstart; j <= i; j++){
                     code[j] = replacewith;
                 }
-                state = !COMMENT;
+                state = OUTOFCOMMENT;
             }
         }
     }
-}
-
-int check(char code[], int length){
-    int nparentheses, nbrackets, nbraces, nsinglequotes, ndoublequotes, state;
-    nparentheses = nbrackets = nbraces = nsinglequotes = ndoublequotes = 0;
-    state = !COMMENT;
-    for(int i = 0; i < length; i++){
-        if(code[i] == '/' && state == !COMMENT && i + 1 < length){
-            if(code[++i] == '*'){
-                state = COMMENT;
-            }
-        }
-        else if(code[i] == '*' && state == COMMENT && i + 1 < length){
-            if(code[++i] == '/'){
-                state = !COMMENT;
-            }
-        }
-        if(state == COMMENT){
-            continue;
-        }
-        if(code[i] == '('){
-            nparentheses++;
-        }
-        else if(code[i] == ')'){
-            nparentheses--;
-            if(nparentheses < 0){
-                return 0;
-            }
-        }
-        else if(code[i] == '['){
-            nbrackets++;
-        }
-        else if(code[i] == ']'){
-            nbrackets--;
-            if(nbrackets < 0){
-                return 0;
-            }
-        }
-        else if(code[i] == '{'){
-            nbraces++;
-        }
-        else if(code[i] == '}'){
-            nbraces--;
-            if(nbraces < 0){
-                return 0;
-            }
-        }
-        else if(code[i] == '\''){
-            nsinglequotes = (nsinglequotes + 1) % 2;
-        }
-        else if(code[i] == '\"'){
-            ndoublequotes = (ndoublequotes + 1) % 2;
-        }
-    }
-    if(nparentheses == 0 && nbrackets == 0 && nbraces == 0 && nsinglequotes == 0 && ndoublequotes == 0){
-        return 1;
-    }
-    return 0;
 }
