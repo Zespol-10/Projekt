@@ -52,8 +52,6 @@ g++ -std=c++17 main.cpp base64.cpp arithmetic.cpp -o main
 ./main arithmetic "${FILE_PATH}"
 ```
 
-## Specyfikacja funkcji
-
 ### `const char *detect_language(char *text)`
 
 #### Opis:
@@ -101,8 +99,6 @@ Gdy otrzyma oba parametry, umieszcza litery w odpowiednich dla nich rzędach i n
 
 #### Parametry i zwracana wartość
 Funkcja nie przyjmuje żadnych parametrów, ani nic nie zwraca
-
-## Specyfikacja funkcji
 
 ### `char* readString()`
 
