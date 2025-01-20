@@ -19,9 +19,6 @@ int najlepszy_podzial(const char *tekst, char **slownik, int rozmiar_slownika, c
 // Funkcja dzieląca tekst na zdania na podstawie znaków końca zdania
 char **podziel_na_zdania(const char *tekst, int *liczba_zdan);
 
-// Funkcja zwalniająca pamięć tablicy zdań
-void zwolnij_zdania(char **zdania, int liczba_zdan);
-
 //funckja łaczy dzielenia słów i zdań by wynik był jedna zmienną
 void polacz_wyniki_do_ciagu(char **zdania, int liczba_zdan, char **wynik, char **slownik, int rozmiar_slownika);
 
