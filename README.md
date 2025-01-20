@@ -42,4 +42,3 @@ Testowy program może zostać skompilowany i uruchomiony przy pomocy:
 g++ -o main.cpp base64.cpp
 ./a
 ```
-
