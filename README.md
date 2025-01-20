@@ -51,6 +51,36 @@ Testowy program może zostać skompilowany i uruchomiony przy pomocy:
 g++ -std=c++17 main.cpp base64.cpp arithmetic.cpp -o main
 ./main arithmetic "${FILE_PATH}"
 ```
+## Specyfikacja klas
+
+### `bitio::bit_istream`
+
+#### Opis:
+Bazowa klasa pomocnicza reprezentująca strumień wejściowy z operacjami na bitach.
+
+#### Funkcje:
+- `bool get_bit()`: zwraca pojedynczy bit ze strumienia.
+- `bool eof()`: zwraca informację czy wszystkie bit zostały przeczytane ze strumienia.
+
+#### Implementacje:
+- `bitio::bit_ifstream` wykorzystuje `std::ifstream`.
+- `bitio::bit_string_istream` wykorzystuje `std::string`.
+
+### `bitio::bit_ostream`
+
+#### Opis:
+Bazowa klasa pomocnicza reprezentująca strumień wyjściowy z operacjami na bitach.
+
+#### Funkcje:
+- `void put_bit(bool bit)`: dodaje pojedynczy bit do strumienia.
+- `void flush()`: dopełnia niedokończony bajt zerami i zapisuje strumienia.
+
+#### Implementacje:
+- `bitio::bit_ofstream` wykorzystuje `std::ofstream`.
+    Posiada dodatkową funkcję `void close()` zamykającą strumień.
+- `bitio::bit_string_ostream` wykorzystuje `std::string`.
+    Posiada dodatkową funkcję `std::string result()` zwracającą wewnętrzny napis.
+
 ## Specyfikacja funkcji
 ### `const char *detect_language(char *text)`
 
@@ -116,9 +146,6 @@ Funkcja alokuje dynamicznie tablicę i dopóki użytkownik nie zakończy wpisywa
 Funkcja nie przyjmuje żadnych argumentów
   
 Zwraca `char *` - ciąg znaków w której zapisane są dane podane ze standardowego wejścia przez użytkownika.
-
----
-
 
 ---
 
@@ -464,3 +491,54 @@ Funkcja sprawdza podstawowe zasady gramatyki w podanym ciągu tekstowym.
 
 #### Zwracana wartość:
 Funkcja nie zwraca wartości, lecz wypisuje odpowiednie komunikaty na standardowe wyjście.
+
+---
+
+### `std::string base64::encode1421(const std::string_view input)`
+
+#### Opis:
+Funkcja `encode1421` koduje podany tekst (`input`) przy pomocy *base64*, wykorzystując specyfikację z RFC 1421.
+Istnieją analogiczne funkcje dla następujących RFC: 2045, 2152, 3501, 4648.4 (4648_4), 4648.5 (4648_5), 4880.
+
+#### Parametry:
+- `const std::string_view input`: Tekst wejściowy, który zostanie zakodowany.
+
+#### Zwracana wartość:
+- `std::string`: Nowy napis zawierający zakodowany tekst.
+
+---
+
+### `std::optional<std::string> base64::decode1421(const std::string_view input)`
+
+#### Opis:
+Funkcja `encode1421` dekoduje podany tekst (`input`) przy pomocy *base64*, wykorzystując specyfikację z RFC 1421.
+Istnieją analogiczne funkcje dla następujących RFC: 2045, 2152, 3501, 4648.4 (4648_4), 4648.5 (4648_5), 4880.
+
+#### Parametry:
+- `const std::string_view input`: Tekst wejściowy, który zostanie zdekodowany.
+
+#### Zwracana wartość:
+- `std::string`: Nowy napis zawierający zdekodowany tekst lub brak wartości w przypadku błędu dekodowania.
+
+---
+
+### `void arithmetic::compress(std::istream &input, bitio::bit_ostream &output)`
+
+#### Opis:
+Funkcja kompresuje strumień `input` przy pomocy adaptacyjnego kodowania arytmetycznego do strumienia `output`.
+
+#### Parametry:
+- `std::istream &input`: Strumień wejściowy, zawierający tekst do skompresowania.
+- `bitio::bit_ostream &output`: Bitowy strumień wyjściowy, do którego zostaną zapisane skompresowane dane.
+
+---
+
+### `void arithmetic::compress(bitio::bit_istream &input, std::ostream &output)`
+
+#### Opis:
+Funkcja dekompresuje strumień `input` przy pomocy adaptacyjnego kodowania arytmetycznego do strumienia `output`.
+
+#### Parametry:
+- `bitio::bit_istream &input`: Bitowy strumień wejściowy, zawierający skompresowany tekst.
+- `std::ostream &output`: Strumień wyjściowy, do którego zostaną zapisane zdekompresowane dane.
+
