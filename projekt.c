@@ -8,7 +8,7 @@
 int main(int argc, char *argv[]) {
     
     if (argc < 2) {
-        printf("Zbyt mała liczba argumentów\n");
+        printf("Zbyt mala liczba argumentlow\n");
         return 0;
     }
 
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     if (argc == 2) {
         FILE *file = fopen(argv[1], "r");
         if (!file) {
-            //perror("Nie można otworzyć pliku");
+            //perror("Nie mozna otworzyć pliku");
             strcat(text, argv[1]);
         }
         else {
@@ -36,12 +36,12 @@ int main(int argc, char *argv[]) {
     TextStats stats;
     statystyki(text, &stats);
 
-    ignorowanie_wielkosci_liter(text, "wielki brat");
-    //wypisanie_statystyk_liter(stats);
-    //podmiana_wzorca(text, "mogła", "liczba", text);
+    //ignorowanie_wielkosci_liter(text, "Milać");
+    wypisanie_statystyk_liter(stats);
+    //podmiana_wzorca(text, "mogla", "liczba", text);
     //printf("%s\n", text);
     //printf("%i\n", zliczanie_wzorca(text, ":"));
-    //wyszukiwanie_wzorca(text, "liczba");
+    //wyszukiwanie_wzorca(text, "Milać");
     //ignorowanie_wielkosci_liter(text, "jestem");
     return 0;
 }

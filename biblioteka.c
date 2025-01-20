@@ -10,7 +10,7 @@
 void statystyki(const char *text, TextStats *stats) {
     for (int i = 0; i < 52; i++) stats->tablica_liter[i] = 0;
     int i = 0, dlugosc_slowa = 0, dlugosc_zdania = 0;
-    stats->liczba_wyrazow = stats->liczba_akapitow = stats->liczba_cyfr = stats->liczba_znakow = stats->liczba_zdań = stats->liczba_liter = 0;
+    stats->liczba_wyrazow = stats->liczba_akapitow = stats->liczba_cyfr = stats->liczba_znakow = stats->liczba_zdan = stats->liczba_liter = 0;
     stats->srednia_dlugosc_slowa = stats->srednia_dlugosc_zdania = stats->liczba_znakow_specjalnych = stats->zlozonosc_leksykalna = 0;
     stats->max_dlugosc_slowa = 0;
     stats->min_dlugosc_slowa = MAX_WORD_LENGHT;
@@ -40,7 +40,7 @@ void statystyki(const char *text, TextStats *stats) {
         }
 
         if (znak == '.' || znak == '!' || znak == '?') {
-            stats->liczba_zdań++;
+            stats->liczba_zdan++;
             stats->srednia_dlugosc_zdania += dlugosc_zdania;
             dlugosc_zdania = 0;
         }
@@ -57,8 +57,8 @@ void statystyki(const char *text, TextStats *stats) {
         
 
     stats->srednia_dlugosc_slowa = (float) stats->liczba_znakow / stats->liczba_wyrazow;
-    stats->srednia_dlugosc_zdania = (float) stats->srednia_dlugosc_zdania / stats->liczba_zdań;
-    stats->zlozonosc_leksykalna = (float) stats->liczba_wyrazow / stats->liczba_zdań;
+    stats->srednia_dlugosc_zdania = (float) stats->srednia_dlugosc_zdania / stats->liczba_zdan;
+    stats->zlozonosc_leksykalna = (float) stats->liczba_wyrazow / stats->liczba_zdan;
 }
 
 void wyszukiwanie_wzorca(const char *text, const char *pattern) {
@@ -167,7 +167,7 @@ void wyszukiwanie_znaku_specjalnego(const char *text, const char *znak) {
 void ignorowanie_wielkosci_liter(const char *text, const char *pattern) {
 
     if (text == NULL || pattern == NULL) {
-        perror("Błąd alokacji pamięci");
+        perror("Blad alokacji pamieci");
         return;
     }
 
@@ -260,10 +260,10 @@ void wypisz_tekst_wersja2(const char *text, int x, int pattern_len) {
 void wypisanie_statystyk_liter(TextStats stats) {
     // a / A: 63 + 32 = 95 czyli 11% wszystkich liter
     printf("Instrukcja: \n");
-    printf("-> 0 - wyjście\n");
-    printf("-> 1 - dokładne statystyki dla każdej litery\n");
-    printf("-> 2 - ilościowe statystyki dla tekstu\n");
-    printf("-> 3 - wyróżnienia w tekście\n");
+    printf("-> 0 - wyjscie\n");
+    printf("-> 1 - dokladne statystyki dla kazdej litery\n");
+    printf("-> 2 - ilosciowe statystyki dla tekstu\n");
+    printf("-> 3 - wyroznienia w tekscie\n");
     printf("-> 4 - instrukcja\n");
 
     while (1) {
@@ -273,36 +273,36 @@ void wypisanie_statystyk_liter(TextStats stats) {
 
         if (liczba == 1) {
             for (int i = 0; i < 26; i++) {
-                printf("%c / %c: %i + %i = %i czyli %lf%% wszystkich znaków\n", (char) i+97, (char) i+65, stats.tablica_liter[i],
+                printf("%c / %c: %i + %i = %i czyli %lf%% wszystkich znakow\n", (char) i+97, (char) i+65, stats.tablica_liter[i],
                 stats.tablica_liter[i+26], stats.tablica_liter[i] + stats.tablica_liter[i+26], 
                 ((double)stats.tablica_liter[i]+(double)stats.tablica_liter[i+26])/(double)stats.liczba_znakow*100);
             }
         }
 
         if (liczba == 2) {
-            printf("Liczba wszystkich znaków: %i\n", stats.liczba_znakow);
+            printf("Liczba wszystkich znakow: %i\n", stats.liczba_znakow);
             printf("Liczba liter: %i\n", stats.liczba_liter);
-            printf("Liczba wyrazów: %i\n", stats.liczba_wyrazow);
+            printf("Liczba wyrazow: %i\n", stats.liczba_wyrazow);
             printf("Liczba cyfr: %i\n", stats.liczba_cyfr);
-            printf("Liczba znaków specjalnych: %i\n", stats.liczba_znakow_specjalnych);
-            printf("Liczba zdań: %i\n", stats.liczba_zdań);
-            printf("Liczba akapitów: %i\n", stats.liczba_akapitow);
+            printf("Liczba znakow specjalnych: %i\n", stats.liczba_znakow_specjalnych);
+            printf("Liczba zdan: %i\n", stats.liczba_zdan);
+            printf("Liczba akapitow: %i\n", stats.liczba_akapitow);
         }
 
         if (liczba == 3) {
-            printf("Minimalna długość słowa: %i\n", stats.min_dlugosc_slowa);
-            printf("Maksymalna długość słowa: %i\n", stats.max_dlugosc_slowa);
-            printf("Średnia długość słowa: %f\n", stats.srednia_dlugosc_slowa);
-            printf("Średnia długość zdania: %f\n", stats.srednia_dlugosc_zdania);
-            printf("Złożoność leksykalna: %f\n", stats.zlozonosc_leksykalna);
+            printf("Minimalna dlugosc slowa: %i\n", stats.min_dlugosc_slowa);
+            printf("Maksymalna dlugosc slowa: %i\n", stats.max_dlugosc_slowa);
+            printf("Srednia dlugosc slowa: %f\n", stats.srednia_dlugosc_slowa);
+            printf("Srednia dlugosc zdania: %f\n", stats.srednia_dlugosc_zdania);
+            printf("Zlozonosc leksykalna: %f\n", stats.zlozonosc_leksykalna);
         }
 
         if (liczba == 4) {
             printf("Instrukcja: \n");
-            printf("-> 0 - wyjście\n");
-            printf("-> 1 - dokładne statystyki dla każdej litery\n");
-            printf("-> 2 - ilościowe statystyki dla tekstu\n");
-            printf("-> 3 - wyróżnienia w tekście\n");
+            printf("-> 0 - wyjscie\n");
+            printf("-> 1 - dokladne statystyki dla kazdej litery\n");
+            printf("-> 2 - ilosciowe statystyki dla tekstu\n");
+            printf("-> 3 - wyroznienia w tekscie\n");
             printf("-> 4 - instrukcja\n");
         }
     }
@@ -324,14 +324,14 @@ int zliczanie_wzorca(const char *text, const char *pattern) {
 void podmiana_wzorca(const char *text, const char* pattern, const char* replacement, char* result) {
     const char *text_copy = text;         // aktualna pozycja w tekscie
     char buffer[MAX_TEXT_SIZE];     // wynikowy tekst
-    char *buffer2 = buffer;         // wskaźnik
+    char *buffer2 = buffer;         // wskaznik
 
-    while (strstr(text_copy, pattern) != NULL) {        // strstr to jakaś funkcja która zwraca wskaźnik na pierwsze wystąpienie pattern w text_copy
+    while (strstr(text_copy, pattern) != NULL) {        // strstr to jakas funkcja ktora zwraca wskaznik na pierwsze wystapienie pattern w text_copy
         text_copy = strstr(text_copy, pattern);         
-        strncpy(buffer2, text, text_copy - text);       // w buffer2 trzymamy wszystko oprócz patternu
-        buffer2 += text_copy - text;                    // przesuwamy buffer do końca
+        strncpy(buffer2, text, text_copy - text);       // w buffer2 trzymamy wszystko oprocz patternu
+        buffer2 += text_copy - text;                    // przesuwamy buffer do konca
         strcpy(buffer2, replacement);                   // dodajemy do buffer2 replacement
-        buffer2 += strlen(replacement);                 // przesuwamy buffer do końca
+        buffer2 += strlen(replacement);                 // przesuwamy buffer do konca
         text_copy += strlen(pattern);                   
         text = text_copy;
     }

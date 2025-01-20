@@ -2,7 +2,7 @@ typedef struct {
     int liczba_znakow;
     int liczba_liter;
     int liczba_wyrazow;
-    int liczba_zdań;
+    int liczba_zdan;
     int liczba_akapitow;
     int liczba_znakow_specjalnych;
     int liczba_cyfr;
