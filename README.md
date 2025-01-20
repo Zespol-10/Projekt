@@ -51,7 +51,7 @@ Testowy program może zostać skompilowany i uruchomiony przy pomocy:
 g++ -std=c++17 main.cpp base64.cpp arithmetic.cpp -o main
 ./main arithmetic "${FILE_PATH}"
 ```
-
+## Specyfikacja funkcji
 ### `const char *detect_language(char *text)`
 
 #### Opis:
@@ -84,7 +84,6 @@ Funkcja `find_longest_palindrome` znajduje najdłuższy palindrom w danym tekśc
 #### Zwracana wartość:
 - `char *`: Najdłuższy palindrom znaleziony w tekście. Zwracany łańcuch znaków jest zakończony znakiem `'\0'` i zawiera tylko litery z oryginalnego tekstu, bez dodatkowych separatorów czy znaków krańcowych.
 
-## Specyfikacja funkcji
 
 ### `void szyfruj()`
 
