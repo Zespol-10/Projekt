@@ -5,15 +5,6 @@
 
 #define MAX_TEXT_SIZE 1000000
 
-void wypisanie_statystyk_liter(TextStats stats) {
-    // a / A: 63 + 32 = 95 czyli 11% wszystkich liter
-    for (int i = 0; i < 26; i++) {
-        printf("%c / %c: %i + %i = %i czyli %lf%% wszystkich znaków\n", (char) i+97, (char) i+65, stats.tablica_liter[i],
-        stats.tablica_liter[i+26], stats.tablica_liter[i] + stats.tablica_liter[i+26], 
-        ((double)stats.tablica_liter[i]+(double)stats.tablica_liter[i+26])/(double)stats.liczba_znakow*100);
-    }
-}
-
 int main(int argc, char *argv[]) {
     
     if (argc < 2) {
@@ -44,12 +35,8 @@ int main(int argc, char *argv[]) {
 
     TextStats stats;
     statystyki(text, &stats);
-    printf("%i\n", stats.liczba_wyrazow);
-    printf("%i\n", stats.liczba_znakow);
-    printf("%i\n", stats.liczba_liter);
-    printf("%i\n", stats.liczba_znakow_specjalnych);
 
-    ignorowanie_wielkosci_liter(text, "jestem");
+    ignorowanie_wielkosci_liter(text, "wielki brat");
     //wypisanie_statystyk_liter(stats);
     //podmiana_wzorca(text, "mogła", "liczba", text);
     //printf("%s\n", text);

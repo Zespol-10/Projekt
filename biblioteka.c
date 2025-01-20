@@ -173,15 +173,6 @@ void ignorowanie_wielkosci_liter(const char *text, const char *pattern) {
 
     if (strlen(pattern) > strlen(text)) return;
 
-    /*strcpy(text_copy, text);
-    strcpy(pattern_copy, pattern);
-    int text_len = strlen(text), pattern_len = strlen(pattern);
-
-    for (int i = 0; i < text_len; i++) text_copy[i] = toupper(text_copy[i]);
-    for (int i = 0; i < pattern_len; i++) pattern_copy[i] = toupper(pattern_copy[i]);*/
-    //for (int i = 0; i < strlen(text); i++) text_copy[i] = tolower(text_copy[i]);
-    //for (int i = 0; i < strlen(pattern); i++) pattern_copy[i] = tolower(pattern_copy[i]);
-
 
     for (int i = 0; i <= strlen(text) - strlen(pattern); i++) {
         if (tolower(text[i]) != tolower(pattern[0])) continue;
@@ -192,7 +183,7 @@ void ignorowanie_wielkosci_liter(const char *text, const char *pattern) {
                 break;
             }
             if (j == i + strlen(pattern) - 1 && tolower(text[j]) == tolower(pattern[j-i])) {
-                wypisz_tekst_wersja1(text, i, strlen(pattern));
+                wypisz_tekst_wersja2(text, i, strlen(pattern));
                 i = j;
             }
         }
@@ -225,24 +216,96 @@ void wypisz_tekst_wersja1(const char* text, int x, int pattern_len) {
 }
 
 void wypisz_tekst_wersja2(const char *text, int x, int pattern_len) {
-    int end = x-1;
     char buffer[MAX_TEXT_SIZE];
-    while (end >= 0 && text[end] != '\t') {
-        buffer[x-1-end] = text[end];
-        end--;
-    }
-    for (int i = strlen(buffer)-1; i >= 0; i--) printf("%c", buffer[i]);
     memset(buffer, 0, sizeof(buffer));
+    int end = x - 1;
+    int idx = 0;
+    int cou = 0; 
 
+    while (end >= 0 && text[end] != '\t' && cou <= 200) {
+        if (idx < MAX_TEXT_SIZE - 1) {
+            buffer[idx++] = text[end];
+        }
+        end--;
+        cou++;
+    }
+
+    if (end > 0) printf("...");
+    buffer[idx] = '\0';
+    for (int i = idx - 1; i >= 0; i--) printf("%c", buffer[i]);
     printf("\033[0;31m");
-    for (int j = x; j < x + pattern_len; j++) printf("%c", text[j]);
+    for (int j = x; j < x + pattern_len; j++) {
+        if (text[j] == '\0' || text[j] == '\t') {
+            break;
+        }
+        putchar(text[j]);
+    }
     printf("\033[0m");
 
-    int i, licznik = 0;
-    for (i = x + pattern_len; text[i] != '\t' && text[i] != EOF && licznik <= 30; i++, licznik++) printf("%c", text[i]);
-    if (licznik == 60) printf(" ...");
+    int licznik = 0;
+    int i;
+    for (i = x + pattern_len; text[i] != '\0' && text[i] != '\t' && licznik < 200; i++, licznik++) {
+        putchar(text[i]);
+    }
+
+    if (text[i] != '\0' && text[i] != '\t') {
+        printf(" ...");
+    }
 
     putchar('\n');
+    putchar('\n');
+}
+
+
+void wypisanie_statystyk_liter(TextStats stats) {
+    // a / A: 63 + 32 = 95 czyli 11% wszystkich liter
+    printf("Instrukcja: \n");
+    printf("-> 0 - wyjście\n");
+    printf("-> 1 - dokładne statystyki dla każdej litery\n");
+    printf("-> 2 - ilościowe statystyki dla tekstu\n");
+    printf("-> 3 - wyróżnienia w tekście\n");
+    printf("-> 4 - instrukcja\n");
+
+    while (1) {
+        int liczba;
+        scanf("%i", &liczba);
+        if (liczba == 0) break;
+
+        if (liczba == 1) {
+            for (int i = 0; i < 26; i++) {
+                printf("%c / %c: %i + %i = %i czyli %lf%% wszystkich znaków\n", (char) i+97, (char) i+65, stats.tablica_liter[i],
+                stats.tablica_liter[i+26], stats.tablica_liter[i] + stats.tablica_liter[i+26], 
+                ((double)stats.tablica_liter[i]+(double)stats.tablica_liter[i+26])/(double)stats.liczba_znakow*100);
+            }
+        }
+
+        if (liczba == 2) {
+            printf("Liczba wszystkich znaków: %i\n", stats.liczba_znakow);
+            printf("Liczba liter: %i\n", stats.liczba_liter);
+            printf("Liczba wyrazów: %i\n", stats.liczba_wyrazow);
+            printf("Liczba cyfr: %i\n", stats.liczba_cyfr);
+            printf("Liczba znaków specjalnych: %i\n", stats.liczba_znakow_specjalnych);
+            printf("Liczba zdań: %i\n", stats.liczba_zdań);
+            printf("Liczba akapitów: %i\n", stats.liczba_akapitow);
+        }
+
+        if (liczba == 3) {
+            printf("Minimalna długość słowa: %i\n", stats.min_dlugosc_slowa);
+            printf("Maksymalna długość słowa: %i\n", stats.max_dlugosc_slowa);
+            printf("Średnia długość słowa: %f\n", stats.srednia_dlugosc_slowa);
+            printf("Średnia długość zdania: %f\n", stats.srednia_dlugosc_zdania);
+            printf("Złożoność leksykalna: %f\n", stats.zlozonosc_leksykalna);
+        }
+
+        if (liczba == 4) {
+            printf("Instrukcja: \n");
+            printf("-> 0 - wyjście\n");
+            printf("-> 1 - dokładne statystyki dla każdej litery\n");
+            printf("-> 2 - ilościowe statystyki dla tekstu\n");
+            printf("-> 3 - wyróżnienia w tekście\n");
+            printf("-> 4 - instrukcja\n");
+        }
+    }
 }
 
 int zliczanie_wzorca(const char *text, const char *pattern) {
