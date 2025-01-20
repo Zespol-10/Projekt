@@ -69,7 +69,6 @@ Funkcja `detect_language` analizuje tekst i określa, w jakim języku został na
 
 #### Zwracana wartość:
 - `const char *`: Kod języka w formacie trzyliterowym (np. `"ENG"`, `"POL"`).
-## Specyfikacja funkcji
 
 ### `char *find_longest_palindrome(const char *text)`
 
