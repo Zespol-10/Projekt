@@ -135,10 +135,10 @@ class Compressor {
     code_t pending;
     Range range;
     Model model;
-    arithmetic::bit_ostream &output;
+    bitio::bit_ostream &output;
 
   public:
-    Compressor(arithmetic::bit_ostream &output) : pending(0), output(output) {}
+    Compressor(bitio::bit_ostream &output) : pending(0), output(output) {}
 
     void emit(bool bit) {
         output.put_bit(bit);
@@ -197,7 +197,7 @@ class Decompressor {
   public:
     Decompressor(std::ostream &output) : current(0), range(), output(output) {}
 
-    void decompress(arithmetic::bit_istream &input) {
+    void decompress(bitio::bit_istream &input) {
         for (size_t i = 0; i < CODE_VALUE_BITS; i++) {
             current = (current << 1) | input.get_bit();
         }
@@ -241,8 +241,7 @@ class Decompressor {
 };
 } // namespace
 
-namespace arithmetic {
-
+namespace bitio {
 /******************************* INPUT STREAM *******************************/
 
 /*                             BASE INPUT STREAM                            */
@@ -326,19 +325,17 @@ bit_string_ostream::bit_string_ostream() {}
 
 void bit_string_ostream::put_char(std::uint8_t ch) { output.push_back(ch); }
 
-void bit_string_ostream::flush() {
-    bit_ostream::fill();
-}
+void bit_string_ostream::flush() { bit_ostream::fill(); }
 
 std::string bit_string_ostream::result() { return output; }
+} // namespace bitio
 
-/****************************** MAIN FUNCTIONS ******************************/
-
-void compress(std::istream &input, bit_ostream &output) {
+namespace arithmetic {
+void compress(std::istream &input, bitio::bit_ostream &output) {
     Compressor(output).compress(input);
 }
 
-void decompress(bit_istream &input, std::ostream &output) {
+void decompress(bitio::bit_istream &input, std::ostream &output) {
     Decompressor(output).decompress(input);
 }
 } // namespace arithmetic

@@ -71,12 +71,12 @@ bool arithmetic_example(int argc, char *argv[]) {
     std::string decompressed_path = input_path + ".decomp";
 
     std::cout << "Compressing to '" << compressed_path << "' ...";
-    arithmetic::bit_ofstream compressed_stream(compressed_path);
+    bitio::bit_ofstream compressed_stream(compressed_path);
     arithmetic::compress(input_stream, compressed_stream);
     std::cout << " Done." << std::endl;
 
     std::cout << "Decompressing to '" << decompressed_path << "' ...";
-    arithmetic::bit_ifstream input_stream2(compressed_path);
+    bitio::bit_ifstream input_stream2(compressed_path);
     auto decompressed_stream = std::ofstream(decompressed_path);
     arithmetic::decompress(input_stream2, decompressed_stream);
     std::cout << " Done." << std::endl;

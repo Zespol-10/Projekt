@@ -3,8 +3,7 @@
 #include <string>
 #include <string_view>
 
-namespace arithmetic {
-
+namespace bitio {
 /******************************* INPUT STREAM *******************************/
 
 /// @brief A base class for bit wise input stream
@@ -107,18 +106,18 @@ class bit_string_ostream : public bit_ostream {
     /// @brief Returns the underlying string
     std::string result();
 };
+} // namespace bitio
 
-/****************************** MAIN FUNCTIONS ******************************/
-
+namespace arithmetic {
 /// @brief Adaptive arithmetic coding compressor
 ///
 /// @paramin input (byte wise) stream to be compress
 /// @paramin output (bit wise) stream for the compressed data
-void compress(std::istream &input, bit_ostream &output);
+void compress(std::istream &input, bitio::bit_ostream &output);
 
 /// @brief Adaptive arithmetic coding decompressor
 ///
 /// @paramin input (bit wise) stream to be decompress
 /// @paramin output (byte wise) stream for the decompressed data
-void decompress(bit_istream &input, std::ostream &output);
+void decompress(bitio::bit_istream &input, std::ostream &output);
 } // namespace arithmetic
