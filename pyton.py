@@ -481,7 +481,43 @@ def podzial_init():
 	
 	return lib
 	
+def arithmetic_init():
+	nazwa = 'arithmetic'
+
+	if os.name == 'posix':
+		compile_command = [
+			"g++",
+			'-std=c++17',
+			"-shared",
+			"-fPIC",
+			nazwa+'.cpp',
+			"-o",
+			nazwa+'.so'
+			]
+		try:
+			subprocess.run(compile_command, check=True)
+		except:
+			print("Cos poszlo zle :( Upewnij sie ze masz zainstalowane gcc")
+			exit()
+		lib = ctypes.CDLL("./"+nazwa+".so")
+	elif os.name == 'nt':
+			try:
+					os.environ['PATH'] = r'C:\msys64\mingw64\bin;' + os.environ['PATH']
+					subprocess.run(['g++', '-std=c++17','-shared', nazwa+'.cpp', '-o',  nazwa + '.dll'], check=True)
+			except:
+					print("Cos poszlo zle :( Upewnij sie ze masz zainstalowane gcc")
+					exit()
+			lib = ctypes.CDLL('./'+nazwa+'.dll')
+	#kod z konwerter.py
+
+	lib.c_compress.restype = None
+	lib.c_compress.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+
+
+
 	
+	return lib
+
 
 
 
