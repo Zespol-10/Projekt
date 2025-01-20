@@ -20,9 +20,9 @@ if os.name == 'posix':
 elif os.name == 'nt':
         try:
                 os.environ['PATH'] = r'C:\msys64\mingw64\bin;' + os.environ['PATH']
-                subprocess.run(['x86_64-w64-mingw32-gcc', '-shared', 'Szyfr_RSA.c', '-o', 'Szyfr_RSA.dll'], check=True)
+                subprocess.run(['gcc', '-shared', 'Szyfr_RSA.c', '-o', 'Szyfr_RSA.dll'], check=True)
         except:
-                print("Cos poszlo zle :( Upewnij sie ze masz zainstalowane x86_64-w64-mingw32-gcc.exe pod sciezka C:\\msys64\\mingw64\\bin ")
+                print("Cos poszlo zle :( Upewnij sie ze masz zainstalowane gcc")
                 exit()
         lib = ctypes.CDLL("./Szyfr_RSA.dll")
 #kod z konwerter.py
