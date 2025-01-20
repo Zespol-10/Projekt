@@ -135,23 +135,27 @@ class Compressor {
     code_t pending;
     Range range;
     Model model;
-    std::vector<bool> output;
+    arithmetic::bit_ostream &output;
 
   public:
-    Compressor() : pending(0) {}
+    Compressor(arithmetic::bit_ostream &output) : pending(0), output(output) {}
 
     void emit(bool bit) {
-        output.push_back(bit);
-        output.resize(output.size() + pending, !bit);
+        output.put_bit(bit);
+        for (size_t i = 0; i < pending; i++) {
+            output.put_bit(!bit);
+        }
         pending = 0;
     }
 
-    std::vector<bool> compress(const std::string_view &input) {
-        auto iter = input.begin();
+    void compress(std::istream &input) {
         std::uint16_t ch = 0;
 
         while (ch != CODE_EOF) {
-            ch = iter == input.end() ? CODE_EOF : *(iter++);
+            ch = input.get();
+            if (input.eof()) {
+                ch = CODE_EOF;
+            }
 
             auto prob = model.get_probability(ch);
             range.update(prob);
@@ -180,10 +184,7 @@ class Compressor {
         pending++;
         emit(range.left >= QUARTER1);
 
-        // Make sure to emit a multiple of 8 bits
-        output.resize((output.size() + 7) & ~0b111, false);
-
-        return output;
+        output.flush();
     }
 };
 
@@ -191,16 +192,14 @@ class Decompressor {
     code_t current;
     Range range;
     Model model;
-    std::string output;
+    std::ostream &output;
 
   public:
-    Decompressor() : current(0), range() {}
+    Decompressor(std::ostream &output) : current(0), range(), output(output) {}
 
-    std::string decompress(const std::vector<bool> &input) {
-        auto curr_bit = input.begin();
-
+    void decompress(arithmetic::bit_istream &input) {
         for (size_t i = 0; i < CODE_VALUE_BITS; i++) {
-            current = (current << 1) | *(curr_bit++);
+            current = (current << 1) | input.get_bit();
         }
 
         while (true) {
@@ -213,7 +212,7 @@ class Decompressor {
                 break;
             }
 
-            output.push_back(ch);
+            output.put(ch);
             range.update(prob);
 
             // The range width is less than 0.5 and both ends are in the same
@@ -226,7 +225,7 @@ class Decompressor {
 
                 range.left <<= 1;
                 range.right = (range.right << 1) + 1;
-                current = (current << 1) | *(curr_bit++);
+                current = (current << 1) | input.get_bit();
             }
 
             // The range width is less than 0.5, and both ends are in the 0.25
@@ -235,21 +234,93 @@ class Decompressor {
                 range.decrease(QUARTER1);
                 range.left <<= 1;
                 range.right = (range.right << 1) + 1;
-                current = ((current - QUARTER1) << 1) | *(curr_bit++);
+                current = ((current - QUARTER1) << 1) | input.get_bit();
             }
         }
-
-        return output;
     }
 };
 } // namespace
 
 namespace arithmetic {
-std::vector<bool> compress(const std::string_view input) {
-    return Compressor().compress(input);
+
+bit_istream::bit_istream() : buf(0), mask(0) {}
+
+bool bit_istream::get_bit() {
+    if (mask == 0b0) {
+        mask = 0b10000000;
+        buf = get_char();
+    }
+
+    bool result = (buf & mask) != 0;
+    mask >>= 1;
+    return result;
+};
+
+bool bit_istream::eof() const { return mask == 0 && stream_eof(); }
+
+bit_ifstream::bit_ifstream(const std::string &filename)
+    : std::ifstream(filename, std::ios::binary) {}
+
+char bit_ifstream::get_char() { return std::ifstream::get(); }
+
+bool bit_ifstream::stream_eof() const { return std::ifstream::eof(); }
+
+bit_string_istream::bit_string_istream(const std::string_view input)
+    : iter(input.begin()), end(input.end()) {}
+
+char bit_string_istream::get_char() { return *(iter++); }
+
+bool bit_string_istream::stream_eof() const { return iter == end; }
+
+bit_ostream::bit_ostream() : buf(0), count(0) {}
+
+void bit_ostream::fill() {
+    if (count == 0) {
+        return;
+    }
+
+    buf <<= 8 - count;
+    put_char(buf);
 }
 
-std::string decompress(const std::vector<bool> &input) {
-    return Decompressor().decompress(input);
+void bit_ostream::put_bit(bool bit) {
+    buf = (buf << 1) | bit;
+    count++;
+
+    if (count == 8) {
+        put_char(buf);
+        buf = 0;
+        count = 0;
+    }
+};
+
+bit_ofstream::bit_ofstream(const std::string &filename)
+    : std::ofstream(filename, std::ios::binary) {}
+
+void bit_ofstream::put_char(std::uint8_t ch) { std::ofstream::put(ch); }
+
+void bit_ofstream::flush() {
+    bit_ostream::fill();
+    std::ofstream::flush();
+}
+
+void bit_ofstream::close() { std::ofstream::close(); }
+
+bit_string_ostream::bit_string_ostream() {}
+
+void bit_string_ostream::put_char(std::uint8_t ch) { output.push_back(ch); }
+
+void bit_string_ostream::flush() {
+    bit_ostream::fill();
+}
+
+std::string bit_string_ostream::result() { return output; }
+
+void compress(std::istream &input, bit_ostream &output) {
+    Compressor(output).compress(input);
+}
+
+void decompress(bit_istream &input, std::ostream &output) {
+    Decompressor(output).decompress(input);
 }
 } // namespace arithmetic
