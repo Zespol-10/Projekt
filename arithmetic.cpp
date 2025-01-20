@@ -3,7 +3,7 @@
 #include <array>
 #include <cstdint>
 #include <limits>
-
+#include <tuple>
 // The following implementation is based on:
 //
 // Mark Nelson's "Data Compression With Arithmetic Coding" article
