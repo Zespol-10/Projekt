@@ -1,7 +1,7 @@
 # Projekt
 Biblioteka w C/C++ zajmująca się operacjami na tekstach. 
 
-Część Szyfr RSA:
+## RSA:
 Żeby przetestować projekt wpisz w terminalu:
 ```bash
 gcc -c main.c -o main.o
@@ -34,14 +34,24 @@ pip install subprocess
 pip install os
 ```
 --------------------------------------
-Część base64
+## base64
 
 Testowy program może zostać skompilowany i uruchomiony przy pomocy:
 
 ```bash
-g++ -o main.cpp base64.cpp
-./a
+g++ -o main.cpp base64.cpp arithmetic.cpp -o main
+./main base64
 ```
+
+## arithmetic
+
+Testowy program może zostać skompilowany i uruchomiony przy pomocy:
+
+```bash
+g++ -o main.cpp base64.cpp arithmetic.cpp -o main
+./main arithmetic "${FILE_PATH}"
+```
+
 ## Specyfikacja funkcji
 
 ### `const char *detect_language(char *text)`
