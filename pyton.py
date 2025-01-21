@@ -503,7 +503,7 @@ def arithmetic_init():
 	elif os.name == 'nt':
 			try:
 					os.environ['PATH'] = r'C:\msys64\mingw64\bin;' + os.environ['PATH']
-					subprocess.run(['g++', '-std=c++17','-shared', nazwa+'.cpp', '-o',  nazwa + '.dll'], check=True)
+					subprocess.run(['g++', '-std=c++17',"-static",'-shared', nazwa+'.cpp', '-o',  nazwa + '.dll'], check=True)
 			except:
 					print("Cos poszlo zle :( Upewnij sie ze masz zainstalowane gcc")
 					exit()
@@ -542,7 +542,7 @@ def base64_init():
 	elif os.name == 'nt':
 			try:
 					os.environ['PATH'] = r'C:\msys64\mingw64\bin;' + os.environ['PATH']
-					subprocess.run(['g++', '-std=c++17','-shared', nazwa+'.cpp', '-o',  nazwa + '.dll'], check=True)
+					subprocess.run(['g++', '-std=c++17','-shared',"-static", nazwa+'.cpp', '-o',  nazwa + '.dll'], check=True)
 			except:
 					print("Cos poszlo zle :( Upewnij sie ze masz zainstalowane g++")
 					exit()
