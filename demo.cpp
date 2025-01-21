@@ -17,6 +17,8 @@
 #include "arithmetic.hpp"
 #include <iostream>
 #define MAXLENGTH 4096
+#define MAX_TEXT_SIZE 1000000
+
 
 
 
@@ -253,6 +255,49 @@ void rozpoznawanie_jezyka_demo(){
 
 }
 
+void statystyki_demo(){
+
+
+    char text[MAX_TEXT_SIZE] = {0};
+    std::string nazwa;
+    std::cout<<"Wpisz nazwe pliku:\n";
+    std::cin>>nazwa;
+    
+        FILE *file = fopen(nazwa.c_str(), "r");
+        if (!file) {
+            //perror("Nie mozna otworzyć pliku");
+           
+            std::cerr<<"Nie mozna otworzyc pliku\n";
+            return;
+        }
+        else {
+            fread(text, sizeof(char), MAX_TEXT_SIZE, file);
+            fclose(file);
+        }
+    
+    
+   
+
+    TextStats stats;
+    statystyki(text, &stats);
+
+    ignorowanie_wielkosci_liter(text, "Milac");
+    wypisanie_statystyk_liter(stats);
+    puts("Podmienienie 'mogla' na 'liczba' w tekscie");
+    podmiana_wzorca(text, "mogla", "liczba", text);
+    printf("%s\n", text);
+    puts("Zliczanie dwukropkow");
+    printf("%i\n", zliczanie_wzorca(text, ":"));
+    puts("Wyszukiwanie wzorca: 'Milac'");
+    wyszukiwanie_wzorca(text, "Milac");
+   // ignorowanie_wielkosci_liter(text, "jestem");
+
+
+
+
+
+}
+
 
 
 
@@ -266,6 +311,7 @@ int main(int argc, char *argv[]){
         "\tregex\n"
         "\tpalindrom\n"
         "\tpodzial\n"
+        "\tstatystyki\n"
         "\tszyfr_plotkowy\n"
         "\tszyfr_rsa\n";
 
@@ -293,6 +339,9 @@ int main(int argc, char *argv[]){
     	if(command == "podzial"){
     		podzial_demo();
     		}else
+    	if(command == "statystyki"){
+    		statystyki_demo();
+    		}
     	if(command == "szyfr_plotkowy"){
     		szyfr_plotkowy_demo();
     		}else
