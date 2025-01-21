@@ -6,6 +6,19 @@ Biblioteka w C/C++ zajmująca się operacjami na tekstach.
 `python3 demo.py` lub `py demo.py`
 Aby skorzystać z biblioteki pythonowej, powinieneś mieć zainstalowanego 64-bitowego Pythona oraz 64-bitowy gcc oraz g++.
 Musisz mieć też zainstalowane pythonowe biblioteki: `ctypes, subprocess, os`
+Żeby skorzystać z funkcji bibliotecznych we własnym projekcie w Pythonie zaimportuj najpierw bibliotekę `pyton`:
+```python
+from pyton import *
+lib = get_all_libs() #to polecenie spróbuje skompilować wszystkie biblioteki dynamiczne potrzebne do uruchomienia programu
+#Żeby wypisać nazwy poszczególnych modułów wpisz:
+print(list(lib))
+#wynik: ['biblioteka', 'palindrom', 'szyfr_rsa', 'plot', 'podzial', 'regex', 'rozpoznawanie_jezyka', 'nawiasowanie', 'arithmetic', 'base64']
+lib['plot'].szyfruj() #wywołuje funkcję szyfruj() z plot.c
+lib['arithmetic'].c_encode1421(b'a.txt',b'b.txt') #w przypadku funkcji z arithmetic.cpp oraz base64.cpp
+#należy dodać przedrostek do nazwy funkcji
+#poza tym wszystkie pythonowe stringi przesyłane do funkcji należy poprzedzić literą b
+#więcej przykładów można znaleźć w demo.py 
+```
 
 --------------------------------------
 ## base64
