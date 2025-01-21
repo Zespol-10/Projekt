@@ -51,6 +51,36 @@ Testowy program może zostać skompilowany i uruchomiony przy pomocy:
 g++ -std=c++17 main.cpp base64.cpp arithmetic.cpp -o main
 ./main arithmetic "${FILE_PATH}"
 ```
+## Specyfikacja klas
+
+### `bitio::bit_istream`
+
+#### Opis:
+Bazowa klasa pomocnicza reprezentująca strumień wejściowy z operacjami na bitach.
+
+#### Funkcje:
+- `bool get_bit()`: zwraca pojedynczy bit ze strumienia.
+- `bool eof()`: zwraca informację czy wszystkie bit zostały przeczytane ze strumienia.
+
+#### Implementacje:
+- `bitio::bit_ifstream` wykorzystuje `std::ifstream`.
+- `bitio::bit_string_istream` wykorzystuje `std::string`.
+
+### `bitio::bit_ostream`
+
+#### Opis:
+Bazowa klasa pomocnicza reprezentująca strumień wyjściowy z operacjami na bitach.
+
+#### Funkcje:
+- `void put_bit(bool bit)`: dodaje pojedynczy bit do strumienia.
+- `void flush()`: dopełnia niedokończony bajt zerami i zapisuje strumienia.
+
+#### Implementacje:
+- `bitio::bit_ofstream` wykorzystuje `std::ofstream`.
+    Posiada dodatkową funkcję `void close()` zamykającą strumień.
+- `bitio::bit_string_ostream` wykorzystuje `std::string`.
+    Posiada dodatkową funkcję `std::string result()` zwracającą wewnętrzny napis.
+
 ## Specyfikacja funkcji
 ### `const char *detect_language(char *text)`
 
@@ -116,9 +146,6 @@ Funkcja alokuje dynamicznie tablicę i dopóki użytkownik nie zakończy wpisywa
 Funkcja nie przyjmuje żadnych argumentów
   
 Zwraca `char *` - ciąg znaków w której zapisane są dane podane ze standardowego wejścia przez użytkownika.
-
----
-
 
 ---
 
@@ -316,73 +343,202 @@ Funkcja `podmiana_wzorca` pozwala na znalezienie wszystkich wystąpień wzorca w
 
 ---
 
-Dzielenie tekstu na słowa, zdania i sprawdzanie gramatyki (funkcje w podzial.c):
+### `void zwolnij(char **tablica, int liczba)`
 
-- void zwolnij (char **tablica, int liczba)
-opis: funkcja zwalnia pamięć zarezerwowaną dla tablicy wskaźników oraz pamięć, na którą wskazują poszczególne elementy tablicy 
-parametry wejściowe:
-Wskaźnik na dynamicznie alokowaną tablicę wskaźników.
-Liczba elementów w tablicy.
+#### Opis:
+Funkcja zwalnia pamięć zarezerwowaną dla tablicy wskaźników oraz pamięć, na którą wskazują poszczególne elementy tablicy.
 
-- int porownaj_slowo(const void *a, const void*b)
-opis:Funkcja porównuje dwa słowa na podstawie ich długości i ustawia je w kolejności rosnącej
-parametry wejściowe:
-Wskaźnik na pierwszy element do porównania (wskaźnik na wskaźnik).
-Wskaźnik na drugi element do porównania (wskaźnik na wskaźnik).
+#### Jak działa:
+1. Iteruje przez elementy tablicy wskaźników.
+2. Zwalnia pamięć każdego elementu.
+3. Zwalnia pamięć samej tablicy wskaźników.
 
-- char **wczytaj_slownik(const char *nazwa_pliku, int *rozmiar_slownika)
-opis: wczytuje dane z pliku tekstowego, zapisuje je w dynamicznie alokowanej tablicy wskaźników na ciągi znaków oraz sortuje je używając porownaj_slowo. 
-parametry wejściowe:
-Wskaźnik na ciąg znaków reprezentujący nazwę pliku, z którego ma wczytać dane.
-Wskaźnik na zmienną, gdzie zostanie zapisany rozmiar wczytanego słownika.
+#### Parametry wejściowe:
+- `char **tablica`: Wskaźnik na dynamicznie alokowaną tablicę wskaźników.
+- `int liczba`: Liczba elementów w tablicy.
 
--int najlepszy_podzial(const char *tekst, char **slownik, int rozmiar_slownika, char ***wynik, int *licznik, char ** *najlepszy, int *najlepsza_liczba)
-opis: służy do rekursywnego znajdowania najlepszego podziału tekstu na słowa w oparciu o dostarczoną listę słów (tutaj tylko dla języka polskiego. Funkcja wykorzystuje podejście rekurencyjne do przeszukiwania wszystkich możliwych podziałów i wybiera ten, który wykorzystuje najmniejszą liczbę słów. tekst podzielony na słowa jest przechowywany w dynamicznie alokowanej tablicy wskaźników na ciągi znaków.
-Parametry wejściowe:
-const char *tekst:
-Ciąg znaków reprezentujący tekst do podziału.
-char **slownik:
-Tablica wskaźników zawierająca słowa wczytane z wcześniej zdefiniowanego słownika.
-int rozmiar_slownika:
-Liczba słów w słowniku.
-char ***wynik:
-Dynamicznie alokowana tablica wskaźników przechowująca aktualny podział tekstu na słowa.
-int *licznik:
-Licznik określający liczbę słów w bieżącym podziale.
-char ***najlepszy:
-Dynamicznie alokowana tablica wskaźników przechowująca najkrótszy podział tekstu na słowa.
-int *najlepsza_liczba:
-Liczba słów w najkrótszym podziale.
+#### Zwracana wartość:
+Funkcja nie zwraca wartości.
 
-char **podziel_na_zdania(const char *tekst, int *liczba_zdan)
-opis: dzieli tekst na pojedyncze zdania, wykorzystując określone znaki końca zdania (., !, ?). Wynikiem działania funkcji jest dynamicznie alokowana tablica wskaźników, w której każde zdanie jest przechowywane jako osobny ciąg znaków.
-Parametry wejściowe:
-const char *tekst:
-Ciąg znaków reprezentujący tekst, który ma zostać podzielony na zdania.
-Jeśli wartość jest NULL, funkcja natychmiast zwraca NULL.
-int *liczba_zdan:
-Wskaźnik na zmienną, do której funkcja zapisze liczbę znalezionych zdań.
-Jeśli wskaźnik jest NULL, funkcja zwraca NULL.
-Zwracana wartość:
-Dynamicznie alokowana tablica wskaźników (char **), gdzie każdy element wskazuje na jedno zdanie.
-W przypadku błędów alokacji pamięci funkcja zwraca NULL.
+---
 
-void polacz_wyniki_do_ciagu(char **zdania, int liczba_zdan, char **wynik, char **slownik, int rozmiar_slownika)
-opis łączy zdania podzielone na słowa w jeden ciąg znaków, wykorzystując zbiór słów oraz funkcję najlepszy_podzial do podziału każdego zdania. Wynik jest przechowywany w dynamicznie alokowanej pamięci.
-Parametry wejściowe
-char **zdania:
-Tablica wskaźników na zdania (char *), które mają zostać przetworzone i połączone w jeden ciąg znaków.
-int liczba_zdan:
-Liczba elementów w tablicy zdania (czyli liczba zdań).
-char **wynik:
-Wskaźnik na dynamicznie alokowany ciąg znaków, który będzie przechowywał połączony wynik.
-char **slownik:
-Tablica wskaźników zawierająca słowa wczytane ze słownika.
-int rozmiar_slownika:
-Liczba słów w słowniku.
-Zwracana wartość
-Funkcja nie zwraca wartości bezpośrednio, ale wynik działania zapisuje w dynamicznie alokowanej zmiennej *wynik.
-Jeśli wystąpi błąd alokacji pamięci, funkcja nie modyfikuje *wynik.
+### `int porownaj_slowo(const void *a, const void *b)`
 
-void sprawdz_gramatyke(const char *tekst)
-opis:  sprawdza podstawowe zasady gramatyki w podanym ciągu tekstowym. Weryfikuje, czy zdania zaczynają się od wielkiej litery, czy po znakach interpunkcyjnych występują odpowiednie spacje, oraz czy nie ma zbyt wielu spacji między słowami. parametr wejściowy: ciąg znaków, który ma sprawdzić. funkcja wypisuje komunikaty: jak nie ma błędów to "tekst jest gramatycznie poprawny", jeśli znajdzie błąd to napisze jaki błąd znalazła i pozycję błędu w ciągu znaków.
+#### Opis:
+Funkcja porównuje dwa słowa na podstawie ich długości i ustawia je w kolejności rosnącej.
+
+#### Jak działa:
+1. Odczytuje długości dwóch ciągów znaków wskazywanych przez wskaźniki `a` i `b`.
+2. Zwraca wartość porównania (ujemną, zero lub dodatnią) w zależności od różnicy długości.
+
+#### Parametry wejściowe:
+- `const void *a`: Wskaźnik na pierwszy element do porównania (wskaźnik na wskaźnik).
+- `const void *b`: Wskaźnik na drugi element do porównania (wskaźnik na wskaźnik).
+
+#### Zwracana wartość:
+- Liczba całkowita:
+  - Ujemna, jeśli długość pierwszego słowa jest mniejsza.
+  - Zero, jeśli długości są równe.
+  - Dodatnia, jeśli długość pierwszego słowa jest większa.
+
+---
+
+### `char **wczytaj_slownik(const char *nazwa_pliku, int *rozmiar_slownika)`
+
+#### Opis:
+Funkcja wczytuje dane z pliku tekstowego, zapisuje je w dynamicznie alokowanej tablicy wskaźników na ciągi znaków oraz sortuje je używając funkcji `porownaj_slowo`.
+
+#### Jak działa:
+1. Otwiera plik o podanej nazwie.
+2. Odczytuje słowa z pliku i zapisuje je w dynamicznie alokowanej tablicy.
+3. Sortuje tablicę przy użyciu funkcji `qsort` i funkcji pomocniczej `porownaj_slowo`.
+4. Zapisuje rozmiar wczytanego słownika do zmiennej wskazywanej przez `rozmiar_slownika`.
+
+#### Parametry wejściowe:
+- `const char *nazwa_pliku`: Wskaźnik na ciąg znaków reprezentujący nazwę pliku, z którego ma wczytać dane.
+- `int *rozmiar_slownika`: Wskaźnik na zmienną, gdzie zostanie zapisany rozmiar wczytanego słownika.
+
+#### Zwracana wartość:
+- `char **`: Dynamicznie alokowana tablica wskaźników zawierająca wczytane słowa.
+- `NULL`, jeśli wystąpił błąd otwarcia pliku lub alokacji pamięci.
+
+---
+
+### `int najlepszy_podzial(const char *tekst, char **slownik, int rozmiar_slownika, char ***wynik, int *licznik, char ***najlepszy, int *najlepsza_liczba)`
+
+#### Opis:
+Funkcja służy do rekursywnego znajdowania najlepszego podziału tekstu na słowa w oparciu o dostarczoną listę słów (tylko dla języka polskiego).
+
+#### Jak działa:
+1. Wykorzystuje podejście rekurencyjne do przeszukiwania wszystkich możliwych podziałów tekstu.
+2. Sprawdza dopasowanie podziałów z dostarczonym słownikiem słów.
+3. Wybiera podział tekstu na najmniejszą liczbę słów.
+4. Zapisuje najkrótszy podział w dynamicznie alokowanej tablicy wskaźników.
+
+#### Parametry wejściowe:
+- `const char *tekst`: Ciąg znaków reprezentujący tekst do podziału.
+- `char **slownik`: Tablica wskaźników zawierająca słowa wczytane z wcześniej zdefiniowanego słownika.
+- `int rozmiar_slownika`: Liczba słów w słowniku.
+- `char ***wynik`: Dynamicznie alokowana tablica wskaźników przechowująca aktualny podział tekstu na słowa.
+- `int *licznik`: Licznik określający liczbę słów w bieżącym podziale.
+- `char ***najlepszy`: Dynamicznie alokowana tablica wskaźników przechowująca najkrótszy podział tekstu na słowa.
+- `int *najlepsza_liczba`: Liczba słów w najkrótszym podziale.
+
+#### Zwracana wartość:
+- Liczba całkowita:
+  - 0, jeśli funkcja zakończyła działanie poprawnie.
+  - -1, jeśli wystąpił błąd alokacji pamięci.
+
+---
+
+### `char **podziel_na_zdania(const char *tekst, int *liczba_zdan)`
+
+#### Opis:
+Funkcja dzieli tekst na pojedyncze zdania, wykorzystując określone znaki końca zdania (., !, ?).
+
+#### Jak działa:
+1. Iteruje przez podany tekst i identyfikuje znaki końca zdania.
+2. Tworzy dynamicznie alokowaną tablicę wskaźników na ciągi znaków, gdzie każde zdanie jest osobnym elementem.
+3. Zapisuje liczbę znalezionych zdań do zmiennej wskazywanej przez `liczba_zdan`.
+
+#### Parametry wejściowe:
+- `const char *tekst`: Ciąg znaków reprezentujący tekst, który ma zostać podzielony na zdania. Jeśli wartość jest NULL, funkcja natychmiast zwraca NULL.
+- `int *liczba_zdan`: Wskaźnik na zmienną, do której funkcja zapisze liczbę znalezionych zdań. Jeśli wskaźnik jest NULL, funkcja zwraca NULL.
+
+#### Zwracana wartość:
+- `char **`: Dynamicznie alokowana tablica wskaźników, gdzie każdy element wskazuje na jedno zdanie.
+- `NULL`, jeśli wystąpił błąd alokacji pamięci.
+
+---
+
+### `void polacz_wyniki_do_ciagu(char **zdania, int liczba_zdan, char **wynik, char **slownik, int rozmiar_slownika)`
+
+#### Opis:
+Funkcja łączy zdania podzielone na słowa w jeden ciąg znaków, wykorzystując zbiór słów oraz funkcję `najlepszy_podzial` do podziału każdego zdania.
+
+#### Jak działa:
+1. Iteruje przez podaną tablicę zdań.
+2. Dla każdego zdania stosuje funkcję `najlepszy_podzial` w celu podziału na słowa.
+3. Łączy podzielone zdania w jeden ciąg znaków, który jest przechowywany w dynamicznie alokowanej pamięci.
+
+#### Parametry wejściowe:
+- `char **zdania`: Tablica wskaźników na zdania (char *), które mają zostać przetworzone i połączone w jeden ciąg znaków.
+- `int liczba_zdan`: Liczba elementów w tablicy `zdania` (czyli liczba zdań).
+- `char **wynik`: Wskaźnik na dynamicznie alokowany ciąg znaków, który będzie przechowywał połączony wynik.
+- `char **slownik`: Tablica wskaźników zawierająca słowa wczytane ze słownika.
+- `int rozmiar_slownika`: Liczba słów w słowniku.
+
+#### Zwracana wartość:
+Funkcja nie zwraca wartości bezpośrednio, ale wynik działania zapisuje w dynamicznie alokowanej zmiennej `*wynik`. Jeśli wystąpi błąd alokacji pamięci, funkcja nie modyfikuje `*wynik`.
+
+---
+
+### `void sprawdz_gramatyke(const char *tekst)`
+
+#### Opis:
+Funkcja sprawdza podstawowe zasady gramatyki w podanym ciągu tekstowym.
+
+#### Jak działa:
+1. Weryfikuje, czy zdania zaczynają się od wielkiej litery.
+2. Sprawdza, czy po znakach interpunkcyjnych występują odpowiednie spacje.
+3. Weryfikuje, czy nie ma zbyt wielu spacji między słowami.
+4. Wypisuje komunikaty:
+   - "Tekst jest gramatycznie poprawny" w przypadku braku błędów.
+   - Informacje o znalezionych błędach i ich lokalizacji w przeciwnym przypadku.
+
+#### Parametry wejściowe:
+- `const char *tekst`: Ciąg znaków, który ma zostać sprawdzony pod względem gramatycznym.
+
+#### Zwracana wartość:
+Funkcja nie zwraca wartości, lecz wypisuje odpowiednie komunikaty na standardowe wyjście.
+
+---
+
+### `std::string base64::encode1421(const std::string_view input)`
+
+#### Opis:
+Funkcja `encode1421` koduje podany tekst (`input`) przy pomocy *base64*, wykorzystując specyfikację z RFC 1421.
+Istnieją analogiczne funkcje dla następujących RFC: 2045, 2152, 3501, 4648.4 (4648_4), 4648.5 (4648_5), 4880.
+
+#### Parametry:
+- `const std::string_view input`: Tekst wejściowy, który zostanie zakodowany.
+
+#### Zwracana wartość:
+- `std::string`: Nowy napis zawierający zakodowany tekst.
+
+---
+
+### `std::optional<std::string> base64::decode1421(const std::string_view input)`
+
+#### Opis:
+Funkcja `encode1421` dekoduje podany tekst (`input`) przy pomocy *base64*, wykorzystując specyfikację z RFC 1421.
+Istnieją analogiczne funkcje dla następujących RFC: 2045, 2152, 3501, 4648.4 (4648_4), 4648.5 (4648_5), 4880.
+
+#### Parametry:
+- `const std::string_view input`: Tekst wejściowy, który zostanie zdekodowany.
+
+#### Zwracana wartość:
+- `std::string`: Nowy napis zawierający zdekodowany tekst lub brak wartości w przypadku błędu dekodowania.
+
+---
+
+### `void arithmetic::compress(std::istream &input, bitio::bit_ostream &output)`
+
+#### Opis:
+Funkcja kompresuje strumień `input` przy pomocy adaptacyjnego kodowania arytmetycznego do strumienia `output`.
+
+#### Parametry:
+- `std::istream &input`: Strumień wejściowy, zawierający tekst do skompresowania.
+- `bitio::bit_ostream &output`: Bitowy strumień wyjściowy, do którego zostaną zapisane skompresowane dane.
+
+---
+
+### `void arithmetic::compress(bitio::bit_istream &input, std::ostream &output)`
+
+#### Opis:
+Funkcja dekompresuje strumień `input` przy pomocy adaptacyjnego kodowania arytmetycznego do strumienia `output`.
+
+#### Parametry:
+- `bitio::bit_istream &input`: Bitowy strumień wejściowy, zawierający skompresowany tekst.
+- `std::ostream &output`: Strumień wyjściowy, do którego zostaną zapisane zdekompresowane dane.
+
