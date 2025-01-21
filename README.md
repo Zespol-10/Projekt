@@ -15,9 +15,12 @@ print(list(lib))
 #wynik: ['biblioteka', 'palindrom', 'szyfr_rsa', 'plot', 'podzial', 'regex', 'rozpoznawanie_jezyka', 'nawiasowanie', 'arithmetic', 'base64']
 lib['plot'].szyfruj() #wywołuje funkcję szyfruj() z plot.c
 lib['arithmetic'].c_encode1421(b'a.txt',b'b.txt') #w przypadku funkcji z arithmetic.cpp oraz base64.cpp
-#należy dodać przedrostek do nazwy funkcji
+#należy dodać przedrostek c_ do nazwy funkcji
 #poza tym wszystkie pythonowe stringi przesyłane do funkcji należy poprzedzić literą b
-#więcej przykładów można znaleźć w demo.py 
+#aby zadeklarować obiekt typu np. c_string należy wpisać
+tekst = c_string() #tworzymy obiekt klasy c_string
+lib['szyfr_rsa'].init(ctypes.byref(tekst)) #jesli funkcja wymaga wskaznika do obiektu, a nie obiektu to należy użyć ctypes.byref()
+#dużo więcej przykładów można znaleźć w demo.py 
 ```
 
 --------------------------------------
