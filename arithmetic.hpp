@@ -124,5 +124,5 @@ void decompress(bitio::bit_istream &input, std::ostream &output);
 
 extern "C"{
   void c_compress(char* file_in,char* file_out);
-  //c_decompress(char* file_in,char* file_out);
+  void c_decompress(char* file_in,char* file_out);
 }

@@ -50,7 +50,7 @@ class c_string(ctypes.Structure):
 	_fields_ = [
 		('rozm',ctypes.c_int),
 		('rozm_max',ctypes.c_int),
-		('wsk',ctypes.POINTER(ctypes.c_char)),
+		('wsk',ctypes.c_char_p),
 	]
 #biblioteka.c
 class TextStats(ctypes.Structure):
@@ -216,8 +216,8 @@ def palindrom_init():
 					exit()
 			lib = ctypes.CDLL('./'+nazwa+'.dll')
 	#kod z konwerter.py
-	lib.find_longest_palindrome.restype = ctypes.POINTER(ctypes.c_char)
-	lib.find_longest_palindrome.argtypes = [ctypes.POINTER(ctypes.c_char)]
+	lib.find_longest_palindrome.restype = ctypes.c_char_p
+	lib.find_longest_palindrome.argtypes = [ctypes.c_char_p]
 
 	
 	return lib
@@ -256,7 +256,7 @@ def plot_init():
 	#kod z konwerter.py
 
 
-	lib.readString.restype = ctypes.POINTER(ctypes.c_char)
+	lib.readString.restype = ctypes.c_char_p
 	lib.readString.argtypes = []
 	lib.szyfruj.restype = None
 	lib.szyfruj.argtypes = []
@@ -330,21 +330,21 @@ def regex_init():
 			lib = ctypes.CDLL('./'+nazwa+'.dll')
 	#kod z konwerter.py
 	lib.match.restype = ctypes.c_int
-	lib.match.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+	lib.match.argtypes = [ctypes.c_char_p,ctypes.c_char_p]
 	lib.reg_ast.restype = ctypes.c_int
-	lib.reg_ast.argtypes = [ctypes.c_char,ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+	lib.reg_ast.argtypes = [ctypes.c_char,ctypes.c_char_p,ctypes.c_char_p]
 	lib.reg_pl.restype = ctypes.c_int
-	lib.reg_pl.argtypes = [ctypes.c_char,ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+	lib.reg_pl.argtypes = [ctypes.c_char,ctypes.c_char_p,ctypes.c_char_p]
 	lib.reg_br.restype = ctypes.c_int
-	lib.reg_br.argtypes = [ctypes.c_char,ctypes.c_int,ctypes.c_int,ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+	lib.reg_br.argtypes = [ctypes.c_char,ctypes.c_int,ctypes.c_int,ctypes.c_char_p,ctypes.c_char_p]
 	lib.parse_dgt.restype = ctypes.c_int
 	lib.parse_dgt.argtypes = [ctypes.POINTER(ctypes.c_char_p)]
 	#lib.reverse.restype = None
-	#lib.reverse.argtypes = [ctypes.POINTER(ctypes.c_char)]
+	#lib.reverse.argtypes = [ctypes.c_char_p]
 	#lib.int_str.restype = None
-	#lib.int_str.argtypes = [ctypes.c_int,ctypes.POINTER(ctypes.c_char)]
+	#lib.int_str.argtypes = [ctypes.c_int,ctypes.c_char_p]
 	#lib.match_pos.restype = ctypes.c_int
-	#lib.match_pos.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+	#lib.match_pos.argtypes = [ctypes.c_char_p,ctypes.c_char_p]
 	return lib
 
 #regex.c
@@ -377,8 +377,8 @@ def rozpoznawanie_jezyka_init():
 					exit()
 			lib = ctypes.CDLL('./'+nazwa+'.dll')
 	#kod z konwerter.py
-	lib.detect_language.restype = ctypes.POINTER(ctypes.c_char)
-	lib.detect_language.argtypes = [ctypes.POINTER(ctypes.c_char)]
+	lib.detect_language.restype = ctypes.c_char_p
+	lib.detect_language.argtypes = [ctypes.c_char_p]
 	
 	return lib
 	
@@ -411,23 +411,23 @@ def biblioteka_init():
 	#kod z konwerter.py
 
 	lib.statystyki.restype = None
-	lib.statystyki.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(TextStats)]
+	lib.statystyki.argtypes = [ctypes.c_char_p,ctypes.POINTER(TextStats)]
 	lib.wyszukiwanie_wzorca.restype = None
-	lib.wyszukiwanie_wzorca.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+	lib.wyszukiwanie_wzorca.argtypes = [ctypes.c_char_p,ctypes.c_char_p]
 	lib.wyszukiwanie_znaku_specjalnego.restype = None
-	lib.wyszukiwanie_znaku_specjalnego.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+	lib.wyszukiwanie_znaku_specjalnego.argtypes = [ctypes.c_char_p,ctypes.c_char_p]
 	lib.ignorowanie_wielkosci_liter.restype = None
-	lib.ignorowanie_wielkosci_liter.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+	lib.ignorowanie_wielkosci_liter.argtypes = [ctypes.c_char_p,ctypes.c_char_p]
 	lib.wypisz_tekst_wersja1.restype = None
-	lib.wypisz_tekst_wersja1.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.c_int,ctypes.c_int]
+	lib.wypisz_tekst_wersja1.argtypes = [ctypes.c_char_p,ctypes.c_int,ctypes.c_int]
 	lib.wypisz_tekst_wersja2.restype = None
-	lib.wypisz_tekst_wersja2.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.c_int,ctypes.c_int]
+	lib.wypisz_tekst_wersja2.argtypes = [ctypes.c_char_p,ctypes.c_int,ctypes.c_int]
 	lib.wypisanie_statystyk_liter.restype = None
 	lib.wypisanie_statystyk_liter.argtypes = [TextStats]
 	lib.zliczanie_wzorca.restype = ctypes.c_int
-	lib.zliczanie_wzorca.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+	lib.zliczanie_wzorca.argtypes = [ctypes.c_char_p,ctypes.c_char_p]
 	lib.podmiana_wzorca.restype = None
-	lib.podmiana_wzorca.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+	lib.podmiana_wzorca.argtypes = [ctypes.c_char_p,ctypes.c_char_p,ctypes.c_char_p,ctypes.c_char_p]
 
 
 	
@@ -466,15 +466,15 @@ def podzial_init():
 	lib.porownaj_slowo.restype = ctypes.c_int
 	lib.porownaj_slowo.argtypes = [ctypes.c_void_p,ctypes.c_void_p]
 	lib.wczytaj_slownik.restype = ctypes.POINTER(ctypes.c_char_p)
-	lib.wczytaj_slownik.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_int)]
+	lib.wczytaj_slownik.argtypes = [ctypes.c_char_p,ctypes.POINTER(ctypes.c_int)]
 	lib.najlepszy_podzial.restype = ctypes.c_int
-	lib.najlepszy_podzial.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char_p),ctypes.c_int,ctypes.POINTER(ctypes.POINTER(ctypes.c_char_p)),ctypes.POINTER(ctypes.c_int),ctypes.POINTER(ctypes.POINTER(ctypes.c_char_p)),ctypes.POINTER(ctypes.c_int)]
+	lib.najlepszy_podzial.argtypes = [ctypes.c_char_p,ctypes.POINTER(ctypes.c_char_p),ctypes.c_int,ctypes.POINTER(ctypes.POINTER(ctypes.c_char_p)),ctypes.POINTER(ctypes.c_int),ctypes.POINTER(ctypes.POINTER(ctypes.c_char_p)),ctypes.POINTER(ctypes.c_int)]
 	lib.podziel_na_zdania.restype = ctypes.POINTER(ctypes.c_char_p)
-	lib.podziel_na_zdania.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_int)]
+	lib.podziel_na_zdania.argtypes = [ctypes.c_char_p,ctypes.POINTER(ctypes.c_int)]
 	lib.polacz_wyniki_do_ciagu.restype = None
 	lib.polacz_wyniki_do_ciagu.argtypes = [ctypes.POINTER(ctypes.c_char_p),ctypes.c_int,ctypes.POINTER(ctypes.c_char_p),ctypes.POINTER(ctypes.c_char_p),ctypes.c_int]
 	lib.sprawdz_gramatyke.restype = None
-	lib.sprawdz_gramatyke.argtypes = [ctypes.POINTER(ctypes.c_char)]
+	lib.sprawdz_gramatyke.argtypes = [ctypes.c_char_p]
 
 
 
@@ -511,7 +511,71 @@ def arithmetic_init():
 	#kod z konwerter.py
 
 	lib.c_compress.restype = None
-	lib.c_compress.argtypes = [ctypes.POINTER(ctypes.c_char),ctypes.POINTER(ctypes.c_char)]
+	lib.c_compress.argtypes = [ctypes.c_char_p,ctypes.c_char_p]
+	lib.c_decompress.restype = None
+	lib.c_compress.argtypes = [ctypes.c_char_p,ctypes.c_char_p]
+
+
+
+	
+	return lib
+
+def base64_init():
+	nazwa = 'base64'
+
+	if os.name == 'posix':
+		compile_command = [
+			"g++",
+			'-std=c++17',
+			"-shared",
+			"-fPIC",
+			nazwa+'.cpp',
+			"-o",
+			nazwa+'.so'
+			]
+		try:
+			subprocess.run(compile_command, check=True)
+		except:
+			print("Cos poszlo zle :( Upewnij sie ze masz zainstalowane g++")
+			exit()
+		lib = ctypes.CDLL("./"+nazwa+".so")
+	elif os.name == 'nt':
+			try:
+					os.environ['PATH'] = r'C:\msys64\mingw64\bin;' + os.environ['PATH']
+					subprocess.run(['g++', '-std=c++17','-shared', nazwa+'.cpp', '-o',  nazwa + '.dll'], check=True)
+			except:
+					print("Cos poszlo zle :( Upewnij sie ze masz zainstalowane g++")
+					exit()
+			lib = ctypes.CDLL('./'+nazwa+'.dll')
+	#kod z konwerter.py
+	lib.c_encode1421.restype = ctypes.c_char_p
+	lib.c_encode1421.argtypes = [ctypes.c_char_p]
+	lib.c_encode2045.restype = ctypes.c_char_p
+	lib.c_encode2045.argtypes = [ctypes.c_char_p]
+	lib.c_encode2152.restype = ctypes.c_char_p
+	lib.c_encode2152.argtypes = [ctypes.c_char_p]
+	lib.c_encode3501.restype = ctypes.c_char_p
+	lib.c_encode3501.argtypes = [ctypes.c_char_p]
+	lib.c_encode4648_4.restype = ctypes.c_char_p
+	lib.c_encode4648_4.argtypes = [ctypes.c_char_p]
+	lib.c_encode4648_5.restype = ctypes.c_char_p
+	lib.c_encode4648_5.argtypes = [ctypes.c_char_p]
+	lib.c_encode4880.restype = ctypes.c_char_p
+	lib.c_encode4880.argtypes = [ctypes.c_char_p]
+	lib.c_decode1421.restype = ctypes.c_char_p
+	lib.c_decode1421.argtypes = [ctypes.c_char_p]
+	lib.c_decode2045.restype = ctypes.c_char_p
+	lib.c_decode2045.argtypes = [ctypes.c_char_p]
+	lib.c_decode2152.restype = ctypes.c_char_p
+	lib.c_decode2152.argtypes = [ctypes.c_char_p]
+	lib.c_decode3501.restype = ctypes.c_char_p
+	lib.c_decode3501.argtypes = [ctypes.c_char_p]
+	lib.c_decode4648_4.restype = ctypes.c_char_p
+	lib.c_decode4648_4.argtypes = [ctypes.c_char_p]
+	lib.c_decode4648_5.restype = ctypes.c_char_p
+	lib.c_decode4648_5.argtypes = [ctypes.c_char_p]
+	lib.c_decode4880.restype = ctypes.c_char_p
+	lib.c_decode4880.argtypes = [ctypes.c_char_p]
 
 
 
@@ -531,4 +595,6 @@ def get_all_libs():
 	lib['regex'] = regex_init()
 	lib['rozpoznawanie_jezyka'] = rozpoznawanie_jezyka_init()
 	lib['nawiasowanie'] = nawiasowanie_init()
+	lib['arithmetic'] = arithmetic_init()
+	lib['base64'] = base64_init()
 	return lib

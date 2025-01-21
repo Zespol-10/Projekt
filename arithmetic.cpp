@@ -357,7 +357,20 @@ extern "C"{
     bitio::bit_ofstream compressed_stream(compressed_path);
     arithmetic::compress(input_stream, compressed_stream);
     std::cout << " Done." << std::endl;
+    return;
 
+  }
+  void  c_decompress(char* file_in,char* file_out){
+    auto input_path = std::string(file_in);
+    auto input_stream = bitio::bit_ifstream(input_path);
+   
+    
+    std::string compressed_path = std::string(file_out);
+    std::cout << "Decompressing to '" << compressed_path << "' ...";
+    std::ofstream compressed_stream(compressed_path);
+    arithmetic::decompress(input_stream, compressed_stream);
+    std::cout << " Done." << std::endl;
+    return;
   }
  
 }
