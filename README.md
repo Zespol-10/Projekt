@@ -1,38 +1,12 @@
 # Projekt
 Biblioteka w C/C++ zajmująca się operacjami na tekstach. 
 
-## RSA:
-Żeby przetestować projekt wpisz w terminalu:
-```bash
-gcc -c main.c -o main.o
-gcc -c Szyfr_RSA.c -o Szyfr_RSA.o
-gcc main.o Szyfr_RSA.o -o main
-./main
-```
-lub po prostu
-```bash
-gcc main.c Szyfr_RSA.c -o main
-./main
-```
+## Pythonowa wersja projektu:
 Żeby przetestować wersję pythonową wpisz w terminalu:
-```bash
-python3 Szyfr.py
+`python3 demo.py` lub `py demo.py`
+Aby skorzystać z biblioteki pythonowej, powinieneś mieć zainstalowanego 64-bitowego Pythona oraz 64-bitowy gcc oraz g++.
+Musisz mieć też zainstalowane pythonowe biblioteki: `ctypes, subprocess, os`
 
-```
-lub
-```bash
-py Szyfr.py
-```
-Musisz mieć nadzieję, że wersja twojego Pythona (32/64-bitowa) zgadza się z wersją twojego gcc.
-W przypadku Windowsa musisz mieć zainstalowanego x86_64-w64-mingw32-gcc pod ścieżką C:\msys64\mingw64\bin.
-Musisz mieć też zainstalowaną pythonowe biblioteki:
-ctypes, subprocess, os
-Jeśli jej nie masz zainstaluj ją za pomocą polecenia:
-```bash
-pip install ctypes
-pip install subprocess
-pip install os
-```
 --------------------------------------
 ## base64
 
@@ -82,6 +56,86 @@ Bazowa klasa pomocnicza reprezentująca strumień wyjściowy z operacjami na bit
     Posiada dodatkową funkcję `std::string result()` zwracającą wewnętrzny napis.
 
 ## Specyfikacja funkcji
+### `key RSA()`
+
+#### Opis:
+Funkcja `RSA` zwraca struct typu `key`. Zawiera on parę kluczy - klucz publiczny oraz prywatny.
+Klucz prywatny to `key.privatekey`, a publiczny `key.publickey`. Posłużą one do szyfrowania i deszyfrowania.
+#### Parametry:
+- brak
+
+#### Zwracana wartość:
+- `key` - para kluczy
+---
+### `void init_c_string(c_string* a); void push_c_string(c_string* a, char z); void free_c_string(c_string* a); char get_c_string(c_string* a, int i);`
+
+#### Opis:
+Są to funkcje obsługujące struct c_string. Struct ten symuluje nieco zachowanie stringa w C++.
+* Żeby utworzyć zmienną typu c_string wystarczy napisać `c_string tekst;`
+* Funkcja `init_c_string(&tekst)` powinna zostać wywołana od razu po zadeklarowaniu zmiennej typu c_string oraz zawsze po poleceniu `free_c_string(&tekst)`, jeśli zamierzamy dalej używać tej zmiennej.
+* Funkcja `push_c_string(&tekst,char litera)` konkatenuje zawartość zmiennej `litera` na koniec structa `tekst`.
+* Funkcja `free_c_string(&tekst)` czyści c_string `tekst`. 
+* Funkcja `get_c_string(c_string* a, int i)` zwraca i-tą literę c-stringa (licząc od 0).
+
+---
+
+### `void print_c_string(c_string* a); void read_c_string(c_string* res);`
+
+#### Opis:
+Są to funkcje obsługujące struct c_string. Struct ten symuluje nieco zachowanie stringa w C++.
+* funkcja `print_c_string(&tekst)` służy wypisaniu zawartości `tekst` na ekran.
+* funkcja `read_c_string(&tekst)` służy wczytaniu ze standardowego wejścia tekstu i zapisania go do zmiennej `tekst`. 
+  
+---
+
+### `void print_hex(int1024 a, c_string* res); int1024 read_hex(c_string* a);`
+
+#### Opis:
+Te funkcje służą do zapisania i odczytania klucza z pewnego ustalonego formatu. (np. jeśli jest potrzeba wymienienia się kluczami między różnymi osobami używającymi biblioteki)
+* funkcja `print_hex(int1024 a, c_string* res);` zapisuje do `res` zapis w pewnym formacie liczbę 1024-bitową `a`.
+* funkcja `read_c_string(&tekst)` zwraca liczbę 1024-bitową po odczytaniu jej ze zmiennej `tekst`. 
+
+#### Przykład zastosowania:
+```C
+key klucz = RSA();
+c_string klucz_prywatny; init_c_string(&klucz_prywatny);
+print_hex(klucz.privatekey.d,klucz_prywatny); 
+print_c_string(klucz_prywatny); //wypisuje na ekran
+free_c_string(&klucz_prywatny);
+```
+---
+### `void RSA_encode(c_string* s, public_key klucz, c_string* res); void RSA_decode(c_string* s, private_key klucz, c_string* res);`
+
+#### Opis:
+Szyfruje i deszyfruje tekst za pomocą algorytmu RSA.
+#### Parametry:
+- wskaźnik do szyfrowanego/deszyfrowanego tekstu (zapisanego z pomocą structa `c_string`) 
+- klucz publiczny/prywatny (np. klucz prywatny można dostać ze structa typu `key` o nazwie `klucz` za pomocą `klucz.privatekey`)
+- wskaźnik do structa c_string w którym zostanie zapisana odpowiedź
+
+
+#### Zwracana wartość:
+- brak
+---
+### `void init_c_string(c_string* a); void push_c_string(c_string* a, char z); void free_c_string(c_string* a); char get_c_string(c_string* a, int i);`
+
+#### Opis:
+Są to funkcje obsługujące struct c_string. Struct ten symuluje nieco zachowanie stringa w C++.
+* Żeby utworzyć zmienną typu c_string wystarczy napisać `c_string tekst;`
+* Funkcja `init_c_string(&tekst)` powinna zostać wywołana od razu po zadeklarowaniu zmiennej typu c_string oraz zawsze po poleceniu `free_c_string(&tekst)`, jeśli zamierzamy dalej używać tej zmiennej.
+* Funkcja `push_c_string(&tekst,char litera)` konkatenuje zawartość zmiennej `litera` na koniec structa `tekst`.
+* Funkcja `free_c_string(&tekst)` czyści c_string `tekst`. 
+* Funkcja `get_c_string(c_string* a, int i)` zwraca i-tą literę c-stringa (licząc od 0).
+
+
+
+---
+
+
+
+
+
+
 ### `const char *detect_language(char *text)`
 
 #### Opis:
