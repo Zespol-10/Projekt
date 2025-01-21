@@ -173,7 +173,10 @@ Funkcja `detect_language` analizuje tekst i określa, w jakim języku został na
 - `char *text`: Tekst wejściowy, którego język ma zostać rozpoznany.
 
 #### Zwracana wartość:
-- `const char *`: Kod języka w formacie trzyliterowym (np. `"ENG"`, `"POL"`).
+- `const char *`: Kod języka w formacie trzyliterowym (np. `"ENG"`, `"POL", "GER", "FRA", "FIN", "ESP", "ITA", "TUR", "SWE", "DAN", "ICE", "CZE", "HUN" `). Dla kolejno angielskiego, polskiego, niemieckiego, francuskiego, fińskiego, hiszpańskiego, włoskiego, tureckiego, szwedzkiego, duńskiego, islandzkiego, czeskiego i węgierskiego.
+
+### **Uwaga:** 
+**Algorytm działa skutecznie przy tekście który ma wiecej niż 100 znaków, a w tekstach powyżej 1000 znaków dokładność jest bardzo wysoka**
 
 ---
 
