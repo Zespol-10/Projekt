@@ -155,3 +155,28 @@ std::string encode4880(const std::string_view input);
 /// Lines are at most 76 bytes long and separated with `CR+LF` (`\r\n`)
 std::optional<std::string> decode4880(const std::string_view input);
 } // namespace base64
+
+
+extern "C"{
+
+char* c_encode1421(char* input);
+char* c_encode2045(char* input);
+char* c_encode2152(char* input);
+char* c_encode3501(char* input);
+char* c_encode4648_4(char* input);
+char* c_encode4648_5(char* input);
+char* c_encode4880(char* input);
+
+char* c_decode1421(char* input);
+char* c_decode2045(char* input);
+char* c_decode2152(char* input);
+char* c_decode3501(char* input);
+char* c_decode4648_4(char* input);
+char* c_decode4648_5(char* input);
+char* c_decode4880(char* input);
+
+
+
+
+
+}

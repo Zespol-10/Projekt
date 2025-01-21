@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <limits>
 #include <tuple>
+#include <iostream>
 // The following implementation is based on:
 //
 // Mark Nelson's "Data Compression With Arithmetic Coding" article
@@ -339,3 +340,37 @@ void decompress(bitio::bit_istream &input, std::ostream &output) {
     Decompressor(output).decompress(input);
 }
 } // namespace arithmetic
+
+
+
+extern "C"{
+  void  c_compress(char* file_in,char* file_out){
+    auto input_path = std::string(file_in);
+    auto input_stream = std::ifstream(input_path);
+    if (!input_stream.is_open()) {
+        std::cerr << "Error: cannot open given file: " << input_path << "\n";
+        return;
+    }
+    
+    std::string compressed_path = std::string(file_out);
+    std::cout << "Compressing to '" << compressed_path << "' ...";
+    bitio::bit_ofstream compressed_stream(compressed_path);
+    arithmetic::compress(input_stream, compressed_stream);
+    std::cout << " Done." << std::endl;
+    return;
+
+  }
+  void  c_decompress(char* file_in,char* file_out){
+    auto input_path = std::string(file_in);
+    auto input_stream = bitio::bit_ifstream(input_path);
+   
+    
+    std::string compressed_path = std::string(file_out);
+    std::cout << "Decompressing to '" << compressed_path << "' ...";
+    std::ofstream compressed_stream(compressed_path);
+    arithmetic::decompress(input_stream, compressed_stream);
+    std::cout << " Done." << std::endl;
+    return;
+  }
+ 
+}

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <cstring>
 
 namespace {
 struct Specification {
@@ -232,3 +233,165 @@ std::optional<std::string> decode4880(const std::string_view input) {
     return Decoder(RFC4880).decode(input);
 }
 } // namespace base64
+
+
+
+extern "C"{
+
+char* c_encode1421(char* input){
+    std::string_view strView(input);
+    auto Str = base64::encode1421(strView);
+    
+    char* cStr = new char[Str.size() + 1];
+    std::strcpy(cStr, Str.c_str());
+    return cStr;
+    
+}
+char* c_encode2045(char* input){
+    std::string_view strView(input);
+    auto Str = base64::encode2045(strView);
+    
+    char* cStr = new char[Str.size() + 1];
+    std::strcpy(cStr, Str.c_str());
+    return cStr;
+    
+}
+char* c_encode2152(char* input){
+    std::string_view strView(input);
+    auto Str = base64::encode2152(strView);
+    
+    char* cStr = new char[Str.size() + 1];
+    std::strcpy(cStr, Str.c_str());
+    return cStr;
+    
+}
+char* c_encode3501(char* input){
+    std::string_view strView(input);
+    auto Str = base64::encode3501(strView);
+    
+    char* cStr = new char[Str.size() + 1];
+    std::strcpy(cStr, Str.c_str());
+    return cStr;
+    
+}
+char* c_encode4648_4(char* input){
+    std::string_view strView(input);
+    auto Str = base64::encode4648_4(strView);
+    
+    char* cStr = new char[Str.size() + 1];
+    std::strcpy(cStr, Str.c_str());
+    return cStr;
+    
+}
+char* c_encode4648_5(char* input){
+    std::string_view strView(input);
+    auto Str = base64::encode4648_5(strView);
+    
+    char* cStr = new char[Str.size() + 1];
+    std::strcpy(cStr, Str.c_str());
+    return cStr;
+    
+}
+char* c_encode4880(char* input){
+    std::string_view strView(input);
+    auto Str = base64::encode4880(strView);
+    
+    char* cStr = new char[Str.size() + 1];
+    std::strcpy(cStr, Str.c_str());
+    return cStr;
+}
+
+
+
+char* c_decode1421(char* input){
+    std::string_view strView(input);
+    auto optStr = base64::decode1421(strView);
+    if (optStr.has_value()) {
+        char* cStr = new char[optStr->size() + 1];
+        std::strcpy(cStr, optStr->c_str());
+        return cStr;
+    } 
+    return nullptr;
+    
+}
+
+char* c_decode2045(char* input){
+    std::string_view strView(input);
+    auto optStr = base64::decode2045(strView);
+    if (optStr.has_value()) {
+        char* cStr = new char[optStr->size() + 1];
+        std::strcpy(cStr, optStr->c_str());
+        return cStr;
+    } 
+        return nullptr;
+    
+}
+
+
+char* c_decode2152(char* input){
+    std::string_view strView(input);
+    auto optStr = base64::decode2152(strView);
+    if (optStr.has_value()) {
+        char* cStr = new char[optStr->size() + 1];
+        std::strcpy(cStr, optStr->c_str());
+        return cStr;
+    } 
+        return nullptr;
+    
+}
+
+char* c_decode3501(char* input){
+    std::string_view strView(input);
+    auto optStr = base64::decode3501(strView);
+    if (optStr.has_value()) {
+        char* cStr = new char[optStr->size() + 1];
+        std::strcpy(cStr, optStr->c_str());
+        return cStr;
+    } 
+        return nullptr;
+    
+}
+
+char* c_decode4648_4(char* input){
+    std::string_view strView(input);
+    auto optStr = base64::decode4648_4(strView);
+    if (optStr.has_value()) {
+        char* cStr = new char[optStr->size() + 1];
+        std::strcpy(cStr, optStr->c_str());
+        return cStr;
+    } 
+        return nullptr;
+    
+}
+
+
+char* c_decode4648_5(char* input){
+    std::string_view strView(input);
+    auto optStr = base64::decode4648_5(strView);
+    if (optStr.has_value()) {
+        char* cStr = new char[optStr->size() + 1];
+        std::strcpy(cStr, optStr->c_str());
+        return cStr;
+    } 
+        return nullptr;
+    
+}
+
+
+char* c_decode4880(char* input){
+    std::string_view strView(input);
+    auto optStr = base64::decode4880(strView);
+    if (optStr.has_value()) {
+        char* cStr = new char[optStr->size() + 1];
+        std::strcpy(cStr, optStr->c_str());
+        return cStr;
+    } 
+        return nullptr;
+    
+}
+
+
+
+
+
+}

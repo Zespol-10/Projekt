@@ -121,3 +121,8 @@ void compress(std::istream &input, bitio::bit_ostream &output);
 /// @paramin output (byte wise) stream for the decompressed data
 void decompress(bitio::bit_istream &input, std::ostream &output);
 } // namespace arithmetic
+
+extern "C"{
+  void c_compress(char* file_in,char* file_out);
+  void c_decompress(char* file_in,char* file_out);
+}
