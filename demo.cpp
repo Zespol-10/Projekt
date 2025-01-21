@@ -55,6 +55,7 @@ void base64_demo(){
 	std::cout<<"Podaj nazwe algorytmu jaki chcesz uzyc:\n";
 	std::cout<<"Do wyboru 1421, 2045, 2152, 3501, 4648_4, 4648_5, 4880\n";
 	std::string alg; std::cin>>alg;
+    std::cin.ignore(1, '\n');
 	auto encoder = base64::encode4648_4;
     auto decoder = base64::decode4648_4;
 
