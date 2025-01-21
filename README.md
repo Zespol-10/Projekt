@@ -1,5 +1,12 @@
 # Projekt
 Biblioteka w C/C++ zajmująca się operacjami na tekstach. 
+## Program demonstracyjny:
+Aby skompilować program demonstracyjny wpisz:
+```bash
+g++ -std=c++17 Szyfr_RSA.c rozpoznawanie_jezyka.c regex.c podzial.c plot.c nawiasowanie.c najdluzszy_palindrom.c biblioteka.c base64.cpp arithmetic.cpp demo.cpp  -o demonstracja
+```
+Program prezentuje różne funkcjonalności biblioteki
+
 
 ## Pythonowa wersja projektu:
 Żeby przetestować wersję pythonową wpisz w terminalu:
