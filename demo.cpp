@@ -89,7 +89,7 @@ void base64_demo(){
     std::string input;
 
     std::cout << "Enter text to be encoded:" << std::endl;
-    std::cin>>input;
+    std::getline(std::cin, input);
 
     std::string encoded = encoder(input);
     std::string decoded = decoder(encoded).value_or("<ERROR>");
@@ -102,7 +102,7 @@ void base64_demo(){
 void nawiasowanie_demo(){
 	std::cout<<"Wpisz nawiasowanie skladajace się ze znakow: {}[]()\n";
 	// std::cout<<"Do wyboru 1421, 2045, 2152, 3501, 4648_4, 4648_5, 4880\n";
-	std::string alg; std::cin>>alg;
+	std::string alg; std::getline(std::cin, alg);
 	char s1[MAXLENGTH];
 	for(int i = 0; i < alg.size(); i++) s1[i] = alg[i];
 	printf("%s\n", check(s1) ? "Poprawne" : "Niepoprawne");
@@ -127,7 +127,7 @@ void regex_demo(){
 void palindrom_demo(){
 	std::string tekst;
 	std::cout<<"Wpisz tekst:\n";
-	std::cin>>tekst;
+	std::getline(std::cin, tekst);
 	char * wsk = new char[tekst.size()+1];
 	strcpy(wsk, tekst.c_str());
 	std::cout<<"Najdluzszy palindrom w tekscie to:\n";
@@ -247,7 +247,7 @@ void podzial_demo(){
 void rozpoznawanie_jezyka_demo(){
 	std::string tekst;
 	std::cout<<"Wpisz tekst w jakims jezyku: (bez liter specjalnych):\n";
-	std::cin>>tekst;
+	std::getline(std::cin, tekst);
 	char * wsk = new char[tekst.size()+1];
 	strcpy(wsk, tekst.c_str());
 	std::string rezultat(detect_language(wsk)); 
