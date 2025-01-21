@@ -341,7 +341,7 @@ int main(int argc, char *argv[]){
     		}else
     	if(command == "statystyki"){
     		statystyki_demo();
-    		}
+    		} else
     	if(command == "szyfr_plotkowy"){
     		szyfr_plotkowy_demo();
     		}else
