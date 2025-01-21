@@ -309,6 +309,7 @@ int main(int argc, char *argv[]){
         "\tbase64\n"
         "\tnawiasowanie\n"
         "\tregex\n"
+	"\trozpoznawanie_jezyka\n"
         "\tpalindrom\n"
         "\tpodzial\n"
         "\tstatystyki\n"
@@ -345,6 +346,9 @@ int main(int argc, char *argv[]){
     	if(command == "szyfr_plotkowy"){
     		szyfr_plotkowy_demo();
     		}else
+	if(command == "rozpoznawanie_jezyka"){
+    		rozpoznawanie_jezyka_demo();
+		}else
     	if(command == "szyfr_rsa"){
     		szyfr_rsa_demo();
     		}else{
